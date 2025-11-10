@@ -1,0 +1,72 @@
+# data/vowels.yaml
+# Hangul vowels grouped by branching type (A–D)
+# Each entry includes the vowel glyph, IPA value, and corresponding BlockType.
+
+vowels:
+  # --- A. Right-branching vowels (ㅏ ㅑ ㅓ ㅕ ㅣ; and ㅐ ㅔ ㅖ ㅙ ㅚ ㅟ) ---
+  - glyph: "ㅏ"
+    ipa: "a"
+    type: A_RightBranch
+  - glyph: "ㅑ"
+    ipa: "ja"
+    type: A_RightBranch
+  - glyph: "ㅓ"
+    ipa: "ʌ"
+    type: A_RightBranch
+  - glyph: "ㅕ"
+    ipa: "jʌ"
+    type: A_RightBranch
+  - glyph: "ㅣ"
+    ipa: "i"
+    type: A_RightBranch
+  - glyph: "ㅐ"
+    ipa: "ɛ"
+    type: A_RightBranch
+  - glyph: "ㅔ"
+    ipa: "e"
+    type: A_RightBranch
+  - glyph: "ㅖ"
+    ipa: "je"
+    type: A_RightBranch
+  - glyph: "ㅙ"
+    ipa: "wɛ"
+    type: A_RightBranch
+  - glyph: "ㅚ"
+    ipa: "we~ø"
+    type: A_RightBranch
+  - glyph: "ㅟ"
+    ipa: "wi"
+    type: A_RightBranch
+
+  # --- B. Top-branching vowels (ㅗ ㅛ; and complexes starting with ㅗ) ---
+  - glyph: "ㅗ"
+    ipa: "o"
+    type: B_TopBranch
+  - glyph: "ㅛ"
+    ipa: "jo"
+    type: B_TopBranch
+  - glyph: "ㅘ"
+    ipa: "wa"
+    type: B_TopBranch
+
+  # --- C. Bottom-branching vowels (ㅜ ㅠ; and complexes starting with ㅜ) ---
+  - glyph: "ㅜ"
+    ipa: "u"
+    type: C_BottomBranch
+  - glyph: "ㅠ"
+    ipa: "ju"
+    type: C_BottomBranch
+  - glyph: "ㅝ"
+    ipa: "wʌ"
+    type: C_BottomBranch
+  - glyph: "ㅞ"
+    ipa: "we"
+    type: C_BottomBranch
+
+  # --- D. Horizontal vowels (ㅡ; and ㅢ) ---
+  - glyph: "ㅡ"
+    ipa: "ɯ"
+    type: D_Horizontal
+  - glyph: "ㅢ"
+    ipa: "ɰi"
+    type: D_Horizontal

@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>1200</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Hangul Pronunciation</string>
+  </property>
+   <widget class="QWidget" name="centralwidget">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="labelPlaceholder">
+       <property name="text">
+        <string>Welcome to Hangul Pronunciation</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="rowControls">
+       <property name="spacing"><number>8</number></property>
+
+       <!-- Mode selector: Combo box for Syllables/Vowels/Consonants -->
+       <item>
+        <widget class="QComboBox" name="comboMode">
+         <property name="toolTip">
+          <string>Choose what to practice: full syllables, vowels, or consonants</string>
+         </property>
+         <item>
+          <property name="text"><string>Syllables</string></property>
+         </item>
+         <item>
+          <property name="text"><string>Vowels</string></property>
+         </item>
+         <item>
+          <property name="text"><string>Consonants</string></property>
+         </item>
+        </widget>
+       </item>
+
+       <!-- Small spacer before nav buttons -->
+       <item>
+        <spacer name="spacerCtrlBeforeNav">
+         <property name="orientation"><enum>Qt::Horizontal</enum></property>
+         <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>12</width><height>20</height></size></property>
+        </spacer>
+       </item>
+
+       <!-- Prev / Next on current axis -->
+       <item>
+        <widget class="QPushButton" name="buttonPrev">
+         <property name="text"><string>Prev</string></property>
+         <property name="minimumHeight"><number>36</number></property>
+         <property name="toolTip"><string>Go to previous item on the current axis</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="buttonNext">
+         <property name="text"><string>Next</string></property>
+         <property name="minimumHeight"><number>36</number></property>
+         <property name="toolTip"><string>Go to next item on the current axis</string></property>
+        </widget>
+       </item>
+
+       <!-- Advance Anchor (switches the fixed dimension forward) -->
+
+       <!-- Small spacer before toggles -->
+       <item>
+        <spacer name="spacerCtrlBeforeToggles">
+         <property name="orientation"><enum>Qt::Horizontal</enum></property>
+         <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>12</width><height>20</height></size></property>
+        </spacer>
+       </item>
+
+
+       <!-- Stretch spacer to push progress to the right -->
+       <item>
+        <spacer name="spacerCtrlStretch">
+         <property name="orientation"><enum>Qt::Horizontal</enum></property>
+         <property name="sizeType"><enum>QSizePolicy::Expanding</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+        </spacer>
+       </item>
+
+       <!-- Progress label on the far right -->
+       <item>
+        <widget class="QLabel" name="labelProgress">
+         <property name="text"><string/></property>
+         <property name="alignment"><set>Qt::AlignRight|Qt::AlignVCenter</set></property>
+         <property name="minimumWidth"><number>120</number></property>
+         <property name="toolTip"><string>Progress summary (e.g., 5/10 vowels)</string></property>
+        </widget>
+       </item>
+
+      </layout>
+     </item>
+
+     <item>
+      <widget class="QFrame" name="drawerLeft">
+       <property name="visible"><bool>false</bool></property>
+       <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+       <property name="frameShadow"><enum>QFrame::Raised</enum></property>
+       <property name="styleSheet"><string notr="true">background-color: #f0f0f0; border: 2px solid #cccccc;</string></property>
+       <layout class="QVBoxLayout" name="layoutDrawerLeft">
+        <property name="spacing"><number>6</number></property>
+        <property name="leftMargin"><number>12</number></property>
+        <property name="topMargin"><number>12</number></property>
+        <property name="rightMargin"><number>12</number></property>
+        <property name="bottomMargin"><number>12</number></property>
+        <item>
+         <widget class="QLabel" name="labelDrawerTitle">
+          <property name="text"><string>Settings</string></property>
+          <property name="alignment"><set>Qt::AlignHCenter</set></property>
+          <property name="styleSheet"><string notr="true">font-weight: bold;</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkIncludeRare">
+          <property name="text"><string>Include rare</string></property>
+          <property name="toolTip"><string>Show syllables marked as rare</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkAdvancedVowels">
+          <property name="text"><string>Advanced vowels</string></property>
+          <property name="toolTip"><string>Include diphthongs/complex vowels in the order</string></property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacerDrawerBottom">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+          <property name="sizeType"><enum>QSizePolicy::Expanding</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+
+     <item>
+      <widget class="QSplitter" name="splitJamoAndGlyph">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="handleWidth">
+        <number>6</number>
+       </property>
+       <property name="opaqueResize">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="JamoBlock">
+        <property name="minimumSize">
+         <size>
+          <width>320</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>360</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #fafafa; border: 3px solid red;</string>
+        </property>
+        <property name="toolTip">
+         <string>Hangul Jamo Block (≈45% width)</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="syllableContainer">
+        <property name="minimumSize">
+         <size>
+          <width>260</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #ffffff; border: 3px solid blue;</string>
+        </property>
+        <layout class="QVBoxLayout" name="layoutSyllableContainer">
+            <property name="leftMargin"><number>0</number></property>
+            <property name="topMargin"><number>0</number></property>
+            <property name="rightMargin"><number>0</number></property>
+            <property name="bottomMargin"><number>0</number></property>
+            <property name="spacing"><number>0</number></property>
+         <item>
+          <widget class="QLabel" name="labelSyllableRight">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignTop|Qt::AlignHCenter</set>
+           </property>
+              <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>1</horstretch>
+                      <verstretch>1</verstretch>
+                  </sizepolicy>
+              </property>
+              <property name="styleSheet">
+                  <string notr="true">border: 3px solid green;</string>
+              </property>
+           <property name="font">
+            <font>
+             <pointsize>84</pointsize>
+            </font>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+
+     <item>
+      <spacer name="spacerBelowRow">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>200</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1536</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,11 @@
+# data/syllable_overrides.yaml
+# Map specific syllable glyphs to teaching tags.
+# tag ∈ {allowed, rare, not_used_in_spoken_language, impossible}
+
+overrides:
+  "긔": rare       # ㄱ+ㅢ — orthographically valid; uncommon in modern usage
+  "늬": rare       # ㄴ+ㅢ — valid but infrequent in modern usage
+  "띄": rare       # ㄸ+ㅢ — valid but infrequent in modern usage
+  # Add more as you curate:
+  # "쯔": rare
+  # "됴": rare

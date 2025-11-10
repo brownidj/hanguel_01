@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>JamoBlock</class>
+ <widget class="QWidget" name="JamoBlock">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Jamo Block Viewer</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QStackedWidget" name="stackedTemplates">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+
+     <!-- Right-branching vowels page -->
+     <widget class="QWidget" name="typeA_RightBranch">
+      <layout class="QGridLayout" name="gridRightBranch">
+       <item row="0" column="0">
+        <widget class="QFrame" name="typeA_segmentTop">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type A (Right-branching) — Top segment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QFrame" name="typeA_segmentMiddle">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type A (Right-branching) — Middle segment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QFrame" name="typeA_segmentBottom">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type A (Right-branching) — Bottom segment</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- Top-branching vowels page -->
+     <widget class="QWidget" name="typeB_TopBranch">
+      <layout class="QGridLayout" name="gridTopBranch">
+       <item row="0" column="0">
+        <widget class="QFrame" name="typeB_segmentTop">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type B (Top-branching) — Top segment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QFrame" name="typeB_segmentMiddle">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type B (Top-branching) — Middle segment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QFrame" name="typeB_segmentBottom">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type B (Top-branching) — Bottom segment</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- Bottom-branching vowels page -->
+     <widget class="QWidget" name="typeC_BottomBranch">
+      <layout class="QGridLayout" name="gridBottomBranch">
+       <item row="0" column="0">
+        <widget class="QFrame" name="typeC_segmentTop">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type C (Bottom-branching) — Top segment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QFrame" name="typeC_segmentMiddle">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type C (Bottom-branching) — Middle segment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QFrame" name="typeC_segmentBottom">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type C (Bottom-branching) — Bottom segment</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- Horizontal vowels page -->
+     <widget class="QWidget" name="typeD_Horizontal">
+      <layout class="QGridLayout" name="gridHorizontal">
+       <item row="0" column="0">
+        <widget class="QFrame" name="typeD_segmentTop">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type D (Horizontal) — Top segment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QFrame" name="typeD_segmentMiddle">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type D (Horizontal) — Middle segment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QFrame" name="typeD_segmentBottom">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border: 1px dashed #aaaaaa; background: #ffffff;</string>
+         </property>
+         <property name="toolTip">
+          <string>Type D (Horizontal) — Bottom segment</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,5 +1,6 @@
 delays:
+  between_reps: 1
   pre_first: 0
-repeats: 1
+repeats: 2
 theme: taegeuk
 wpm: 80

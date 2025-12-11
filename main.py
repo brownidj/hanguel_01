@@ -1414,13 +1414,27 @@ class PlaybackOrchestrator(QObject):
         self._on_autoadvance = on_autoadvance or (lambda: None)
         self._gen = 0
         self._running = False
+        self._on_finished: Optional[Callable[[], None]] = None
 
     def is_running(self) -> bool:
         return self._running
 
+    def set_on_finished(self, cb: Optional[Callable[[], None]]) -> None:
+        """Register a callback invoked when a sequence ends or is cancelled."""
+        self._on_finished = cb
+
     def cancel(self) -> None:
         self._gen += 1
-        self._running = False
+        if self._running:
+            self._running = False
+            cb = self._on_finished
+            if cb is not None:
+                try:
+                    cb()
+                except Exception:
+                    pass
+        else:
+            self._running = False
 
     def start(self, glyph: str, repeat_count: int, delays: DelaysConfig, auto_mode: bool = False) -> None:
         self.cancel()  # invalidate any previous chain
@@ -1434,6 +1448,12 @@ class PlaybackOrchestrator(QObject):
             if not _valid():
                 return
             self._running = False
+            cb = self._on_finished
+            if cb is not None:
+                try:
+                    cb()
+                except Exception:
+                    pass
 
         def _play_n(n_left: int):
             if not _valid():
@@ -1537,6 +1557,43 @@ def create_main_window():
     except Exception as e:
         print(f"[ERROR] create_main_window failed: {e}")
         raise
+
+def _set_controls_for_repeats_locked(window, lock: bool) -> None:
+    """Enable/disable key playback/navigation controls during repeat sequences."""
+    try:
+        from PyQt6.QtWidgets import QPushButton, QWidget
+    except Exception:
+        # If imports fail for any reason, do nothing rather than crash.
+        return
+
+    widgets = []
+
+    chip_pronounce = window.findChild(QPushButton, "chipPronounce")
+    chip_next = window.findChild(QPushButton, "chipNext")
+    chip_prev = window.findChild(QPushButton, "chipPrev")
+    chip_slow = window.findChild(QPushButton, "chipSlow")
+    btn_next = window.findChild(QPushButton, "buttonNext")
+    btn_prev = window.findChild(QPushButton, "buttonPrev")
+    combo_mode = window.findChild(QWidget, "comboMode")
+
+    widgets.extend([
+        chip_pronounce,
+        chip_next,
+        chip_prev,
+        chip_slow,
+        btn_next,
+        btn_prev,
+        combo_mode,
+    ])
+
+    for w in widgets:
+        if w is None:
+            continue
+        try:
+            w.setEnabled(not lock)
+        except Exception:
+            # Best-effort; ignore widgets that don't support setEnabled
+            pass
 
 def main():
     app = QApplication(sys.argv)
@@ -2013,14 +2070,25 @@ def main():
         def _on_chip_pronounce():
             global current_chip_state
             print(f"[DEBUG] Play chip pressed (state={current_chip_state.name})")
-            orchestrator.cancel()
+
             glyph = _current_syllable_text()
+            if not glyph:
+                # Nothing to play; do not change state or lock controls
+                return
+
+            orchestrator.cancel()
+            repeats = _current_repeats()
+
+            if repeats > 1:
+                _set_controls_for_repeats_locked(window, True)
+
             orchestrator.start(
                 glyph=glyph,
-                repeat_count=_current_repeats(),
+                repeat_count=repeats,
                 delays=_current_delays(),
-                auto_mode=False
+                auto_mode=False,
             )
+
             if current_chip_state == PlayChipState.PLAY:
                 current_chip_state = PlayChipState.REPEAT
                 update_play_chip_icon()
@@ -2232,6 +2300,11 @@ def main():
     btn_prev = window.findChild(QPushButton, "buttonPrev")
     chk_rare = window.findChild(QCheckBox, "checkIncludeRare")
     chk_adv_vowels = window.findChild(QCheckBox, "checkAdvancedVowels")
+    # When playback finishes (naturally or via cancel), always unlock controls.
+    try:
+        orchestrator.set_on_finished(lambda: _set_controls_for_repeats_locked(window, False))
+    except Exception:
+        pass
 
     # --- Colour Scheme Radio Buttons ---
     rad_taegeuk = window.findChild(QRadioButton, "radioColourTaegeuk")
@@ -2304,9 +2377,12 @@ def main():
             on_next()
             if current_chip_state == PlayChipState.REPEAT:
                 glyph = _current_syllable_text()
+                repeats = _current_repeats()
+                if repeats > 1:
+                    _set_controls_for_repeats_locked(window, True)
                 orchestrator.start(
                     glyph=glyph,
-                    repeat_count=_current_repeats(),
+                    repeat_count=repeats,
                     delays=_current_delays(),
                     auto_mode=False
                 )
@@ -2324,9 +2400,12 @@ def main():
             on_prev()
             if current_chip_state == PlayChipState.REPEAT:
                 glyph = _current_syllable_text()
+                repeats = _current_repeats()
+                if repeats > 1:
+                    _set_controls_for_repeats_locked(window, True)
                 orchestrator.start(
                     glyph=glyph,
-                    repeat_count=_current_repeats(),
+                    repeat_count=repeats,
                     delays=_current_delays(),
                     auto_mode=False
                 )

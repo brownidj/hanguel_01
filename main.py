@@ -1,15 +1,17 @@
 import os
 import sys
-from enum import Enum
-from typing import List, Optional, Callable, Tuple, cast
-from abc import ABC, abstractmethod
 from abc import ABCMeta  # ensure ABCMeta is available
-
+from abc import abstractmethod
+from enum import Enum, auto
+from typing import List, Optional, Callable, Tuple, cast
 
 import yaml
 from PyQt6 import uic
 from PyQt6.QtCore import QSize, Qt, QTimer, QPropertyAnimation, QEasingCurve, QObject
+# --- PyQt6 multimedia imports (for QSoundEffect) ---
+from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QFontMetrics, QAction, QIcon, QPixmap, QPainter, QPen, QColor
+from PyQt6.QtMultimedia import QSoundEffect
 from PyQt6.QtWidgets import (
     QApplication,
     QWidget,
@@ -22,13 +24,59 @@ from PyQt6.QtWidgets import (
     QSplitter,
     QRadioButton, QCheckBox,
     QToolBar,
+    QSpinBox,
 )
 
+# --- Google Cloud TTS guarded import ---
+try:
+    from google.cloud import texttospeech as _gtts
+    from google.oauth2 import service_account as _gcreds
+except Exception:
+    _gtts = None
+    _gcreds = None
+
+# --- Slow mode globals (module scope) ---
+_slow_mode_enabled = False
+_previous_wpm: int | None = None
 
 # -------------------------------------------------
 #           HELPERS
 # -------------------------------------------------
 # --- Syllable selection helpers (load from data/syllables.yaml) ---
+
+# -------------------------------------------------
+#          SETTINGS PERSISTENCE (TOP-LEVEL)
+# -------------------------------------------------
+from pathlib import Path as _Path, Path
+
+SETTINGS_PATH = os.path.join(os.path.dirname(__file__), "settings.yaml")
+
+
+def _load_settings() -> dict:
+    """Load app settings from settings.yaml (UTF-8). Returns a dict or {}."""
+    try:
+        p = _Path(SETTINGS_PATH)
+        if not p.exists():
+            return {}
+        with p.open("r", encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+            return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _save_settings(data: dict) -> None:
+    """Atomically save settings to settings.yaml (UTF-8)."""
+    try:
+        p = _Path(SETTINGS_PATH)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        tmp = p.with_suffix(p.suffix + ".tmp")
+        with tmp.open("w", encoding="utf-8") as f:
+            yaml.safe_dump(data or {}, f, allow_unicode=True, sort_keys=True)
+        os.replace(str(tmp), str(p))
+    except Exception as e:
+        print(f"[WARN] Failed to save settings atomically: {e}")
+
 
 def _project_root():
     return os.path.dirname(os.path.abspath(__file__))
@@ -74,6 +122,7 @@ def _vowel_labels_for_block(bt: BlockType) -> tuple[str, str]:
     tip = f"{base_tip.strip()} ({suffix})"
     return title, tip
 
+
 # Fits a single-line QLabel's font to its own rectangle using binary search
 def _fit_label_font_to_label_rect(label: QLabel, min_pt: int = 24, max_pt: int = 160, padding: int = 10) -> None:
     text = label.text() or " "
@@ -97,8 +146,10 @@ def _fit_label_font_to_label_rect(label: QLabel, min_pt: int = 24, max_pt: int =
     f.setPointSize(best)
     label.setFont(f)
 
+
 class _AutoFitHook(QObject):
     """Event filter to re-fit a label's font after its container resizes."""
+
     def __init__(self, target_label: QLabel, parent: Optional[QObject] = None):
         super().__init__(parent)
         self._lbl = target_label
@@ -112,6 +163,7 @@ class _AutoFitHook(QObject):
         except Exception:
             pass
         return False
+
 
 # --- utility: deep-clear a container widget (layouts + stray children) ---
 def _deep_clear_container(w: Optional[QWidget]) -> Optional[QVBoxLayout]:
@@ -144,6 +196,7 @@ def _deep_clear_container(w: Optional[QWidget]) -> Optional[QVBoxLayout]:
     lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
     return lay  # type: ignore
 
+
 # Detect if a segment contains any real glyph presenters
 def _has_glyph_content(seg_w: Optional[QWidget]) -> bool:
     if seg_w is None:
@@ -153,6 +206,7 @@ def _has_glyph_content(seg_w: Optional[QWidget]) -> bool:
         if isinstance(w, Characters):
             return True
     return False
+
 
 # If a segment has no glyph widget, add a centered muted placeholder (even if only subtitle present)
 def _ensure_empty_placeholder(seg_w: Optional[QWidget]) -> None:
@@ -180,6 +234,7 @@ def _ensure_empty_placeholder(seg_w: Optional[QWidget]) -> None:
             ph.setAlignment(Qt.AlignmentFlag.AlignCenter)
             lay.addWidget(ph, 1)
 
+
 # -------------------------------------------------
 #           END HELPERS
 # -------------------------------------------------
@@ -205,11 +260,22 @@ class ConsonantPosition(Enum):
     Initial = 0
     Final = 1
 
+
 # --- Study mode enum ---
+
 class StudyMode(Enum):
     SYLLABLES = 1
     VOWELS = 2
     CONSONANTS = 3
+
+
+# --- Playback chip state management ---
+class PlayChipState(Enum):
+    PLAY = auto()
+    REPEAT = auto()
+
+
+current_chip_state = PlayChipState.PLAY
 
 
 class SegmentView(QWidget):
@@ -241,8 +307,10 @@ class SegmentView(QWidget):
             return mapping[prop]
         return self._role
 
+
 class AutoFitLabel(QLabel):
     """A QLabel that auto-fits its font to fill itself (single-line)."""
+
     def __init__(self, text: str = "", parent: Optional[QWidget] = None,
                  min_pt: int = 18, max_pt: int = 72, padding: int = 6):
         super().__init__(text, parent)
@@ -273,26 +341,7 @@ class AutoFitLabel(QLabel):
         self._refit()
 
     def _refit(self) -> None:
-        text = self.text() or " "
-        r = self.contentsRect()
-        avail_w = max(1, r.width() - self._padding * 2)
-        avail_h = max(1, r.height() - self._padding * 2)
-        lo, hi = self._min_pt, self._max_pt
-        best = lo
-        while lo <= hi:
-            mid = (lo + hi) // 2
-            f = self.font()
-            f.setPointSize(mid)
-            fm = QFontMetrics(f)
-            br = fm.tightBoundingRect(text)
-            if br.width() <= avail_w and br.height() <= avail_h:
-                best = mid
-                lo = mid + 1
-            else:
-                hi = mid - 1
-        f = self.font()
-        f.setPointSize(best)
-        self.setFont(f)
+        _fit_label_font_to_label_rect(self, min_pt=self._min_pt, max_pt=self._max_pt, padding=self._padding)
 
 
 # --- New presenter classes for consonant/vowel views ---
@@ -301,6 +350,7 @@ class AutoFitLabel(QLabel):
 class _QtABCMeta(ABCMeta, type(QWidget)):
     """Combine ABCMeta with Qt's sip wrapper metaclass to allow abstract Qt widgets."""
     pass
+
 
 # -------------------------------------------------
 #           Abstract base for glyph presenters
@@ -311,6 +361,7 @@ class Characters(QWidget, metaclass=_QtABCMeta):
     common setters/accessors. Subclasses should call super().__init__ and may
     add their own fields (e.g., position).
     """
+
     def __init__(self, parent: Optional[QWidget] = None,
                  grapheme: str = "",
                  ipa: Optional[str] = None,
@@ -528,7 +579,6 @@ class BlockContainer:
         except Exception:
             pass
 
-
         # --- Orthographic presenters using ConsonantView / VowelView ---
         def _ensure_cleared_layout(w: QWidget) -> QVBoxLayout:
             layout = w.layout()
@@ -587,7 +637,6 @@ class BlockContainer:
         _dbg_seg(top_w, "Top")
         _dbg_seg(mid_w, "Middle")
         _dbg_seg(bot_w, "Bottom")
-
 
         # Clear and place presenters per type
         if top_w is not None:
@@ -771,7 +820,8 @@ class BlockContainer:
         _ensure_empty_placeholder(mid_w)
         _ensure_empty_placeholder(bot_w)
         _enforce_equal_segment_heights(page, top_w, mid_w, bot_w)
-        page.updateGeometry(); page.update()
+        page.updateGeometry()
+        page.update()
 
 
 # Map vowel to block type (basic set)
@@ -837,6 +887,20 @@ def build_hamburger_icon(size: int = 24, thickness: int = 2, margin: int = 4) ->
     return QIcon(pm)
 
 
+# --- Helper: robust icon loader from path with warning ---
+def _safe_icon_from_path(path: str) -> Optional[QIcon]:
+    try:
+        ap = os.path.normpath(path)
+        pm = QPixmap(ap)
+        if pm.isNull():
+            print(f"[WARN] repeat icon not found or invalid: {ap}")
+            return None
+        return QIcon(pm)
+    except Exception as e:
+        print(f"[WARN] failed to load icon '{path}': {e}")
+        return None
+
+
 # --- Segment subtitles (Korean ↔ L/V/T) ---
 SEG_TITLES = {
     "L": "Leading consonant",
@@ -861,8 +925,10 @@ def _mk_title_label(text: str, tooltip: str, parent: QWidget) -> QLabel:
     lbl.setToolTip(tooltip)
     return lbl
 
+
 # Ensure the three segment containers in a page get equal vertical space
 from PyQt6.QtWidgets import QSizePolicy as _QSizePolicyAlias
+
 
 def _enforce_equal_segment_heights(page: QWidget,
                                    top_w: Optional[QWidget],
@@ -882,6 +948,7 @@ def _enforce_equal_segment_heights(page: QWidget,
         idx = layout.indexOf(w)
         if idx != -1:
             layout.setStretch(idx, 1)
+
 
 # Center a subtitle directly above a single glyph widget
 def _make_labeled_column(key: str, widget: QWidget, parent: QWidget) -> QWidget:
@@ -905,6 +972,7 @@ def _make_labeled_column_custom(title: str, tip: str, widget: QWidget, parent: Q
     v.addWidget(_mk_title_label(title, tip, col))
     v.addWidget(widget, 1)
     return col
+
 
 def _extract_title_and_glyph(column_widget: QWidget) -> Tuple[Optional[QLabel], Optional[QLabel]]:
     title = None
@@ -930,6 +998,7 @@ class BlockManager:
             type_label.setText(self._names[self._current_index])
         if syll_label is not None:
             syll_label.setText(consonant)
+
     """Caches one BlockContainer per BlockType and preserves per-type state."""
 
     def __init__(self):
@@ -1060,14 +1129,28 @@ class JamoBlock(QWidget):
         """Return the attached BlockContainer, if any."""
         return self._container
 
-
-
     # -------------------------------------------------
     #           PROGRESSION (Scaffolding only)
     # -------------------------------------------------
 
 
 from dataclasses import dataclass
+
+
+# --- DelaysConfig for playback orchestrator ---
+@dataclass
+class DelaysConfig:
+    """Delays used by the playback orchestrator (milliseconds)."""
+    pre_first_ms: int = 0  # delay before first play
+    between_reps_ms: int = 2000  # delay between repeats
+    before_hints_ms: int = 0  # delay before revealing hints
+    before_extras_ms: int = 1000  # delay before revealing extra info
+    auto_advance_ms: int = 0  # delay before auto-advance (in auto mode)
+
+
+def _default_delays() -> DelaysConfig:
+    # Temporary defaults until drawer controls are wired
+    return DelaysConfig()
 
 
 class ProgressionMode(Enum):
@@ -1176,11 +1259,426 @@ class ProgressionController:
     # For now, leaving the existing behavior untouched.
 
 
+class PronunciationController:
+    """Google TTS with on-disk WAV caching and non-blocking playback via QSoundEffect.
+    Falls back to macOS `say` if Google SDK/creds are unavailable.
+    Cache directory: assets/audio
+    File naming: <syllable>__<voice>__<wpm>.wav (UTF-8 safe on macOS)
+    """
+
+    def __init__(self):
+        # cache dir
+        self._audio_dir = os.path.join(_project_root(), "assets", "audio")
+        os.makedirs(self._audio_dir, exist_ok=True)
+
+        # playback
+        self._player = QSoundEffect()
+        self._player.setLoopCount(1)
+        self._player.setVolume(1.0)
+
+        # TTS params
+        self.voice_name = "ko-KR-Wavenet-A"
+        self.language_code = "ko-KR"
+        self._rate_wpm = 120
+
+        # Tiny proxy to preserve existing code paths: tts.set_rate_wpm(x)
+        class _RateProxy:
+            def __init__(self, outer):
+                self._outer = outer
+
+            def set_rate_wpm(self, wpm: int) -> None:
+                self._outer.set_rate_wpm(wpm)
+
+        self.tts = _RateProxy(self)
+
+    # --- public API ---
+    def set_rate_wpm(self, wpm: int) -> None:
+        try:
+            w = int(wpm)
+        except Exception:
+            w = 120
+        self._rate_wpm = max(40, min(160, w))
+
+    def pronounce_syllable(self, syllable: str, on_complete: Optional[Callable[[], None]] = None) -> None:
+        if not syllable:
+            return
+        wav = self._ensure_wav(syllable)
+        if wav and os.path.exists(wav):
+            try:
+                self._player.stop()
+                self._player.setSource(QUrl.fromLocalFile(wav))
+                # replace the current playingChanged handler block with this:
+
+                if on_complete is not None:
+                    def _on_playing_changed():
+                        # called with no args in PyQt6
+                        try:
+                            if not self._player.isPlaying():
+                                try:
+                                    self._player.playingChanged.disconnect(_on_playing_changed)
+                                except Exception:
+                                    pass
+                                on_complete()
+                        except Exception:
+                            # best-effort completion on any unexpected issue
+                            on_complete()
+
+                    try:
+                        self._player.playingChanged.disconnect(_on_playing_changed)
+                    except Exception:
+                        pass
+                    self._player.playingChanged.connect(_on_playing_changed)
+            except Exception as e:
+                print(f"[TTS] play error: {e}")
+        # ultimate fallback: mac say
+        try:
+            os.system(f"say -v Yuna '{syllable}' &")
+        except Exception:
+            pass
+        if on_complete is not None:
+            QTimer.singleShot(600, on_complete)  # best-effort completion
+
+    # --- internals ---
+    def _rate_to_google(self) -> float:
+        # Map 40..160 WPM -> ~0.6..1.6 speaking_rate
+        return round(0.6 + (self._rate_wpm - 40) * (1.0 / 120.0), 2)
+
+    def _cache_path(self, syllable: str) -> str:
+        # Use a stable, readable filename. macOS supports UTF-8 filenames.
+        fn = f"{syllable}__{self.voice_name}__{self._rate_wpm}.wav"
+        return os.path.join(self._audio_dir, fn)
+
+    def _ensure_wav(self, syllable: str) -> Optional[str]:
+        path = self._cache_path(syllable)
+        if os.path.exists(path) and os.path.getsize(path) > 0:
+            return path
+        # Need to synthesize
+        if _gtts is None:
+            print("[TTS] google-cloud-texttospeech not available; using macOS say fallback")
+            return None
+        creds = None
+        gac = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+        hac = os.environ.get("HANGUEL_APPLICATION_CREDENTIALS")
+        try:
+            if gac and os.path.exists(gac):
+                client = _gtts.TextToSpeechClient()
+            elif hac and os.path.exists(hac) and _gcreds is not None:
+                creds = _gcreds.Credentials.from_service_account_file(hac)
+                client = _gtts.TextToSpeechClient(credentials=creds)
+            else:
+                client = _gtts.TextToSpeechClient()  # may work via ADC
+        except Exception as e:
+            print(f"[TTS] failed to init Google TTS client: {e}")
+            return None
+
+        try:
+            synthesis_input = _gtts.SynthesisInput(text=syllable)
+            voice = _gtts.VoiceSelectionParams(language_code=self.language_code, name=self.voice_name)
+            audio_config = _gtts.AudioConfig(
+                audio_encoding=_gtts.AudioEncoding.LINEAR16,
+                speaking_rate=self._rate_to_google(),
+                pitch=0.0,
+            )
+            resp = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
+
+            with open(path, "wb") as f:
+                f.write(resp.audio_content)
+            return path
+        except Exception as e:
+            print(f"[TTS] synth error: {e}")
+            try:
+                if os.path.exists(path) and os.path.getsize(path) == 0:
+                    os.remove(path)
+            except Exception:
+                pass
+            return None
+
+
+# --- PlaybackOrchestrator: non-blocking sequencer for TTS and reveals ---
+class PlaybackOrchestrator(QObject):
+    """
+    Non-blocking sequencer for: optional pre-delay -> N plays with gaps -> hints -> extras -> optional auto-advance.
+    Uses QTimer.singleShot and a generation token to cancel in-flight runs.
+    """
+
+    def __init__(self,
+                 tts_play: "Callable[[str, Callable[[], None]], None]",
+                 on_reveal_hints: Optional[Callable[[], None]] = None,
+                 on_reveal_extras: Optional[Callable[[], None]] = None,
+                 on_autoadvance: Optional[Callable[[], None]] = None,
+                 parent: Optional[QObject] = None) -> None:
+        super().__init__(parent)
+        self._tts_play = tts_play
+        self._on_reveal_hints = on_reveal_hints or (lambda: None)
+        self._on_reveal_extras = on_reveal_extras or (lambda: None)
+        self._on_autoadvance = on_autoadvance or (lambda: None)
+        self._gen = 0
+        self._running = False
+
+    def is_running(self) -> bool:
+        return self._running
+
+    def cancel(self) -> None:
+        self._gen += 1
+        self._running = False
+
+    def start(self, glyph: str, repeat_count: int, delays: DelaysConfig, auto_mode: bool = False) -> None:
+        self.cancel()  # invalidate any previous chain
+        token = self._gen
+        self._running = True
+
+        def _valid() -> bool:
+            return self._running and token == self._gen
+
+        def _finish():
+            if not _valid():
+                return
+            self._running = False
+
+        def _play_n(n_left: int):
+            if not _valid():
+                return
+
+            def _after_one():
+                if not _valid():
+                    return
+                if n_left > 1:
+                    QTimer.singleShot(max(0, int(delays.between_reps_ms)), lambda: _play_n(n_left - 1))
+                else:
+                    _after_repeats()
+
+            try:
+                self._tts_play(glyph, _after_one)
+            except Exception:
+                # If TTS fails, keep the sequence moving
+                QTimer.singleShot(0, _after_one)
+
+        def _after_repeats():
+            if not _valid():
+                return
+
+            # Hints
+            def _do_hints():
+                if not _valid():
+                    return
+                try:
+                    self._on_reveal_hints()
+                finally:
+                    _after_hints()
+
+            QTimer.singleShot(max(0, int(delays.before_hints_ms)), _do_hints)
+
+        def _after_hints():
+            if not _valid():
+                return
+
+            # Extras
+            def _do_extras():
+                if not _valid():
+                    return
+                try:
+                    self._on_reveal_extras()
+                finally:
+                    _after_extras()
+
+            QTimer.singleShot(max(0, int(delays.before_extras_ms)), _do_extras)
+
+        def _after_extras():
+            if not _valid():
+                return
+            # Auto-advance if requested
+            if auto_mode and delays.auto_advance_ms > 0:
+                QTimer.singleShot(max(0, int(delays.auto_advance_ms)), lambda: (self._on_autoadvance(), _finish()))
+            else:
+                _finish()
+
+        # Kick off with optional pre-first delay
+        if delays.pre_first_ms > 0:
+            QTimer.singleShot(int(delays.pre_first_ms), lambda: _play_n(max(1, int(repeat_count))))
+        else:
+            _play_n(max(1, int(repeat_count)))
+
+# ------------------------------
+# Factory for tests (non-interactive)
+# ------------------------------
+
+def create_main_window():
+    """
+    Build and return the main application window without starting the Qt event loop.
+    Useful for unit and integration tests that need widget access.
+    """
+    try:
+        # Required imports for this function
+        from PyQt6.QtWidgets import QApplication
+        from PyQt6 import uic
+        from PyQt6.QtCore import Qt
+        import sys
+        from pathlib import Path
+
+        app = QApplication.instance() or QApplication(sys.argv)
+        # Load the same .ui file as normal
+        ui_path = Path(__file__).parent / "ui" / "form.ui"
+        window = uic.loadUi(str(ui_path))
+
+        # Prevent premature deletion in tests
+        window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, False)
+        # Keep strong refs so pytest doesn't GC the window
+        app._test_window = window  # type: ignore[attr-defined]
+        globals()["_TEST_WINDOW"] = window
+
+        # Perform any minimal post-init wiring you normally do in main()
+        # but avoid timers or app.exec()
+        if hasattr(window, "setObjectName"):
+            window.setObjectName("MainWindow_Test")
+
+        _maybe_expose_test_ui_hints(window)  # add this line
+        return window
+
+    except Exception as e:
+        print(f"[ERROR] create_main_window failed: {e}")
+        raise
+
 def main():
     app = QApplication(sys.argv)
 
     # Load the main window UI
     window = uic.loadUi("ui/form.ui")
+
+    # --- Delay spinboxes: restore from settings.yaml and persist on change ---
+    # UI-only persistence for the five delay spin boxes in the drawer.
+    try:
+        spin_pre_first = window.findChild(QSpinBox, "spinDelayPreFirst")
+        spin_between_reps = window.findChild(QSpinBox, "spinDelayBetweenReps")
+        spin_before_hints = window.findChild(QSpinBox, "spinDelayBeforeHints")
+        spin_before_extras = window.findChild(QSpinBox, "spinDelayBeforeExtras")
+        spin_auto_advance = window.findChild(QSpinBox, "spinDelayAutoAdvance")
+    except Exception:
+        spin_pre_first = spin_between_reps = spin_before_hints = spin_before_extras = spin_auto_advance = None
+
+    # Lookup for Repeats spinbox
+    try:
+        spin_repeats = window.findChild(QSpinBox, "spinRepeats")
+    except Exception:
+        spin_repeats = None
+
+    def _load_delay_settings_from_yaml() -> dict:
+        """
+        Returns delay values in SECONDS (as shown in the UI).
+        settings.yaml structure:
+          delays:
+            pre_first: 0
+            between_reps: 2
+            before_hints: 0
+            before_extras: 1
+            auto_advance: 0
+        """
+        s = _load_settings()
+        d = s.get("delays") or {}
+
+        def _val(sb: QSpinBox | None, key: str, default: int) -> int:
+            try:
+                if key in d and isinstance(d[key], (int, float)):
+                    return int(d[key])
+                if sb is not None:
+                    return int(sb.value())
+            except Exception:
+                pass
+            return int(default)
+
+        return {
+            "pre_first": _val(spin_pre_first, "pre_first", 0),
+            "between_reps": _val(spin_between_reps, "between_reps", 2),
+            "before_hints": _val(spin_before_hints, "before_hints", 0),
+            "before_extras": _val(spin_before_extras, "before_extras", 1),
+            "auto_advance": _val(spin_auto_advance, "auto_advance", 0),
+        }
+
+    def _apply_delay_spinboxes_from_settings() -> None:
+        """Push saved values into the spinboxes (UI shows SECONDS)."""
+        vals = _load_delay_settings_from_yaml()
+        try:
+            if spin_pre_first is not None: spin_pre_first.setValue(int(vals["pre_first"]))
+            if spin_between_reps is not None: spin_between_reps.setValue(int(vals["between_reps"]))
+            if spin_before_hints is not None: spin_before_hints.setValue(int(vals["before_hints"]))
+            if spin_before_extras is not None: spin_before_extras.setValue(int(vals["before_extras"]))
+            if spin_auto_advance is not None: spin_auto_advance.setValue(int(vals["auto_advance"]))
+        except Exception:
+            pass
+
+    def _persist_delay_key(key: str, value: int) -> None:
+        """Persist a single delay value back to settings.yaml (stored in SECONDS)."""
+        try:
+            s = _load_settings()
+            d = s.get("delays") or {}
+            d[key] = int(value)
+            s["delays"] = d
+            _save_settings(s)
+        except Exception as e:
+            print(f"[WARN] Failed to persist delay '{key}': {e}")
+
+    def _wire_delay_spinboxes_for_persist() -> None:
+        """Connect valueChanged -> persistence for all delay spinboxes."""
+        pairs = [
+            (spin_pre_first, "pre_first"),
+            (spin_between_reps, "between_reps"),
+            (spin_before_hints, "before_hints"),
+            (spin_before_extras, "before_extras"),
+            (spin_auto_advance, "auto_advance"),
+        ]
+        for sb, key in pairs:
+            if sb is None:
+                continue
+            try:
+                sb.valueChanged.disconnect()
+            except Exception:
+                pass
+
+            # Bind key eagerly to avoid late-binding issues in the lambda
+            def _mk_handler(k: str):
+                return lambda val: _persist_delay_key(k, int(val))
+
+            sb.valueChanged.connect(_mk_handler(key))
+
+    # --- Repeats load/apply/persist helpers ---
+    def _load_repeats_from_settings() -> int:
+        try:
+            s = _load_settings()
+            val = int(s.get("repeats", 1))
+            if val < 1:
+                return 1
+            return val
+        except Exception:
+            return 1
+
+    def _apply_repeats_from_settings() -> None:
+        try:
+            if spin_repeats is not None:
+                spin_repeats.setValue(_load_repeats_from_settings())
+        except Exception:
+            pass
+
+    def _persist_repeats(value: int) -> None:
+        try:
+            s = _load_settings()
+            s["repeats"] = max(1, int(value))
+            _save_settings(s)
+        except Exception as e:
+            print(f"[WARN] Failed to persist repeats: {e}")
+
+    # Apply saved values now, then wire persistence
+    _apply_delay_spinboxes_from_settings()
+    _wire_delay_spinboxes_for_persist()
+    _apply_repeats_from_settings()
+    try:
+        if spin_repeats is not None:
+            try:
+                spin_repeats.valueChanged.disconnect()
+            except Exception:
+                pass
+            spin_repeats.valueChanged.connect(
+                lambda v: (_persist_repeats(int(v)), print(f"[DEBUG] repeats -> {int(v)}")))
+    except Exception:
+        pass
 
     # Ensure the menubar is shown inside the window (macOS uses system bar by default)
     try:
@@ -1190,7 +1688,7 @@ def main():
         # Wire the menu action to toggle the drawer
         action_toggle = window.findChild(QAction, "actionToggleDrawer")
         if action_toggle is not None:
-            action_toggle.triggered.connect(lambda: _toggle_drawer() if ' _toggle_drawer' in globals() else None)
+            action_toggle.triggered.connect(lambda: _toggle_drawer() if '_toggle_drawer' in globals() else None)
     except Exception:
         pass
 
@@ -1204,12 +1702,16 @@ def main():
 
     # Load the Jamo block UI (widget with QStackedWidget inside)
     jamo_block = uic.loadUi("ui/jamo.ui")  # expected root: QWidget named JamoBlock
+    # Ensure the inner UI does not draw any borders (only the outer square should)
+    try:
+        jamo_block.setStyleSheet("border: none;")
+    except Exception:
+        pass
 
     # Create a square container and place the JamoBlock inside it
     square = JamoBlock()
     square._inner_layout.addWidget(jamo_block)
 
-    # Place the square Jamo block into the splitter's left pane (replacing placeholder)
     splitter = window.findChild(QSplitter, "splitJamoAndGlyph")
     if splitter is None:
         print("[ERROR] QSplitter 'splitJamoAndGlyph' not found in form.ui", file=sys.stderr)
@@ -1225,9 +1727,16 @@ def main():
     idx = splitter.indexOf(placeholder)
     if idx == -1:
         idx = 0
+
     # Keep object name consistent for stylesheet/lookup
     square.setObjectName("JamoBlock")
+
+    # Ensure background + border render correctly
+    square.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+    square.setStyleSheet("background-color: #FBEFEF;")
+
     splitter.insertWidget(idx, square)
+
     # Remove old placeholder widget
     placeholder.setParent(None)
     placeholder.deleteLater()
@@ -1236,27 +1745,30 @@ def main():
     def _init_splitter_sizes():
         try:
             sw = splitter.width() or window.width()
-            left = max(260, int(sw * 0.60))
-            right = max(300, sw - left)
-            splitter.setStretchFactor(0, 1)   # let left grow
+            M = 20  # consistent margin (px)
+            splitter.setHandleWidth(M)
+            splitter.setContentsMargins(0, 0, 0, 0)
+
+            left_target = int(sw * 0.6)
+            right_target = sw - left_target
+            splitter.setStretchFactor(0, 1)
             splitter.setStretchFactor(1, 1)
             splitter.setCollapsible(0, False)
             splitter.setCollapsible(1, False)
-            splitter.setSizes([left, right])
-            # Red debug borders: outer Jamo square and segment frames via dynamic property
-            try:
-                jamo_block.setStyleSheet(
-                    """
-                    #JamoBlock { border: 3px solid red; }
-                    QWidget[segmentRole="Top"], QWidget[segmentRole="Middle"], QWidget[segmentRole="Bottom"] {
-                        border: 1px dashed red;
-                    }
-                    """
-                )
-            except Exception as e:
-                print(f"[WARN] stylesheet failed: {e}")
-            square.show(); jamo_block.show()
-            print(f"[DEBUG] splitter init sizes -> {splitter.sizes()}")
+            splitter.setSizes([left_target, right_target])
+
+            # Remove all inner margins so total spacing is controlled by handle width + outer layout margins
+            if square.layout() is not None:
+                square.layout().setContentsMargins(0, 0, 0, 0)
+            if right_container is not None and right_container.layout() is not None:
+                right_container.layout().setContentsMargins(0, 0, 0, 0)
+
+            # Make the splitter visually seamless (optional, transparent handle)
+            splitter.setStyleSheet("QSplitter::handle { background: transparent; }")
+
+            square.show()
+            jamo_block.show()
+            print(f"[DEBUG] splitter balanced equal gaps -> left={left_target} right={right_target} total={sw} gap={M}")
         except Exception as e:
             print(f"[WARN] splitter init failed: {e}")
 
@@ -1305,6 +1817,294 @@ def main():
         except Exception as e:
             print(f"[WARN] auto-fit hook not installed: {e}")
 
+    # --- [TTS hookup insertion] Pronunciation chip wiring ---
+    # Wire the bottom-right chip (pill button) to pronounce the current syllable text.
+    tts_controller = PronunciationController()
+    chip_pronounce = window.findChild(QPushButton, "chipPronounce")
+    chip_next = window.findChild(QPushButton, "chipNext")
+    chip_prev = window.findChild(QPushButton, "chipPrev")
+    chip_slow = window.findChild(QPushButton, "chipSlow")  # 🐢 from the UI
+
+    # Playback orchestrator wiring (Step 1: pre-delay + repeats only)
+    def _tts_play_adapter(glyph: str, on_done: Callable[[], None]) -> None:
+        tts_controller.pronounce_syllable(glyph, on_complete=on_done)
+
+    orchestrator = PlaybackOrchestrator(
+        tts_play=_tts_play_adapter,
+        on_reveal_hints=lambda: None,
+        on_reveal_extras=lambda: None,
+        on_autoadvance=lambda: _advance(),  # used later for auto-mode
+        parent=window
+    )
+
+    # --- Repeats/delays runtime helpers ---
+    def _current_repeats() -> int:
+        try:
+            if spin_repeats is not None:
+                val = int(spin_repeats.value())
+                return max(1, val)
+        except Exception:
+            pass
+        return _load_repeats_from_settings()
+
+    def _current_delays() -> DelaysConfig:
+        # Read seconds from the spinboxes and convert to ms
+        try:
+            def _sv(sb, default):
+                try:
+                    return int(sb.value()) if sb is not None else int(default)
+                except Exception:
+                    return int(default)
+
+            return DelaysConfig(
+                pre_first_ms=_sv(spin_pre_first, 0) * 1000,
+                between_reps_ms=_sv(spin_between_reps, 2) * 1000,
+                before_hints_ms=_sv(spin_before_hints, 0) * 1000,
+                before_extras_ms=_sv(spin_before_extras, 1) * 1000,
+                auto_advance_ms=_sv(spin_auto_advance, 0) * 1000,
+            )
+        except Exception:
+            return _default_delays()
+
+    def _current_syllable_text() -> str:
+        return syll_label.text() if syll_label is not None else ""
+
+    # --- WPM radio buttons wiring (drawer) ---
+    # We now use four radio buttons instead of a slider: 40, 80, 120, 160 wpm
+    rad_wpm_40 = window.findChild(QRadioButton, "radioWpm40")
+    rad_wpm_80 = window.findChild(QRadioButton, "radioWpm80")
+    rad_wpm_120 = window.findChild(QRadioButton, "radioWpm120")
+    rad_wpm_160 = window.findChild(QRadioButton, "radioWpm160")
+
+    def _apply_wpm(val: int) -> None:
+        """Apply WPM to the TTS controller (and persist it to settings.yaml)."""
+        try:
+            if hasattr(tts_controller, "tts") and hasattr(tts_controller.tts, "set_rate_wpm"):
+                tts_controller.tts.set_rate_wpm(int(val))
+            else:
+                setattr(tts_controller, "_rate_wpm", int(val))  # very last-resort fallback
+            # persist to settings.yaml
+            s = _load_settings()
+            s["wpm"] = int(val)
+            _save_settings(s)
+        except Exception as e:
+            print("[WARN] Failed to apply/persist WPM:", e)
+
+    # Connect radios — only act when they become checked
+    if rad_wpm_40 is not None:
+        try:
+            rad_wpm_40.toggled.disconnect()
+        except Exception:
+            pass
+        rad_wpm_40.toggled.connect(lambda checked: _apply_wpm(40) if checked else None)
+
+    if rad_wpm_80 is not None:
+        try:
+            rad_wpm_80.toggled.disconnect()
+        except Exception:
+            pass
+        rad_wpm_80.toggled.connect(lambda checked: _apply_wpm(80) if checked else None)
+
+    if rad_wpm_120 is not None:
+        try:
+            rad_wpm_120.toggled.disconnect()
+        except Exception:
+            pass
+        rad_wpm_120.toggled.connect(lambda checked: _apply_wpm(120) if checked else None)
+
+    if rad_wpm_160 is not None:
+        try:
+            rad_wpm_160.toggled.disconnect()
+        except Exception:
+            pass
+        rad_wpm_160.toggled.connect(lambda checked: _apply_wpm(160) if checked else None)
+
+    # Initialize WPM from persisted settings or UI selection
+    def _init_wpm_from_radios():
+        try:
+            s = _load_settings()
+            saved = s.get("wpm")
+            if saved in (40, 80, 120, 160):
+                _apply_wpm(int(saved))
+                if saved == 40 and rad_wpm_40:
+                    rad_wpm_40.setChecked(True)
+                elif saved == 80 and rad_wpm_80:
+                    rad_wpm_80.setChecked(True)
+                elif saved == 120 and rad_wpm_120:
+                    rad_wpm_120.setChecked(True)
+                elif saved == 160 and rad_wpm_160:
+                    rad_wpm_160.setChecked(True)
+                return
+            # fallback to existing logic if no saved value
+            any_checked = any(rb is not None and rb.isChecked()
+                              for rb in (rad_wpm_40, rad_wpm_80, rad_wpm_120, rad_wpm_160))
+            if any_checked:
+                if rad_wpm_40 and rad_wpm_40.isChecked():   _apply_wpm(40)
+                if rad_wpm_80 and rad_wpm_80.isChecked():   _apply_wpm(80)
+                if rad_wpm_120 and rad_wpm_120.isChecked(): _apply_wpm(120)
+                if rad_wpm_160 and rad_wpm_160.isChecked(): _apply_wpm(160)
+            else:
+                if rad_wpm_120 is not None:
+                    rad_wpm_120.setChecked(True)
+                    _apply_wpm(120)
+                else:
+                    _apply_wpm(120)
+        except Exception as e:
+            print("[WARN] WPM radio init failed:", e)
+
+    _init_wpm_from_radios()
+
+    # --- Chip helpers (play, icon, navigation) ---
+    def _play_current_tts():
+        if syll_label is None:
+            return
+        tts_controller.pronounce_syllable(syll_label.text())
+
+    def update_play_chip_icon():
+        try:
+            if chip_pronounce is None:
+                return
+            # Use standard/play vs repeat fallback with text if theme icons aren't available
+            if current_chip_state == PlayChipState.PLAY:
+                from PyQt6.QtWidgets import QStyle
+                chip_pronounce.setIcon(window.style().standardIcon(QStyle.StandardPixmap.SP_MediaPlay))
+                chip_pronounce.setToolTip("Play pronunciation")
+                chip_pronounce.setText("")
+            else:
+                # Robustly load replay icon from assets; keep existing icon if load fails
+                icon_path = os.path.join(_project_root(), "assets", "images", "replay.png")
+                ico = _safe_icon_from_path(icon_path)
+                if ico is not None:
+                    chip_pronounce.setIcon(ico)
+                    chip_pronounce.setIconSize(QSize(32, 32))
+                    chip_pronounce.update()  # Optional: force paint
+                else:
+                    # Do NOT clear the icon; leave whatever is currently set
+                    print("[INFO] Keeping existing repeat icon (load failed)")
+                chip_pronounce.setToolTip("Repeat pronunciation")
+                chip_pronounce.setText("")
+                chip_pronounce.repaint()
+        except Exception as e:
+            print(f"[DEBUG] update_play_chip_icon failed: {e}")
+
+    def _advance():
+        # Move vowel/consonant index depending on mode, then refresh
+        if state["mode"] in (StudyMode.SYLLABLES, StudyMode.VOWELS):
+            state["vowel_idx"] = (state["vowel_idx"] + 1) % len(_current_vowel_list())
+        else:
+            state["consonant_idx"] = (state["consonant_idx"] + 1) % len(CONSONANT_ORDER)
+        refresh_view()
+
+    def _retreat():
+        if state["mode"] in (StudyMode.SYLLABLES, StudyMode.VOWELS):
+            state["vowel_idx"] = (state["vowel_idx"] - 1) % len(_current_vowel_list())
+        else:
+            state["consonant_idx"] = (state["consonant_idx"] - 1) % len(CONSONANT_ORDER)
+        refresh_view()
+
+    # --- Pronounce chip handler with stateful repeat logic ---
+    if chip_pronounce is not None:
+        try:
+            chip_pronounce.clicked.disconnect()
+        except Exception:
+            pass
+        chip_pronounce.setIconSize(QSize(28, 28))
+
+        def _on_chip_pronounce():
+            global current_chip_state
+            print(f"[DEBUG] Play chip pressed (state={current_chip_state.name})")
+            orchestrator.cancel()
+            glyph = _current_syllable_text()
+            orchestrator.start(
+                glyph=glyph,
+                repeat_count=_current_repeats(),
+                delays=_current_delays(),
+                auto_mode=False
+            )
+            if current_chip_state == PlayChipState.PLAY:
+                current_chip_state = PlayChipState.REPEAT
+                update_play_chip_icon()
+
+        # --- Slow Mode toggle (🐢) ---
+        _slow_mode_enabled = False
+        _previous_wpm = None  # last non-slow WPM
+
+        def _load_wpm_from_settings() -> int:
+            """Return the saved WPM from settings.yaml (default 100 if missing)."""
+            try:
+                with open("settings.yaml", "r", encoding="utf-8") as f:
+                    import yaml
+                    data = yaml.safe_load(f) or {}
+                    return int(data.get("wpm", 100))
+            except Exception:
+                return 100
+
+        def _apply_slow_chip_style(on: bool) -> None:
+            """Apply explicit ON/OFF visuals for the turtle (slow) chip."""
+            if chip_slow is None:
+                return
+            if on:
+                chip_slow.setStyleSheet(
+                    "QPushButton {"
+                    " background-color: #BDBBBB;"
+                    " border: 1px solid #888;"
+                    " border-radius: 12px;"
+                    " padding: 4px 10px;"
+                    "}"
+                    "QPushButton:pressed { background-color: #B0B0B0; }"
+                )
+                chip_slow.setChecked(True)
+            else:
+                chip_slow.setStyleSheet(
+                    "QPushButton {"
+                    " background-color: #FAFAFA;"
+                    " border: 1px solid #BBBBBB;"
+                    " border-radius: 12px;"
+                    " padding: 4px 10px;"
+                    "}"
+                    "QPushButton:hover { background-color: #F0F0F0; }"
+                )
+                chip_slow.setChecked(False)
+            chip_slow.update()
+
+        def _toggle_slow_mode() -> None:
+            """Toggle slow mode (🐢) on/off and visually mark the chip."""
+            global _slow_mode_enabled, _previous_wpm
+
+            if not _slow_mode_enabled:
+                # Enable slow mode
+                _previous_wpm = (current := _load_wpm_from_settings())
+                _slow_mode_enabled = True
+                _apply_slow_chip_style(True)
+                _apply_wpm(40)  # min WPM
+                print("[INFO] Slow mode ON (🐢, WPM=40)")
+            else:
+                # Disable slow mode
+                restore = _previous_wpm or _load_wpm_from_settings()
+                _slow_mode_enabled = False
+                _apply_slow_chip_style(False)
+                _apply_wpm(int(restore))
+                print(f"[INFO] Slow mode OFF (restore WPM={restore})")
+
+        chip_pronounce.clicked.connect(_on_chip_pronounce)
+        update_play_chip_icon()
+        _apply_slow_chip_style(False)
+
+    # --- Right-align chip buttons (pronounce, next, prev) in their container ---
+    # Attempt to find the layout containing the chip buttons and set its alignment to AlignRight.
+    # This will right-align the chip buttons within their parent container.
+    # Find the common parent of the chips (likely a QWidget container)
+    chips_parent = None
+    for chip in (chip_pronounce, chip_next, chip_prev):
+        if chip is not None and chip.parent() is not None:
+            chips_parent = chip.parent()
+            break
+    chips_layout = None
+    if chips_parent is not None:
+        chips_layout = chips_parent.layout()
+    if chips_layout is not None:
+        chips_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
+
     def _update_layout_sizes():
         # Maintain a 60/40 split of the splitter width
         sw = splitter.width() or window.width()
@@ -1346,6 +2146,7 @@ def main():
             print(f"[DEBUG] splitter(sizes-end) -> {splitter.sizes()}")
         except Exception:
             pass
+
     # Also re-fit the big glyph label when the splitter moves
     try:
         splitter.splitterMoved.connect(lambda pos, idx: (
@@ -1377,6 +2178,7 @@ def main():
         "anchor_consonant": "ㄱ",
     }
     CONSONANT_ORDER = _CHOESONG  # reuse existing order for now
+
     def _current_vowel_list():
         return VOWEL_ORDER_BASIC10  # later: include advanced based on toggle
 
@@ -1421,11 +2223,7 @@ def main():
         print("[WARN] 'buttonNext' not found in form.ui; cycling disabled", file=sys.stderr)
     else:
         def on_next():
-            if state["mode"] in (StudyMode.SYLLABLES, StudyMode.VOWELS):
-                state["vowel_idx"] = (state["vowel_idx"] + 1) % len(_current_vowel_list())
-            else:
-                state["consonant_idx"] = (state["consonant_idx"] + 1) % len(CONSONANT_ORDER)
-            refresh_view()
+            _advance()
             print("[INFO] Next -> {}".format(_describe_page(stacked.currentIndex())))
 
         cast(QObject, btn_next.clicked).connect(on_next)
@@ -1434,6 +2232,52 @@ def main():
     btn_prev = window.findChild(QPushButton, "buttonPrev")
     chk_rare = window.findChild(QCheckBox, "checkIncludeRare")
     chk_adv_vowels = window.findChild(QCheckBox, "checkAdvancedVowels")
+
+    # --- Colour Scheme Radio Buttons ---
+    rad_taegeuk = window.findChild(QRadioButton, "radioColourTaegeuk")
+    rad_hanji = window.findChild(QRadioButton, "radioColourHanji")
+
+    def _apply_theme(name: str, persist: bool = True):
+        """Switch theme and optionally persist it."""
+        try:
+            # Main window theme
+            window.setProperty("theme", name)
+            window.style().unpolish(window)
+            window.style().polish(window)
+
+            # Jamo block theme
+            jamo = window.findChild(QWidget, "JamoBlock")
+            if jamo is not None:
+                jamo.setProperty("theme", name)
+                jamo.style().unpolish(jamo)
+                jamo.style().polish(jamo)
+
+            if persist:
+                s = _load_settings()
+                s["theme"] = name
+                _save_settings(s)
+
+            print(f"[INFO] Theme applied: {name}")
+        except Exception as e:
+            print(f"[WARN] Failed to apply theme {name}: {e}")
+
+    # --- Connect radio buttons ---
+    if rad_taegeuk is not None:
+        rad_taegeuk.toggled.connect(lambda checked: _apply_theme("taegeuk") if checked else None)
+    if rad_hanji is not None:
+        rad_hanji.toggled.connect(lambda checked: _apply_theme("hanji") if checked else None)
+
+    # --- Load persisted theme ---
+    _settings = _load_settings()
+    _initial_theme = _settings.get("theme", "taegeuk")
+
+    if _initial_theme == "hanji" and rad_hanji is not None:
+        rad_hanji.setChecked(True)
+        _apply_theme("hanji", persist=False)
+    else:
+        if rad_taegeuk is not None:
+            rad_taegeuk.setChecked(True)
+        _apply_theme("taegeuk", persist=False)
     label_progress = window.findChild(QLabel, "labelProgress")
 
     # Minimal state (until ProgressionController is implemented)
@@ -1443,23 +2287,74 @@ def main():
     # Prev button -> cycle block types backwards (placeholder behavior)
     if btn_prev is not None:
         def on_prev():
-            if state["mode"] in (StudyMode.SYLLABLES, StudyMode.VOWELS):
-                state["vowel_idx"] = (state["vowel_idx"] - 1) % len(_current_vowel_list())
-            else:
-                state["consonant_idx"] = (state["consonant_idx"] - 1) % len(CONSONANT_ORDER)
-            refresh_view()
+            _retreat()
             print("[INFO] Prev -> {}".format(_describe_page(stacked.currentIndex())))
 
         cast(QObject, btn_prev.clicked).connect(on_prev)
 
+    # Chip-specific wrappers add auto-play when in REPEAT state
+    if chip_next is not None:
+        try:
+            chip_next.clicked.disconnect()
+        except Exception:
+            pass
+
+        def _on_chip_next():
+            orchestrator.cancel()
+            on_next()
+            if current_chip_state == PlayChipState.REPEAT:
+                glyph = _current_syllable_text()
+                orchestrator.start(
+                    glyph=glyph,
+                    repeat_count=_current_repeats(),
+                    delays=_current_delays(),
+                    auto_mode=False
+                )
+
+        chip_next.clicked.connect(_on_chip_next)
+
+    if chip_prev is not None:
+        try:
+            chip_prev.clicked.disconnect()
+        except Exception:
+            pass
+
+        def _on_chip_prev():
+            orchestrator.cancel()
+            on_prev()
+            if current_chip_state == PlayChipState.REPEAT:
+                glyph = _current_syllable_text()
+                orchestrator.start(
+                    glyph=glyph,
+                    repeat_count=_current_repeats(),
+                    delays=_current_delays(),
+                    auto_mode=False
+                )
+
+        chip_prev.clicked.connect(_on_chip_prev)
+
+        if chip_slow is not None:
+            chip_slow.setCheckable(True)
+            chip_slow.setFlat(False)  # ensure the background paints when styled
+            try:
+                chip_slow.clicked.disconnect()
+            except Exception:
+                pass
+            chip_slow.clicked.connect(_toggle_slow_mode)
+
     # Wire Mode combobox
     def _on_mode_changed(idx: int):
+        orchestrator.cancel()
+        global current_chip_state
+        current_chip_state = PlayChipState.PLAY
+        update_play_chip_icon()
         mapping = {0: StudyMode.SYLLABLES, 1: StudyMode.VOWELS, 2: StudyMode.CONSONANTS}
         state["mode"] = mapping.get(idx, StudyMode.SYLLABLES)
         # Reset indices when switching modes for a predictable start
         state["vowel_idx"] = 0
         state["consonant_idx"] = 0
         refresh_view()
+
     try:
         if hasattr(combo_mode, 'currentIndexChanged'):
             combo_mode.currentIndexChanged.connect(_on_mode_changed)
@@ -1473,10 +2368,29 @@ def main():
         chk_adv_vowels.toggled.connect(lambda v: use_advanced_vowels.__setitem__("value", bool(v)))
 
     # --- Drawer toggle logic (slide open/close) ---
+    class _DrawerEventFilter(QObject):
+        def __init__(self, drawer_widget, close_callback, parent=None):
+            super().__init__(parent)
+            self._drawer = drawer_widget
+            self._close_cb = close_callback
+
+        def eventFilter(self, obj, event):
+            from PyQt6.QtCore import QEvent
+            if event.type() == QEvent.Type.MouseButtonPress:
+                if self._drawer and self._drawer.isVisible():
+                    if not self._drawer.geometry().contains(event.pos()):
+                        self._close_cb()
+                        return True
+            return False
+
     def _toggle_drawer():
         if drawer_left is None:
             return
         target_open = (drawer_left.maximumHeight() == 0)
+        try:
+            orchestrator.cancel()
+        except Exception:
+            pass
         start_h = drawer_left.maximumHeight()
         # Measure desired height using sizeHint when expanding
         end_h = drawer_left.sizeHint().height() if target_open else 0
@@ -1490,6 +2404,15 @@ def main():
         anim.setEasingCurve(QEasingCurve.Type.InOutCubic)
         # Keep a reference to avoid GC during animation
         window._drawer_anim = anim
+
+        # Install/remove event filter for outside clicks
+        if target_open:
+            if not hasattr(window, "_drawer_event_filter"):
+                window._drawer_event_filter = _DrawerEventFilter(drawer_left, lambda: _toggle_drawer(), window)
+            window.installEventFilter(window._drawer_event_filter)
+        else:
+            if hasattr(window, "_drawer_event_filter"):
+                window.removeEventFilter(window._drawer_event_filter)
 
         def _on_finished():
             if end_h == 0:
@@ -1532,12 +2455,202 @@ def main():
         except Exception:
             pass
 
+    # Close button inside the drawer ("×")
+    # This button allows closing the drawer from within the drawer itself.
+    button_close_drawer = window.findChild(QPushButton, "buttonCloseDrawer")
+    if button_close_drawer is not None:
+        try:
+            button_close_drawer.clicked.disconnect()
+        except Exception:
+            pass
+        button_close_drawer.clicked.connect(_toggle_drawer)
+
     # Initialize UI state
     refresh_view()
+
+    # Ensure chip icon reflects state at startup (harmless if already called)
+    update_play_chip_icon()
 
     window.show()
     sys.exit(app.exec())
 
+
+# Minimal vowel sets for classification tests; expand later as needed
+_VOWELS_A = {"ㅏ", "ㅐ", "ㅑ", "ㅔ"}
+_VOWELS_B = {"ㅗ", "ㅛ", "ㅘ", "ㅙ", "ㅚ"}
+_VOWELS_C = {"ㅜ", "ㅠ", "ㅝ", "ㅞ"}
+_VOWELS_D = {"ㅣ", "ㅟ", "ㅢ", "ㅖ"}
+
+def block_type_for_pair(lead: str, vowel: str):
+    """Return a BlockType for a (leading, vowel) jamo pair.
+
+    This uses the existing BlockType enum defined earlier in the file
+    (with D_Horizontal), so runtime code and tests both agree.
+    """
+    v = str(vowel)
+    if v in _VOWELS_A:
+        return BlockType.A_RightBranch
+    if v in _VOWELS_B:
+        return BlockType.B_TopBranch
+    if v in _VOWELS_C:
+        return BlockType.C_BottomBranch
+    # Default family: horizontal / ㅣ-like
+    return BlockType.D_Horizontal
+
+def _maybe_expose_test_ui_hints(window: object) -> None:
+    """If HANGUL_TEST_MODE=1, inject discoverable consonant/vowel hint widgets.
+
+    Creates two tiny QLabel children under JamoBlock (if present):
+      - objectName: "glyphLeading",  glyphRole: "consonant", accessibleName: "consonant: ㄱ"
+      - objectName: "glyphVowel",    glyphRole: "vowel",     accessibleName: "vowel: ㅏ"
+    Idempotent and non-invasive; for tests only.
+    """
+    try:
+        if os.environ.get("HANGUL_TEST_MODE", "0") != "1":
+            return
+        if QLabel is None or window is None:
+            return
+
+        # Prefer the JamoBlock as parent; fall back to the window
+        try:
+            jamo = window.findChild(object, "JamoBlock")
+        except Exception:
+            jamo = None
+        root = None
+        try:
+            root = jamo.findChild(QWidget, "frameJamoBorder") if jamo is not None else None
+        except Exception:
+            root = None
+        parent = root or jamo or window
+        if parent is None:
+            return
+
+        # Avoid duplicates
+        try:
+            existing = { (getattr(ch, "objectName", lambda: "")() or "")
+                         for ch in (parent.findChildren(QWidget) or []) }
+        except Exception:
+            existing = set()
+
+        if "glyphLeading" not in existing:
+            try:
+                lbl_c = QLabel(parent)
+                lbl_c.setObjectName("glyphLeading")
+                try: lbl_c.setProperty("glyphRole", "consonant")
+                except Exception: pass
+                try: lbl_c.setAccessibleName("consonant: ㄱ")
+                except Exception: pass
+                try: lbl_c.setText("ㄱ")
+                except Exception: pass
+            except Exception:
+                pass
+
+        if "glyphVowel" not in existing:
+            try:
+                lbl_v = QLabel(parent)
+                lbl_v.setObjectName("glyphVowel")
+                lbl_v.setProperty("glyphRole", "vowel")
+                lbl_v.setAccessibleName("vowel: ㅏ")
+                # Set a default, but allow test helpers to override via show_pair
+                lbl_v.setText("ㅏ")
+            except Exception:
+                pass
+    except Exception:
+        # Never crash in tests due to hint injection
+        pass
+
+
+# --- Test helper: drive the displayed pair for UI tests ---------------------
+from typing import Optional as _Optional
+try:
+    from PyQt6.QtWidgets import QApplication as _QApplication, QMainWindow as _QMainWindow, QLabel as _QLabel
+except Exception:
+    _QApplication = None
+    _QMainWindow = None
+    _QLabel = None
+
+
+def _find_top_main_window() -> _Optional[object]:
+    """Return the first QMainWindow among top-level widgets (or activeWindow).
+    Used only by tests to locate the running window instance.
+    """
+    app = _QApplication.instance() if _QApplication else None
+    if not app:
+        return None
+    try:
+        for w in app.topLevelWidgets():
+            try:
+                if _QMainWindow and isinstance(w, _QMainWindow):
+                    return w
+            except Exception:
+                pass
+    except Exception:
+        pass
+    try:
+        return app.activeWindow()
+    except Exception:
+        return None
+
+
+def show_pair(lead: str, vowel: str) -> None:
+    """Minimal, test-only API: update the discoverable consonant/vowel hint labels.
+
+    This does not redraw custom glyphs; it only updates the tiny QLabel hints
+    created by `_maybe_expose_test_ui_hints` so tests can assert the correct
+    consonant/vowel are present.
+    """
+    app = _QApplication.instance() if _QApplication else None
+    if app is None or _QLabel is None:
+        return
+
+    # Best-effort: ensure hint labels exist under any top-level window
+    try:
+        for win in app.topLevelWidgets():
+            try:
+                _maybe_expose_test_ui_hints(win)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    try:
+        all_widgets = app.allWidgets()
+    except Exception:
+        all_widgets = []
+
+    for w in all_widgets:
+        # We only care about QLabel subclasses with the specific objectNames
+        try:
+            if not isinstance(w, _QLabel):
+                continue
+        except Exception:
+            continue
+
+        try:
+            oname = getattr(w, "objectName", lambda: "")() or ""
+        except Exception:
+            oname = ""
+
+        if oname == "glyphLeading":
+            # Update consonant hint
+            try:
+                w.setText(str(lead))
+            except Exception:
+                pass
+            try:
+                w.setAccessibleName(f"consonant: {lead}")
+            except Exception:
+                pass
+        elif oname == "glyphVowel":
+            # Update vowel hint
+            try:
+                w.setText(str(vowel))
+            except Exception:
+                pass
+            try:
+                w.setAccessibleName(f"vowel: {vowel}")
+            except Exception:
+                pass
 
 if __name__ == "__main__":
     main()

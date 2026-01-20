@@ -27,6 +27,26 @@ from PyQt6.QtWidgets import (
     QSpinBox,
 )
 
+from app.controllers.settings_controller import SettingsController
+from app.domain.enums import (
+    BlockType,
+    SegmentRole,
+    ConsonantPosition,
+    DelaysConfig,
+    PairStatus,
+    ProgressionDirection,
+    ProgressionState,
+    ProgressionStep,
+)
+from app.services.settings_store import SettingsStore
+from app.domain.jamo_data import (
+    get_consonant_order,
+    get_vowel_order_basic10,
+    get_vowel_order_advanced
+)
+from app.domain.hangul_unicode import compose_cv
+from app.domain.block_types import block_type_for_pair
+
 # --- Google Cloud TTS guarded import ---
 try:
     from google.cloud import texttospeech as _gtts
@@ -39,6 +59,7 @@ except Exception:
 _slow_mode_enabled = False
 _previous_wpm: int | None = None
 
+
 # -------------------------------------------------
 #           HELPERS
 # -------------------------------------------------
@@ -47,36 +68,6 @@ _previous_wpm: int | None = None
 # -------------------------------------------------
 #          SETTINGS PERSISTENCE (TOP-LEVEL)
 # -------------------------------------------------
-from pathlib import Path as _Path, Path
-
-SETTINGS_PATH = os.path.join(os.path.dirname(__file__), "settings.yaml")
-
-
-def _load_settings() -> dict:
-    """Load app settings from settings.yaml (UTF-8). Returns a dict or {}."""
-    try:
-        p = _Path(SETTINGS_PATH)
-        if not p.exists():
-            return {}
-        with p.open("r", encoding="utf-8") as f:
-            data = yaml.safe_load(f) or {}
-            return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
-
-
-def _save_settings(data: dict) -> None:
-    """Atomically save settings to settings.yaml (UTF-8)."""
-    try:
-        p = _Path(SETTINGS_PATH)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        tmp = p.with_suffix(p.suffix + ".tmp")
-        with tmp.open("w", encoding="utf-8") as f:
-            yaml.safe_dump(data or {}, f, allow_unicode=True, sort_keys=True)
-        os.replace(str(tmp), str(p))
-    except Exception as e:
-        print(f"[WARN] Failed to save settings atomically: {e}")
-
 
 def _project_root():
     return os.path.dirname(os.path.abspath(__file__))
@@ -238,27 +229,6 @@ def _ensure_empty_placeholder(seg_w: Optional[QWidget]) -> None:
 # -------------------------------------------------
 #           END HELPERS
 # -------------------------------------------------
-
-
-class BlockType(Enum):
-    """The four vowel-driven block layout templates."""
-    A_RightBranch = 0
-    B_TopBranch = 1
-    C_BottomBranch = 2
-    D_Horizontal = 3
-
-
-class SegmentRole(Enum):
-    """Three horizontal segments per block: top, middle, bottom."""
-    Top = 0
-    Middle = 1
-    Bottom = 2
-
-
-# --- Consonant position enum ---
-class ConsonantPosition(Enum):
-    Initial = 0
-    Final = 1
 
 
 # --- Study mode enum ---
@@ -824,39 +794,18 @@ class BlockContainer:
         page.update()
 
 
-# Map vowel to block type (basic set)
-VOWEL_TO_BLOCK = {
-    # A — Right-branching
-    "ㅏ": BlockType.A_RightBranch, "ㅑ": BlockType.A_RightBranch,
-    "ㅓ": BlockType.A_RightBranch, "ㅕ": BlockType.A_RightBranch,
-    "ㅣ": BlockType.A_RightBranch,
-    # B — Top-branching
-    "ㅗ": BlockType.B_TopBranch, "ㅛ": BlockType.B_TopBranch,
-    # C — Bottom-branching
-    "ㅜ": BlockType.C_BottomBranch, "ㅠ": BlockType.C_BottomBranch,
-    # D — Horizontal
-    "ㅡ": BlockType.D_Horizontal,
-}
-
-# Basic 10 vowel order (fallback; will later load from YAML)
-VOWEL_ORDER_BASIC10 = ["ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ", "ㅣ"]
-
-# Unicode CV composer (no final consonant) as a safe fallback
-_CHOESONG = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
-_JUNGSUNG = ["ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ", "ㅙ", "ㅚ", "ㅛ",
-             "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ", "ㅣ"]
-_DEF_L = {ch: i for i, ch in enumerate(_CHOESONG)}
-_DEF_V = {ch: i for i, ch in enumerate(_JUNGSUNG)}
+# -------------------------------------------------
+#           DOMAIN-LOADED ORDERING
+# -------------------------------------------------
+# Canonical consonant/vowel ordering.
+# Loaded from YAML via app/domain/jamo_data.py.
+# main.py must not define or override ordering rules.
+CONSONANT_ORDER = get_consonant_order()
+VOWEL_ORDER_BASIC10 = get_vowel_order_basic10()
+VOWEL_ORDER_ADVANCED = get_vowel_order_advanced()
 
 
-def compose_cv(consonant: str, vowel: str) -> Optional[str]:
-    try:
-        L = _DEF_L[consonant]
-        V = _DEF_V[vowel]
-        code = 0xAC00 + ((L * 21) + V) * 28  # T=0 (no final)
-        return chr(code)
-    except Exception:
-        return None
+
 
 
 # -------------------------------------------------
@@ -1045,7 +994,7 @@ class BlockManager:
 
     def show_pair(self, stacked: QStackedWidget, consonant: str, vowel: str,
                   type_label: Optional[QLabel] = None, syll_label: Optional[QLabel] = None) -> None:
-        bt = VOWEL_TO_BLOCK.get(vowel, self.current_type())
+        bt = block_type_for_pair(consonant, vowel)
         # Move index to match the target block type
         try:
             self._current_index = self._order.index(bt)
@@ -1129,23 +1078,42 @@ class JamoBlock(QWidget):
         """Return the attached BlockContainer, if any."""
         return self._container
 
-    # -------------------------------------------------
-    #           PROGRESSION (Scaffolding only)
-    # -------------------------------------------------
+
+# -------------------------------------------------
+#           PROGRESSION (Scaffolding only)
+# -------------------------------------------------
+
+from pathlib import Path
+
+# Default settings.yaml path (tests may monkeypatch this)
+SETTINGS_PATH = Path(__file__).resolve().parent / "settings.yaml"
+
+# -----------------------------------------------------------------------------
+# Settings compatibility helpers (tests + legacy code paths)
+# -----------------------------------------------------------------------------
+# Tests and some existing code still expect main.py to expose `_load_settings()`
+# and `_save_settings()`. Keep these as thin wrappers over the new SettingsStore.
+
+def _settings_store() -> SettingsStore:
+    # IMPORTANT: tests may monkeypatch SETTINGS_PATH to a temp directory.
+    return SettingsStore(settings_path=SETTINGS_PATH)
 
 
-from dataclasses import dataclass
+def _load_settings() -> dict:
+    try:
+        data = _settings_store().load()
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
 
 
-# --- DelaysConfig for playback orchestrator ---
-@dataclass
-class DelaysConfig:
-    """Delays used by the playback orchestrator (milliseconds)."""
-    pre_first_ms: int = 0  # delay before first play
-    between_reps_ms: int = 2000  # delay between repeats
-    before_hints_ms: int = 0  # delay before revealing hints
-    before_extras_ms: int = 1000  # delay before revealing extra info
-    auto_advance_ms: int = 0  # delay before auto-advance (in auto mode)
+def _save_settings(data: dict) -> None:
+    try:
+        if not isinstance(data, dict):
+            data = {}
+        _settings_store().save(data)
+    except Exception:
+        pass
 
 
 def _default_delays() -> DelaysConfig:
@@ -1153,57 +1121,23 @@ def _default_delays() -> DelaysConfig:
     return DelaysConfig()
 
 
-class ProgressionMode(Enum):
-    """Two progression paths: consonant→vowel or vowel→consonant."""
-    CONSONANT_TO_VOWEL = "C→V"
-    VOWEL_TO_CONSONANT = "V→C"
-
-
-class PairStatus(Enum):
-    """Status tags for CV pairs loaded from YAML (see syllables.yaml / overrides)."""
-    ALLOWED = "allowed"
-    RARE = "rare"
-    NOT_USED = "not_used"
-    IMPOSSIBLE = "impossible"
-
-
-@dataclass(frozen=True)
-class ProgressionStep:
-    consonant: str  # e.g., "ㄱ"
-    vowel: str  # e.g., "ㅏ"
-    glyph: str  # e.g., "가"
-    block_type: str  # "A_RightBranch" | "B_TopBranch" | "C_BottomBranch" | "D_Horizontal"
-    status: PairStatus  # from YAML
-    index_c: int  # consonant index in current order
-    index_v: int  # vowel index in current order
-
-
-@dataclass
-class ProgressionState:
-    mode: ProgressionMode
-    index_c: int = 0
-    index_v: int = 0
-    anchor_c: Optional[str] = None  # fixed consonant when mode is C→V
-    anchor_v: Optional[str] = None  # fixed vowel when mode is V→C
-    include_rare: bool = False
-    use_advanced_vowels: bool = False  # toggle to include complex vowels
-
-
 class ProgressionController:
     """Pure logic (UI-agnostic). Drives next/prev selection through CV space.
     NOTE: This is a non-functional scaffold; method bodies are intentionally empty.
     """
 
-    def __init__(self,
-                 consonant_order: List[str],
-                 vowel_order_basic: List[str],
-                 vowel_order_adv: List[str],
-                 syllable_lookup: "Callable[[str, str], Tuple[str, str, str, str, PairStatus]]",
-                 state: Optional[ProgressionState] = None) -> None:
+    def __init__(
+            self,
+            consonant_order: List[str],
+            vowel_order_basic: List[str],
+            vowel_order_adv: List[str],
+            syllable_lookup: "Callable[[str, str], Tuple[str, str, str, str, PairStatus]]",
+            state: Optional[ProgressionState] = None
+    ) -> None:
         # TODO: store parameters, choose active vowel order depending on state.use_advanced_vowels
         pass
 
-    def set_mode(self, mode: ProgressionMode) -> None:
+    def set_direction(self, direction: ProgressionDirection) -> None:
         pass
 
     def set_anchor_consonant(self, c: str) -> None:
@@ -1226,15 +1160,15 @@ class ProgressionController:
         raise NotImplementedError
 
     def next(self) -> ProgressionStep:
-        # TODO: advance according to mode, skipping IMPOSSIBLE and (optionally) RARE
+        # TODO: advance according to direction, skipping IMPOSSIBLE and (optionally) RARE
         raise NotImplementedError
 
     def prev(self) -> ProgressionStep:
-        # TODO: reverse-advance according to mode
+        # TODO: reverse-advance according to direction
         raise NotImplementedError
 
     def progress_summary(self) -> str:
-        # TODO: e.g., "5/10 vowels" or "8/19 consonants" depending on mode
+        # TODO: e.g., "5/10 vowels" or "8/19 consonants" depending on direction
         return ""
 
     # --- YAML adapter (no implementation) ---
@@ -1254,7 +1188,7 @@ class ProgressionController:
     # When ready, we will:
     #  - create a ProgressionController with the orders and adapter
     #  - wire Next/Prev to controller.next()/prev()
-    #  - wire a mode selector + anchor pickers
+    #  - wire a direction selector + anchor pickers
     #  - call BlockManager + set the big glyph from ProgressionStep
     # For now, leaving the existing behavior untouched.
 
@@ -1518,6 +1452,7 @@ class PlaybackOrchestrator(QObject):
         else:
             _play_n(max(1, int(repeat_count)))
 
+
 # ------------------------------
 # Factory for tests (non-interactive)
 # ------------------------------
@@ -1558,6 +1493,7 @@ def create_main_window():
         print(f"[ERROR] create_main_window failed: {e}")
         raise
 
+
 def _set_controls_for_repeats_locked(window, lock: bool) -> None:
     """Enable/disable key playback/navigation controls during repeat sequences."""
     try:
@@ -1595,6 +1531,7 @@ def _set_controls_for_repeats_locked(window, lock: bool) -> None:
             # Best-effort; ignore widgets that don't support setEnabled
             pass
 
+
 def main():
     app = QApplication(sys.argv)
 
@@ -1602,7 +1539,6 @@ def main():
     window = uic.loadUi("ui/form.ui")
 
     # --- Delay spinboxes: restore from settings.yaml and persist on change ---
-    # UI-only persistence for the five delay spin boxes in the drawer.
     try:
         spin_pre_first = window.findChild(QSpinBox, "spinDelayPreFirst")
         spin_between_reps = window.findChild(QSpinBox, "spinDelayBetweenReps")
@@ -1610,132 +1546,35 @@ def main():
         spin_before_extras = window.findChild(QSpinBox, "spinDelayBeforeExtras")
         spin_auto_advance = window.findChild(QSpinBox, "spinDelayAutoAdvance")
     except Exception:
-        spin_pre_first = spin_between_reps = spin_before_hints = spin_before_extras = spin_auto_advance = None
+        spin_pre_first = None
+        spin_between_reps = None
+        spin_before_hints = None
+        spin_before_extras = None
+        spin_auto_advance = None
 
-    # Lookup for Repeats spinbox
+    # --- Repeats spinbox ---
     try:
         spin_repeats = window.findChild(QSpinBox, "spinRepeats")
     except Exception:
         spin_repeats = None
 
-    def _load_delay_settings_from_yaml() -> dict:
-        """
-        Returns delay values in SECONDS (as shown in the UI).
-        settings.yaml structure:
-          delays:
-            pre_first: 0
-            between_reps: 2
-            before_hints: 0
-            before_extras: 1
-            auto_advance: 0
-        """
-        s = _load_settings()
-        d = s.get("delays") or {}
+    # --- Settings wiring (delays + repeats) ---
+    settings_store = _settings_store()
+    settings_controller = SettingsController(settings_store)
 
-        def _val(sb: QSpinBox | None, key: str, default: int) -> int:
-            try:
-                if key in d and isinstance(d[key], (int, float)):
-                    return int(d[key])
-                if sb is not None:
-                    return int(sb.value())
-            except Exception:
-                pass
-            return int(default)
+    settings_controller.bind_delay_spinboxes(
+        spin_pre_first=spin_pre_first,
+        spin_between_reps=spin_between_reps,
+        spin_before_hints=spin_before_hints,
+        spin_before_extras=spin_before_extras,
+        spin_auto_advance=spin_auto_advance,
+    )
+    settings_controller.bind_repeats_spinbox(spin_repeats)
 
-        return {
-            "pre_first": _val(spin_pre_first, "pre_first", 0),
-            "between_reps": _val(spin_between_reps, "between_reps", 2),
-            "before_hints": _val(spin_before_hints, "before_hints", 0),
-            "before_extras": _val(spin_before_extras, "before_extras", 1),
-            "auto_advance": _val(spin_auto_advance, "auto_advance", 0),
-        }
-
-    def _apply_delay_spinboxes_from_settings() -> None:
-        """Push saved values into the spinboxes (UI shows SECONDS)."""
-        vals = _load_delay_settings_from_yaml()
-        try:
-            if spin_pre_first is not None: spin_pre_first.setValue(int(vals["pre_first"]))
-            if spin_between_reps is not None: spin_between_reps.setValue(int(vals["between_reps"]))
-            if spin_before_hints is not None: spin_before_hints.setValue(int(vals["before_hints"]))
-            if spin_before_extras is not None: spin_before_extras.setValue(int(vals["before_extras"]))
-            if spin_auto_advance is not None: spin_auto_advance.setValue(int(vals["auto_advance"]))
-        except Exception:
-            pass
-
-    def _persist_delay_key(key: str, value: int) -> None:
-        """Persist a single delay value back to settings.yaml (stored in SECONDS)."""
-        try:
-            s = _load_settings()
-            d = s.get("delays") or {}
-            d[key] = int(value)
-            s["delays"] = d
-            _save_settings(s)
-        except Exception as e:
-            print(f"[WARN] Failed to persist delay '{key}': {e}")
-
-    def _wire_delay_spinboxes_for_persist() -> None:
-        """Connect valueChanged -> persistence for all delay spinboxes."""
-        pairs = [
-            (spin_pre_first, "pre_first"),
-            (spin_between_reps, "between_reps"),
-            (spin_before_hints, "before_hints"),
-            (spin_before_extras, "before_extras"),
-            (spin_auto_advance, "auto_advance"),
-        ]
-        for sb, key in pairs:
-            if sb is None:
-                continue
-            try:
-                sb.valueChanged.disconnect()
-            except Exception:
-                pass
-
-            # Bind key eagerly to avoid late-binding issues in the lambda
-            def _mk_handler(k: str):
-                return lambda val: _persist_delay_key(k, int(val))
-
-            sb.valueChanged.connect(_mk_handler(key))
-
-    # --- Repeats load/apply/persist helpers ---
-    def _load_repeats_from_settings() -> int:
-        try:
-            s = _load_settings()
-            val = int(s.get("repeats", 1))
-            if val < 1:
-                return 1
-            return val
-        except Exception:
-            return 1
-
-    def _apply_repeats_from_settings() -> None:
-        try:
-            if spin_repeats is not None:
-                spin_repeats.setValue(_load_repeats_from_settings())
-        except Exception:
-            pass
-
-    def _persist_repeats(value: int) -> None:
-        try:
-            s = _load_settings()
-            s["repeats"] = max(1, int(value))
-            _save_settings(s)
-        except Exception as e:
-            print(f"[WARN] Failed to persist repeats: {e}")
-
-    # Apply saved values now, then wire persistence
-    _apply_delay_spinboxes_from_settings()
-    _wire_delay_spinboxes_for_persist()
-    _apply_repeats_from_settings()
-    try:
-        if spin_repeats is not None:
-            try:
-                spin_repeats.valueChanged.disconnect()
-            except Exception:
-                pass
-            spin_repeats.valueChanged.connect(
-                lambda v: (_persist_repeats(int(v)), print(f"[DEBUG] repeats -> {int(v)}")))
-    except Exception:
-        pass
+    settings_controller.apply_delays_from_store()
+    settings_controller.apply_repeats_from_store()
+    settings_controller.wire_delay_persistence()
+    settings_controller.wire_repeats_persistence()
 
     # Ensure the menubar is shown inside the window (macOS uses system bar by default)
     try:
@@ -1896,32 +1735,10 @@ def main():
 
     # --- Repeats/delays runtime helpers ---
     def _current_repeats() -> int:
-        try:
-            if spin_repeats is not None:
-                val = int(spin_repeats.value())
-                return max(1, val)
-        except Exception:
-            pass
-        return _load_repeats_from_settings()
+        return settings_controller.current_repeats()
 
     def _current_delays() -> DelaysConfig:
-        # Read seconds from the spinboxes and convert to ms
-        try:
-            def _sv(sb, default):
-                try:
-                    return int(sb.value()) if sb is not None else int(default)
-                except Exception:
-                    return int(default)
-
-            return DelaysConfig(
-                pre_first_ms=_sv(spin_pre_first, 0) * 1000,
-                between_reps_ms=_sv(spin_between_reps, 2) * 1000,
-                before_hints_ms=_sv(spin_before_hints, 0) * 1000,
-                before_extras_ms=_sv(spin_before_extras, 1) * 1000,
-                auto_advance_ms=_sv(spin_auto_advance, 0) * 1000,
-            )
-        except Exception:
-            return _default_delays()
+        return settings_controller.current_delays_ms()
 
     def _current_syllable_text() -> str:
         return syll_label.text() if syll_label is not None else ""
@@ -1941,9 +1758,9 @@ def main():
             else:
                 setattr(tts_controller, "_rate_wpm", int(val))  # very last-resort fallback
             # persist to settings.yaml
-            s = _load_settings()
+            s = settings_store.load()
             s["wpm"] = int(val)
-            _save_settings(s)
+            settings_store.save(s)
         except Exception as e:
             print("[WARN] Failed to apply/persist WPM:", e)
 
@@ -1979,7 +1796,7 @@ def main():
     # Initialize WPM from persisted settings or UI selection
     def _init_wpm_from_radios():
         try:
-            s = _load_settings()
+            s = settings_store.load()
             saved = s.get("wpm")
             if saved in (40, 80, 120, 160):
                 _apply_wpm(int(saved))
@@ -2245,7 +2062,6 @@ def main():
         "consonant_idx": 0,
         "anchor_consonant": "ㄱ",
     }
-    CONSONANT_ORDER = _CHOESONG  # reuse existing order for now
 
     def _current_vowel_list():
         return VOWEL_ORDER_BASIC10  # later: include advanced based on toggle
@@ -2326,9 +2142,8 @@ def main():
                 jamo.style().polish(jamo)
 
             if persist:
-                s = _load_settings()
-                s["theme"] = name
-                _save_settings(s)
+                settings_store.load()
+                s = s["theme"] = name
 
             print(f"[INFO] Theme applied: {name}")
         except Exception as e:
@@ -2341,7 +2156,7 @@ def main():
         rad_hanji.toggled.connect(lambda checked: _apply_theme("hanji") if checked else None)
 
     # --- Load persisted theme ---
-    _settings = _load_settings()
+    _settings = settings_store.load()
     _initial_theme = _settings.get("theme", "taegeuk")
 
     if _initial_theme == "hanji" and rad_hanji is not None:
@@ -2554,28 +2369,6 @@ def main():
     sys.exit(app.exec())
 
 
-# Minimal vowel sets for classification tests; expand later as needed
-_VOWELS_A = {"ㅏ", "ㅐ", "ㅑ", "ㅔ"}
-_VOWELS_B = {"ㅗ", "ㅛ", "ㅘ", "ㅙ", "ㅚ"}
-_VOWELS_C = {"ㅜ", "ㅠ", "ㅝ", "ㅞ"}
-_VOWELS_D = {"ㅣ", "ㅟ", "ㅢ", "ㅖ"}
-
-def block_type_for_pair(lead: str, vowel: str):
-    """Return a BlockType for a (leading, vowel) jamo pair.
-
-    This uses the existing BlockType enum defined earlier in the file
-    (with D_Horizontal), so runtime code and tests both agree.
-    """
-    v = str(vowel)
-    if v in _VOWELS_A:
-        return BlockType.A_RightBranch
-    if v in _VOWELS_B:
-        return BlockType.B_TopBranch
-    if v in _VOWELS_C:
-        return BlockType.C_BottomBranch
-    # Default family: horizontal / ㅣ-like
-    return BlockType.D_Horizontal
-
 def _maybe_expose_test_ui_hints(window: object) -> None:
     """If HANGUL_TEST_MODE=1, inject discoverable consonant/vowel hint widgets.
 
@@ -2606,8 +2399,8 @@ def _maybe_expose_test_ui_hints(window: object) -> None:
 
         # Avoid duplicates
         try:
-            existing = { (getattr(ch, "objectName", lambda: "")() or "")
-                         for ch in (parent.findChildren(QWidget) or []) }
+            existing = {(getattr(ch, "objectName", lambda: "")() or "")
+                        for ch in (parent.findChildren(QWidget) or [])}
         except Exception:
             existing = set()
 
@@ -2615,12 +2408,18 @@ def _maybe_expose_test_ui_hints(window: object) -> None:
             try:
                 lbl_c = QLabel(parent)
                 lbl_c.setObjectName("glyphLeading")
-                try: lbl_c.setProperty("glyphRole", "consonant")
-                except Exception: pass
-                try: lbl_c.setAccessibleName("consonant: ㄱ")
-                except Exception: pass
-                try: lbl_c.setText("ㄱ")
-                except Exception: pass
+                try:
+                    lbl_c.setProperty("glyphRole", "consonant")
+                except Exception:
+                    pass
+                try:
+                    lbl_c.setAccessibleName("consonant: ㄱ")
+                except Exception:
+                    pass
+                try:
+                    lbl_c.setText("ㄱ")
+                except Exception:
+                    pass
             except Exception:
                 pass
 
@@ -2641,6 +2440,7 @@ def _maybe_expose_test_ui_hints(window: object) -> None:
 
 # --- Test helper: drive the displayed pair for UI tests ---------------------
 from typing import Optional as _Optional
+
 try:
     from PyQt6.QtWidgets import QApplication as _QApplication, QMainWindow as _QMainWindow, QLabel as _QLabel
 except Exception:
@@ -2730,6 +2530,7 @@ def show_pair(lead: str, vowel: str) -> None:
                 w.setAccessibleName(f"vowel: {vowel}")
             except Exception:
                 pass
+
 
 if __name__ == "__main__":
     main()

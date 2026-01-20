@@ -1,18 +1,26 @@
 # tests/test_render_variants.py
+import importlib
+
 import pytest
-from PyQt6.QtWidgets import QWidget, QLabel, QApplication
+from PyQt6.QtWidgets import QWidget, QApplication
+
 # Prefer shared helpers from conftest, but fall back to local definitions
 try:
     from .conftest import _class_name as _cn_from_cf, _extract_glyph_text as _egt_from_cf
+
     _class_name = _cn_from_cf
     _extract_glyph_text = _egt_from_cf
 except Exception:
     from typing import Optional
+
+
     def _class_name(w) -> str:
         try:
             return w.metaObject().className()
         except Exception:
             return w.__class__.__name__
+
+
     def _extract_glyph_text(w) -> Optional[str]:
         for attr in ("char", "glyph", "text"):
             try:
@@ -37,8 +45,9 @@ except Exception:
             pass
         return None
 
+
 @pytest.mark.ui
-@pytest.mark.parametrize("lead,vowel", [("ㄱ","ㅏ"), ("ㄱ","ㅗ"), ("ㄱ","ㅜ"), ("ㄱ","ㅣ")])
+@pytest.mark.parametrize("lead,vowel", [("ㄱ", "ㅏ"), ("ㄱ", "ㅗ"), ("ㄱ", "ㅜ"), ("ㄱ", "ㅣ")])
 def test_render_has_consonant_and_vowel_widgets(window, qtbot, lead, vowel, main_module, tmp_path):
     # Ask app to render the specific pair if possible
     try:
@@ -99,13 +108,12 @@ def test_render_has_consonant_and_vowel_widgets(window, qtbot, lead, vowel, main
 
 
 # --- Classification tests ---
-import importlib
-
 @pytest.mark.classification
 def test_block_type_function_exposed():
     main_module = importlib.import_module("main")
     fn = getattr(main_module, "block_type_for_pair", None)
     assert callable(fn), "block_type_for_pair() must be exposed"
+
 
 @pytest.mark.classification
 @pytest.mark.parametrize("lead,vowel,starts_with", [

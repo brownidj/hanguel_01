@@ -1453,45 +1453,6 @@ class PlaybackOrchestrator(QObject):
             _play_n(max(1, int(repeat_count)))
 
 
-# ------------------------------
-# Factory for tests (non-interactive)
-# ------------------------------
-
-def create_main_window():
-    """
-    Build and return the main application window without starting the Qt event loop.
-    Useful for unit and integration tests that need widget access.
-    """
-    try:
-        # Required imports for this function
-        from PyQt6.QtWidgets import QApplication
-        from PyQt6 import uic
-        from PyQt6.QtCore import Qt
-        import sys
-        from pathlib import Path
-
-        app = QApplication.instance() or QApplication(sys.argv)
-        # Load the same .ui file as normal
-        ui_path = Path(__file__).parent / "ui" / "form.ui"
-        window = uic.loadUi(str(ui_path))
-
-        # Prevent premature deletion in tests
-        window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, False)
-        # Keep strong refs so pytest doesn't GC the window
-        app._test_window = window  # type: ignore[attr-defined]
-        globals()["_TEST_WINDOW"] = window
-
-        # Perform any minimal post-init wiring you normally do in main()
-        # but avoid timers or app.exec()
-        if hasattr(window, "setObjectName"):
-            window.setObjectName("MainWindow_Test")
-
-        _maybe_expose_test_ui_hints(window)  # add this line
-        return window
-
-    except Exception as e:
-        print(f"[ERROR] create_main_window failed: {e}")
-        raise
 
 
 def _set_controls_for_repeats_locked(window, lock: bool) -> None:
@@ -2369,167 +2330,206 @@ def main():
     sys.exit(app.exec())
 
 
-def _maybe_expose_test_ui_hints(window: object) -> None:
-    """If HANGUL_TEST_MODE=1, inject discoverable consonant/vowel hint widgets.
 
-    Creates two tiny QLabel children under JamoBlock (if present):
-      - objectName: "glyphLeading",  glyphRole: "consonant", accessibleName: "consonant: ㄱ"
-      - objectName: "glyphVowel",    glyphRole: "vowel",     accessibleName: "vowel: ㅏ"
-    Idempotent and non-invasive; for tests only.
-    """
+
+
+# ------------------------------
+# Factory for tests (non-interactive)
+# ------------------------------
+
+def _ui_path(rel: str) -> str:
     try:
-        if os.environ.get("HANGUL_TEST_MODE", "0") != "1":
-            return
-        if QLabel is None or window is None:
-            return
-
-        # Prefer the JamoBlock as parent; fall back to the window
-        try:
-            jamo = window.findChild(object, "JamoBlock")
-        except Exception:
-            jamo = None
-        root = None
-        try:
-            root = jamo.findChild(QWidget, "frameJamoBorder") if jamo is not None else None
-        except Exception:
-            root = None
-        parent = root or jamo or window
-        if parent is None:
-            return
-
-        # Avoid duplicates
-        try:
-            existing = {(getattr(ch, "objectName", lambda: "")() or "")
-                        for ch in (parent.findChildren(QWidget) or [])}
-        except Exception:
-            existing = set()
-
-        if "glyphLeading" not in existing:
-            try:
-                lbl_c = QLabel(parent)
-                lbl_c.setObjectName("glyphLeading")
-                try:
-                    lbl_c.setProperty("glyphRole", "consonant")
-                except Exception:
-                    pass
-                try:
-                    lbl_c.setAccessibleName("consonant: ㄱ")
-                except Exception:
-                    pass
-                try:
-                    lbl_c.setText("ㄱ")
-                except Exception:
-                    pass
-            except Exception:
-                pass
-
-        if "glyphVowel" not in existing:
-            try:
-                lbl_v = QLabel(parent)
-                lbl_v.setObjectName("glyphVowel")
-                lbl_v.setProperty("glyphRole", "vowel")
-                lbl_v.setAccessibleName("vowel: ㅏ")
-                # Set a default, but allow test helpers to override via show_pair
-                lbl_v.setText("ㅏ")
-            except Exception:
-                pass
+        base = Path(__file__).resolve().parent
+        return str(base / rel)
     except Exception:
-        # Never crash in tests due to hint injection
-        pass
+        return rel
 
 
-# --- Test helper: drive the displayed pair for UI tests ---------------------
-from typing import Optional as _Optional
+def create_main_window(*, test_mode: bool = True) -> QWidget:
+    """Build and return the main window without starting the Qt event loop.
 
-try:
-    from PyQt6.QtWidgets import QApplication as _QApplication, QMainWindow as _QMainWindow, QLabel as _QLabel
-except Exception:
-    _QApplication = None
-    _QMainWindow = None
-    _QLabel = None
+    This is intended for pytest/pytest-qt UI tests.
+    It performs minimal wiring required for Next/Prev/Play handlers.
 
+    Args:
+        test_mode: If True, enables small, test-friendly metadata.
 
-def _find_top_main_window() -> _Optional[object]:
-    """Return the first QMainWindow among top-level widgets (or activeWindow).
-    Used only by tests to locate the running window instance.
+    Returns:
+        The constructed top-level window widget.
     """
-    app = _QApplication.instance() if _QApplication else None
-    if not app:
-        return None
+    # Keep imports local to avoid import-time side effects during test collection.
+    from PyQt6 import uic
+    from PyQt6.QtCore import Qt
+    from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QSplitter, QStackedWidget, QWidget
+
+    if test_mode:
+        try:
+            os.environ["HANGUL_TEST_MODE"] = "1"
+        except Exception:
+            pass
+
+    app = QApplication.instance() or QApplication(sys.argv)
+
+    window = uic.loadUi(_ui_path("ui/form.ui"))
     try:
-        for w in app.topLevelWidgets():
-            try:
-                if _QMainWindow and isinstance(w, _QMainWindow):
-                    return w
-            except Exception:
-                pass
+        window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, False)
     except Exception:
         pass
+
+    # --- Minimal Jamo block installation (mirrors runtime behaviour) ---
+    splitter = window.findChild(QSplitter, "splitJamoAndGlyph")
+    if splitter is None:
+        raise RuntimeError("QSplitter 'splitJamoAndGlyph' not found in form.ui")
+
+    placeholder = splitter.findChild(QWidget, "JamoBlock")
+    if placeholder is None:
+        raise RuntimeError("Placeholder 'JamoBlock' not found under splitter")
+
+    jamo_block = uic.loadUi(_ui_path("ui/jamo.ui"))
     try:
-        return app.activeWindow()
+        jamo_block.setStyleSheet("border: none;")
     except Exception:
-        return None
+        pass
 
+    square = JamoBlock()
+    square._inner_layout.addWidget(jamo_block)
+    square.setObjectName("JamoBlock")
+    try:
+        square.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        square.setStyleSheet("background-color: #FBEFEF;")
+    except Exception:
+        pass
 
-def show_pair(lead: str, vowel: str) -> None:
-    """Minimal, test-only API: update the discoverable consonant/vowel hint labels.
+    idx = splitter.indexOf(placeholder)
+    if idx == -1:
+        idx = 0
+    splitter.insertWidget(idx, square)
+    try:
+        placeholder.setParent(None)
+        placeholder.deleteLater()
+    except Exception:
+        pass
 
-    This does not redraw custom glyphs; it only updates the tiny QLabel hints
-    created by `_maybe_expose_test_ui_hints` so tests can assert the correct
-    consonant/vowel are present.
-    """
-    app = _QApplication.instance() if _QApplication else None
-    if app is None or _QLabel is None:
+    stacked = jamo_block.findChild(QStackedWidget, "stackedTemplates")
+    if stacked is None:
+        raise RuntimeError("QStackedWidget 'stackedTemplates' not found in jamo.ui")
+
+    # --- Minimal display state and handlers (no timers, no audio, no animations) ---
+    type_label = window.findChild(QLabel, "labelBlockType")
+    syll_label = window.findChild(QLabel, "labelSyllableRight")
+
+    manager = BlockManager()
+
+    state = {
+        "vowel_idx": 0,
+        "anchor_consonant": "ㄱ",
+    }
+
+    def _current_vowel_list() -> list[str]:
+        try:
+            return list(VOWEL_ORDER_BASIC10)
+        except Exception:
+            return ["ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ", "ㅣ"]
+
+    def _refresh() -> None:
+        vlist = _current_vowel_list()
+        if not vlist:
+            return
+        v = vlist[state["vowel_idx"] % len(vlist)]
+        manager.show_pair(stacked, state["anchor_consonant"], v, type_label, syll_label)
+
+        # Optional, test-friendly metadata
+        if test_mode:
+            try:
+                window.setProperty("HANGUL_TEST_MODE", True)
+            except Exception:
+                pass
+
+    def on_next() -> None:
+        vlist = _current_vowel_list()
+        if not vlist:
+            return
+        state["vowel_idx"] = (state["vowel_idx"] + 1) % len(vlist)
+        _refresh()
+
+    def on_prev() -> None:
+        vlist = _current_vowel_list()
+        if not vlist:
+            return
+        state["vowel_idx"] = (state["vowel_idx"] - 1) % len(vlist)
+        _refresh()
+
+    def on_play() -> None:
+        # UI tests only assert callability; avoid side effects.
         return
 
-    # Best-effort: ensure hint labels exist under any top-level window
+    # Expose handlers for tests (callable without app.exec())
     try:
-        for win in app.topLevelWidgets():
-            try:
-                _maybe_expose_test_ui_hints(win)
-            except Exception:
-                pass
+        window.on_next = on_next  # type: ignore[attr-defined]
+        window.on_prev = on_prev  # type: ignore[attr-defined]
+        window.on_play = on_play  # type: ignore[attr-defined]
     except Exception:
         pass
 
+    # Also store key objects for tests
     try:
-        all_widgets = app.allWidgets()
+        window._stacked = stacked  # type: ignore[attr-defined]
+        window._manager = manager  # type: ignore[attr-defined]
     except Exception:
-        all_widgets = []
+        pass
 
-    for w in all_widgets:
-        # We only care about QLabel subclasses with the specific objectNames
+    # Wire buttons if present
+    btn_next = window.findChild(QPushButton, "buttonNext")
+    if btn_next is not None:
         try:
-            if not isinstance(w, _QLabel):
-                continue
+            btn_next.clicked.disconnect()
         except Exception:
-            continue
+            pass
+        btn_next.clicked.connect(on_next)
 
+    btn_prev = window.findChild(QPushButton, "buttonPrev")
+    if btn_prev is not None:
         try:
-            oname = getattr(w, "objectName", lambda: "")() or ""
+            btn_prev.clicked.disconnect()
         except Exception:
-            oname = ""
+            pass
+        btn_prev.clicked.connect(on_prev)
 
-        if oname == "glyphLeading":
-            # Update consonant hint
-            try:
-                w.setText(str(lead))
-            except Exception:
-                pass
-            try:
-                w.setAccessibleName(f"consonant: {lead}")
-            except Exception:
-                pass
-        elif oname == "glyphVowel":
-            # Update vowel hint
-            try:
-                w.setText(str(vowel))
-            except Exception:
-                pass
-            try:
-                w.setAccessibleName(f"vowel: {vowel}")
-            except Exception:
-                pass
+    chip_pronounce = window.findChild(QPushButton, "chipPronounce")
+    if chip_pronounce is not None:
+        try:
+            chip_pronounce.clicked.disconnect()
+        except Exception:
+            pass
+        chip_pronounce.clicked.connect(on_play)
+
+    chip_next = window.findChild(QPushButton, "chipNext")
+    if chip_next is not None:
+        try:
+            chip_next.clicked.disconnect()
+        except Exception:
+            pass
+        chip_next.clicked.connect(on_next)
+
+    chip_prev = window.findChild(QPushButton, "chipPrev")
+    if chip_prev is not None:
+        try:
+            chip_prev.clicked.disconnect()
+        except Exception:
+            pass
+        chip_prev.clicked.connect(on_prev)
+
+    # Initial render
+    _refresh()
+
+    # Keep strong refs so pytest doesn't GC the window/app during collection
+    try:
+        app._test_window = window  # type: ignore[attr-defined]
+    except Exception:
+        pass
+    globals()["_TEST_WINDOW"] = window
+
+    return window
 
 
 if __name__ == "__main__":

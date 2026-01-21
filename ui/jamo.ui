@@ -16,6 +16,12 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QStackedWidget" name="stackedTemplates">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -23,8 +29,20 @@
      <!-- Right-branching vowels page -->
      <widget class="QWidget" name="typeA_RightBranch">
       <layout class="QGridLayout" name="gridRightBranch">
+       <attribute name="rowstretch">
+        <string>1,1,1</string>
+       </attribute>
+       <attribute name="columnstretch">
+        <string>1</string>
+       </attribute>
        <item row="0" column="0">
         <widget class="QFrame" name="typeA_segmentTop">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -38,6 +56,12 @@
        </item>
        <item row="1" column="0">
         <widget class="QFrame" name="typeA_segmentMiddle">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -51,6 +75,12 @@
        </item>
        <item row="2" column="0">
         <widget class="QFrame" name="typeA_segmentBottom">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -68,8 +98,20 @@
      <!-- Top-branching vowels page -->
      <widget class="QWidget" name="typeB_TopBranch">
       <layout class="QGridLayout" name="gridTopBranch">
+       <attribute name="rowstretch">
+        <string>1,1,1</string>
+       </attribute>
+       <attribute name="columnstretch">
+        <string>1</string>
+       </attribute>
        <item row="0" column="0">
         <widget class="QFrame" name="typeB_segmentTop">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -83,6 +125,12 @@
        </item>
        <item row="1" column="0">
         <widget class="QFrame" name="typeB_segmentMiddle">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -96,6 +144,12 @@
        </item>
        <item row="2" column="0">
         <widget class="QFrame" name="typeB_segmentBottom">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -113,8 +167,20 @@
      <!-- Bottom-branching vowels page -->
      <widget class="QWidget" name="typeC_BottomBranch">
       <layout class="QGridLayout" name="gridBottomBranch">
+       <attribute name="rowstretch">
+        <string>1,1,1</string>
+       </attribute>
+       <attribute name="columnstretch">
+        <string>1</string>
+       </attribute>
        <item row="0" column="0">
         <widget class="QFrame" name="typeC_segmentTop">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -128,6 +194,12 @@
        </item>
        <item row="1" column="0">
         <widget class="QFrame" name="typeC_segmentMiddle">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -141,6 +213,12 @@
        </item>
        <item row="2" column="0">
         <widget class="QFrame" name="typeC_segmentBottom">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -158,8 +236,20 @@
      <!-- Horizontal vowels page -->
      <widget class="QWidget" name="typeD_Horizontal">
       <layout class="QGridLayout" name="gridHorizontal">
+       <attribute name="rowstretch">
+        <string>1,1,1</string>
+       </attribute>
+       <attribute name="columnstretch">
+        <string>1</string>
+       </attribute>
        <item row="0" column="0">
         <widget class="QFrame" name="typeD_segmentTop">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -173,6 +263,12 @@
        </item>
        <item row="1" column="0">
         <widget class="QFrame" name="typeD_segmentMiddle">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -186,6 +282,12 @@
        </item>
        <item row="2" column="0">
         <widget class="QFrame" name="typeD_segmentBottom">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>

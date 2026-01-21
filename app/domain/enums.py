@@ -90,6 +90,13 @@ class PairStatus(str, Enum):
     IMPOSSIBLE = "impossible"
 
 
+class StudyMode(Enum):
+    """High-level study mode selection."""
+
+    SYLLABLES = 1
+    VOWELS = 2
+    CONSONANTS = 3
+
 # ----------------------------------------------------------------------------
 # Progression model (domain dataclasses)
 # ----------------------------------------------------------------------------

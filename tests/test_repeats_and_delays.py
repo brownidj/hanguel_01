@@ -12,28 +12,41 @@ Recommended next step (to enable the UI tests below):
   the loaded QMainWindow (without calling app.exec()) and wires widgets.
 """
 
-from pathlib import Path
+from __future__ import annotations
+
 import importlib
+from pathlib import Path
+from typing import cast
+
 import pytest
 import yaml
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QSpinBox, QPushButton, QWidget
+from app.services.settings_store import SettingsStore
 
 
 @pytest.fixture
-def main_module(monkeypatch, tmp_path: Path):
-    """
-    Import the app's main module with SETTINGS_PATH redirected into a temp area.
-    """
-    main = importlib.import_module("main")
-    monkeypatch.setattr(main, "SETTINGS_PATH", str(tmp_path / "settings.yaml"), raising=False)
-    return main
+def main_module():
+    return importlib.import_module("main")
 
+
+@pytest.fixture
+def settings_path(tmp_path: Path) -> Path:
+    return tmp_path / "settings.yaml"
+
+
+@pytest.fixture
+def settings_store(settings_path: Path):
+    """
+    A SettingsStore pointing at a temp settings.yaml so tests never touch the real config.
+    """
+    return SettingsStore(settings_path=str(settings_path))
 
 # ------------------------------
 # Settings-level smoke tests
 # ------------------------------
 
-def test_repeats_persist_and_load(main_module):
-    main = main_module
+def test_repeats_persist_and_load(settings_store):
     # Save repeats and delays to settings.yaml
     payload = {
         "repeats": 4,
@@ -45,19 +58,18 @@ def test_repeats_persist_and_load(main_module):
             "auto_advance": 0,
         },
     }
-    main._save_settings(payload)
-    loaded = main._load_settings()
+    settings_store.save(payload)
+    loaded = settings_store.load()
     assert loaded.get("repeats") == 4
     assert isinstance(loaded.get("delays"), dict)
     assert loaded["delays"]["between_reps"] == 2
 
 
-def test_settings_file_is_utf8(main_module, tmp_path: Path):
-    main = main_module
+def test_settings_file_is_utf8(settings_store, settings_path: Path):
     # Include Hangul to ensure UTF-8 integrity
     payload = {"theme": "taegeuk", "last_glyph": "가", "repeats": 2}
-    main._save_settings(payload)
-    with open(main.SETTINGS_PATH, "r", encoding="utf-8") as f:
+    settings_store.save(payload)
+    with open(settings_path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
     assert data["last_glyph"] == "가"
 
@@ -66,7 +78,6 @@ def test_settings_file_is_utf8(main_module, tmp_path: Path):
 # UI-level scaffolds (conditional)
 # ------------------------------
 
-@pytest.mark.skip(reason="Enable when main.py exposes create_main_window() without starting app loop.")
 def test_spinboxes_restore_from_settings_qt(qtbot, monkeypatch, tmp_path: Path):
     """
     Intended UI test:
@@ -75,9 +86,9 @@ def test_spinboxes_restore_from_settings_qt(qtbot, monkeypatch, tmp_path: Path):
     - Assert spinboxes show saved values
     """
     import main as m
-    monkeypatch.setattr(m, "SETTINGS_PATH", str(tmp_path / "settings.yaml"), raising=False)
+    settings_path = tmp_path / "settings.yaml"
 
-    m._save_settings({
+    SettingsStore(settings_path=str(settings_path)).save({
         "repeats": 3,
         "delays": {
             "pre_first": 2,
@@ -89,19 +100,18 @@ def test_spinboxes_restore_from_settings_qt(qtbot, monkeypatch, tmp_path: Path):
     })
 
     # Factory should return a fully wired QMainWindow, not start app.exec()
-    win = m.create_main_window()  # <-- Provide this in main.py to enable this test
+    win, _handles = m.create_main_window_for_tests(settings_path=str(settings_path))
     qtbot.addWidget(win)
 
-    spin_repeats = win.findChild(m.QSpinBox, "spinRepeats")
+    spin_repeats = cast(QSpinBox | None, win.findChild(QSpinBox, "spinRepeats"))
     assert spin_repeats is not None
     assert int(spin_repeats.value()) == 3
 
-    spin_between = win.findChild(m.QSpinBox, "spinDelayBetweenReps")
+    spin_between = cast(QSpinBox | None, win.findChild(QSpinBox, "spinDelayBetweenReps"))
     assert spin_between is not None
     assert int(spin_between.value()) == 1
 
 
-@pytest.mark.skip(reason="Enable when Play/Next/Prev handlers are callable without app.exec().")
 def test_orchestrator_uses_current_values(monkeypatch, qtbot, tmp_path: Path):
     """
     Intended integration test:
@@ -110,18 +120,19 @@ def test_orchestrator_uses_current_values(monkeypatch, qtbot, tmp_path: Path):
     - Simulate Play and assert repeat_count==2 and delays match
     """
     import main as m
-    monkeypatch.setattr(m, "SETTINGS_PATH", str(tmp_path / "settings.yaml"), raising=False)
+    settings_path = tmp_path / "settings.yaml"
+    SettingsStore(settings_path=str(settings_path)).save({})
 
     # Build window with factory (to be provided by app)
-    win = m.create_main_window()
+    win, _handles = m.create_main_window_for_tests(settings_path=str(settings_path))
     qtbot.addWidget(win)
 
     # Locate controls
-    spin_repeats = win.findChild(m.QSpinBox, "spinRepeats")
-    spin_between = win.findChild(m.QSpinBox, "spinDelayBetweenReps")
-    chip_play = win.findChild(m.QPushButton, "chipPronounce")
+    spin_repeats = cast(QSpinBox | None, win.findChild(QSpinBox, "spinRepeats"))
+    spin_between = cast(QSpinBox | None, win.findChild(QSpinBox, "spinDelayBetweenReps"))
+    chip_play = cast(QPushButton | None, win.findChild(QPushButton, "chipPronounce"))
 
-    assert spin_repeats and spin_between and chip_play
+    assert spin_repeats is not None and spin_between is not None and chip_play is not None
 
     # Set values
     spin_repeats.setValue(2)
@@ -131,17 +142,16 @@ def test_orchestrator_uses_current_values(monkeypatch, qtbot, tmp_path: Path):
     def fake_start(*, glyph, repeat_count, delays, auto_mode):
         captured.update(dict(glyph=glyph, repeat_count=repeat_count, delays=delays, auto_mode=auto_mode))
 
-    monkeypatch.setattr(m.PlaybackOrchestrator, "start", lambda self, **kw: fake_start(**kw), raising=True)
+    orchestrator_cls = getattr(m, "PlaybackOrchestrator", None)
+    if orchestrator_cls is None:
+        pytest.skip("Enable when PlaybackOrchestrator is exposed/importable for integration testing.")
+    monkeypatch.setattr(orchestrator_cls, "start", lambda self, **kw: fake_start(**kw), raising=True)
 
     # Simulate Play
     chip_play.click()
 
     assert captured.get("repeat_count") == 2
     assert getattr(captured.get("delays"), "between_reps_ms", None) == 1000
-
-import pytest
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QSpinBox, QPushButton, QWidget
 
 
 @pytest.mark.ui
@@ -200,7 +210,7 @@ def test_repeats_gt_1_locks_and_unlocks_controls(window, qtbot, main_module):
         if sb is not None:
             sb.setValue(0)
 
-    # Locate the same controls that _set_controls_for_repeats_locked manipulates
+    # Locate the same controls that set_controls_for_repeats_locked manipulates
     chip_pronounce: QPushButton | None = window.findChild(QPushButton, "chipPronounce")
     chip_next: QPushButton | None = window.findChild(QPushButton, "chipNext")
     chip_prev: QPushButton | None = window.findChild(QPushButton, "chipPrev")
@@ -223,7 +233,7 @@ def test_repeats_gt_1_locks_and_unlocks_controls(window, qtbot, main_module):
     controls = (chip_pronounce, chip_next, chip_prev, chip_slow, btn_next, btn_prev, combo_mode)
 
     # Lock controls as if a multi-repeat sequence had started.
-    main_module._set_controls_for_repeats_locked(window, True)
+    main_module.set_controls_for_repeats_locked(window, True)
 
     # All relevant controls should now be disabled (where present).
     for w in controls:
@@ -231,7 +241,7 @@ def test_repeats_gt_1_locks_and_unlocks_controls(window, qtbot, main_module):
             assert not w.isEnabled(), f"{w.objectName() or type(w).__name__} should be disabled while repeating"
 
     # Unlock again to simulate the sequence finishing.
-    main_module._set_controls_for_repeats_locked(window, False)
+    main_module.set_controls_for_repeats_locked(window, False)
 
     # All relevant controls should now be enabled again.
     for w in controls:

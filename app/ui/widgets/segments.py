@@ -1,0 +1,536 @@
+from __future__ import annotations
+
+from abc import ABCMeta, abstractmethod
+from pathlib import Path
+from typing import Optional, Any
+
+from PyQt6 import uic
+from PyQt6.QtCore import Qt, QSize, QTimer
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QSizePolicy, QLabel, QFrame, QStackedWidget
+
+from app.domain.enums import ConsonantPosition
+from app.ui.fit_text import AutoFitLabel
+
+
+class SegmentView(QWidget):
+    """A lightweight container widget representing one Hangul block segment.
+
+    The UI uses three segments (Top/Middle/Bottom). We persist the role in two
+    ways to make discovery robust:
+
+    1) as an attribute (returned by role()), and
+    2) as a dynamic Qt property 'segmentRole' with string values
+       {"Top", "Middle", "Bottom"} when possible.
+
+    This enables utilities such as `layout._enforce_equal_segment_heights(...)`
+    and renderers to discover segment widgets without relying on object names.
+
+    Architectural note:
+        We deliberately do not model segments as a separate BlockSegment class.
+        In this codebase a “segment” is simply SegmentRole (Top/Middle/Bottom)
+        plus the QWidget that holds presenters, discovered via role() and/or
+        the dynamic property 'segmentRole'.
+    """
+
+    def __init__(self, parent: Optional[QWidget] = None, role: Any = None) -> None:
+        super().__init__(parent)
+        self._role = role
+
+        # Best-effort: reflect role into a dynamic property for discovery.
+        # Accept either enum-like objects (with .name) or strings.
+        try:
+            role_name = getattr(role, "name", None)
+            if isinstance(role_name, str):
+                name = role_name
+            elif isinstance(role, str):
+                name = role
+            else:
+                name = None
+
+            if name in ("Top", "Middle", "Bottom"):
+                self.setProperty("segmentRole", name)
+        except (AttributeError, TypeError, ValueError):
+            pass
+
+        # Ensure it always has a layout, because main render code expects one.
+        if self.layout() is None:
+            layout = QVBoxLayout(self)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+    def role(self) -> Any:
+        """Return the logical segment role (Top/Middle/Bottom)."""
+        return self._role
+
+
+class _QtABCMeta(ABCMeta, type(QWidget)):
+    """Combine ABCMeta with Qt's sip wrapper metaclass to allow abstract Qt widgets."""
+    pass
+
+
+class Characters(QWidget, metaclass=_QtABCMeta):
+    """Abstract base for glyph presenters (consonant/vowel)."""
+
+    def __init__(
+            self,
+            parent: Optional[QWidget] = None,
+            grapheme: str = "",
+            ipa: Optional[str] = None,
+            *,
+            min_pt: int = 24,
+            max_pt: int = 128,
+            padding: int = 4,
+    ) -> None:
+        super().__init__(parent)
+        self._grapheme = grapheme
+        self._ipa = ipa
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        sp_self = self.sizePolicy()
+        sp_self.setHorizontalPolicy(QSizePolicy.Policy.Expanding)
+        sp_self.setVerticalPolicy(QSizePolicy.Policy.Expanding)
+        self.setSizePolicy(sp_self)
+
+        self._glyph = AutoFitLabel(grapheme, self, min_pt=min_pt, max_pt=max_pt, padding=padding)
+        try:
+            # Ensure glyphs remain visible even if parent palettes/styles are muted.
+            self._glyph.setStyleSheet("color: #000000; background: transparent;")
+            self._glyph.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        except Exception:
+            pass
+        layout.addWidget(self._glyph, 1)
+
+    @abstractmethod
+    def kind(self) -> str:
+        raise NotImplementedError
+
+    def glyph_label(self) -> QLabel:
+        return self._glyph
+
+    def set_grapheme(self, g: str) -> None:
+        self._grapheme = g
+        self._glyph.setText(g)
+
+    def set_ipa(self, ipa: Optional[str]) -> None:
+        self._ipa = ipa
+
+
+class ConsonantView(Characters):
+    def __init__(
+            self,
+            parent: Optional[QWidget] = None,
+            grapheme: str = "",
+            position: Optional[ConsonantPosition] = None,
+            ipa: Optional[str] = None,
+    ):
+        super().__init__(parent, grapheme=grapheme, ipa=ipa, min_pt=24, max_pt=128, padding=4)
+        self._position = position
+
+    def set_position(self, p: ConsonantPosition) -> None:
+        self._position = p
+
+    def kind(self) -> str:
+        return "consonant"
+
+
+class VowelView(Characters):
+    def __init__(self, parent: Optional[QWidget] = None, grapheme: str = "", ipa: Optional[str] = None):
+        super().__init__(parent, grapheme=grapheme, ipa=ipa, min_pt=24, max_pt=128, padding=4)
+
+    def kind(self) -> str:
+        return "vowel"
+
+class JamoBlock(QWidget):
+    """A container widget that enforces a 1:1 aspect ratio for the Hangul block.
+
+    This widget owns rendering and loads `jamo.ui` internally.
+    """
+
+    def __init__(self, parent: Optional[QWidget] = None) -> None:
+        super().__init__(parent)
+
+        # Outer layout used to center the inner square block
+        self._inner_layout = QVBoxLayout(self)
+        self._inner_layout.setContentsMargins(0, 0, 0, 0)
+        self._inner_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Load the visual structure of the Jamo block
+        here = Path(__file__).resolve()
+        project_root = here.parents[3]
+        jamo_ui_path = project_root / "ui" / "jamo.ui"
+
+        block = QWidget(self)
+        uic.loadUi(jamo_ui_path, block)
+
+        # Keep references for debugging / discovery.
+        self._ui_root = block
+        self._stacked: Optional[QStackedWidget] = block.findChild(QStackedWidget, "stackedTemplates")
+
+        for frame in block.findChildren(QFrame):
+            name = frame.objectName() or ""
+            if name.endswith("_segmentTop"):
+                frame.setProperty("segmentRole", "Top")
+            elif name.endswith("_segmentMiddle"):
+                frame.setProperty("segmentRole", "Middle")
+            elif name.endswith("_segmentBottom"):
+                frame.setProperty("segmentRole", "Bottom")
+        self._inner_layout.addWidget(block)
+
+        # Wire up segment discovery / rendering hooks
+        self._wire_segments(block)
+
+        # --------------------------------------------------
+        # DEBUG: verify segment frames and their layouts
+        # --------------------------------------------------
+        try:
+            print("[DEBUG] --- segmentRole frames after wiring ---")
+            for f in block.findChildren(QFrame):
+                r = f.property("segmentRole")
+                if r in ("Top", "Middle", "Bottom"):
+                    lay = f.layout()
+                    print(
+                        "[DEBUG] frame objName={} role={} layout_is_none={} layout_type={}".format(
+                            f.objectName(),
+                            r,
+                            (lay is None),
+                            (type(lay).__name__ if lay is not None else "None"),
+                        )
+                    )
+        except Exception as _e:
+            print("[DEBUG] segmentRole debug failed: {}".format(_e))
+
+        self._container: Optional[Any] = None
+
+        # --------------------------------------------------
+        # DEBUG / SMOKE: ensure we can see *something* without
+        # relying on external callers to invoke render_demo().
+        # This runs after the widget is in a layout.
+        # --------------------------------------------------
+        try:
+            QTimer.singleShot(0, self.render_demo_on_current_page)
+        except Exception:
+            pass
+
+    def _wire_segments(self, root: QWidget) -> None:
+        # We must ensure segment frames on ALL pages (and on the current page)
+        # have layouts, because renderers clear and repopulate frame.layout().
+        stacked = self._stacked
+        pages: list[QWidget] = []
+
+        if stacked is not None:
+            for i in range(int(stacked.count())):
+                w = stacked.widget(i)
+                if isinstance(w, QWidget):
+                    pages.append(w)
+
+        # Fall back to the provided root if stacked is missing.
+        if not pages:
+            pages = [root]
+
+        for page in pages:
+            for frame in page.findChildren(QFrame):
+                role_name = frame.property("segmentRole")
+                if role_name not in ("Top", "Middle", "Bottom"):
+                    continue
+
+                if frame.layout() is None:
+                    layout = QVBoxLayout(frame)
+                    layout.setContentsMargins(0, 0, 0, 0)
+                    layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                    frame.setLayout(layout)
+
+    def _current_page(self) -> Optional[QWidget]:
+        stacked = self._stacked
+        if stacked is None:
+            return None
+        w = stacked.currentWidget()
+        return w if isinstance(w, QWidget) else None
+
+    def _find_segment_frame_on_current_page(self, role: str) -> Optional[QFrame]:
+        """Find the QFrame for the given role (Top/Middle/Bottom) on the current page."""
+        page = self._current_page()
+        if page is None:
+            return None
+        for frame in page.findChildren(QFrame):
+            if frame.property("segmentRole") == role:
+                return frame
+        return None
+
+    def _ensure_layout(self, frame: QFrame) -> QVBoxLayout:
+        """Ensure the given frame has a QVBoxLayout and return it."""
+        lay = frame.layout()
+        if lay is None:
+            layout = QVBoxLayout(frame)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            frame.setLayout(layout)
+            return layout
+        # Best-effort: cast to QVBoxLayout-like API.
+        return lay  # type: ignore[return-value]
+
+    def debug_dump_current_template(self, prefix: str = "[DEBUG]") -> None:
+        """Print what is currently attached inside the active template page."""
+        try:
+            stacked = self._stacked
+            if stacked is None:
+                print("{} JamoBlock: stackedTemplates not found".format(prefix))
+                return
+
+            idx = int(stacked.currentIndex())
+            page = stacked.currentWidget()
+            page_name = page.objectName() if page is not None else "None"
+            print("{} JamoBlock: stacked index={} page={}".format(prefix, idx, page_name))
+
+            if page is None:
+                return
+
+            for role in ("Top", "Middle", "Bottom"):
+                frame = self._find_segment_frame_on_current_page(role)
+                if frame is None:
+                    print("{}  segment role={} <frame not found>".format(prefix, role))
+                    continue
+
+                lay = frame.layout()
+                lay_type = type(lay).__name__ if lay is not None else "None"
+                count = lay.count() if lay is not None else -1
+                sr = frame.property("segmentRole")
+                print(
+                    "{}  segment role={} propRole={} objName={} layout={} items={} frame_geo={}x{}+{}+{}".format(
+                        prefix,
+                        role,
+                        sr,
+                        frame.objectName(),
+                        lay_type,
+                        count,
+                        frame.geometry().width(),
+                        frame.geometry().height(),
+                        frame.geometry().x(),
+                        frame.geometry().y(),
+                    )
+                )
+
+                if lay is None:
+                    continue
+
+                for i in range(lay.count()):
+                    item = lay.itemAt(i)
+                    w = item.widget() if item is not None else None
+                    if w is None:
+                        print("{}    [{}] <no-widget>".format(prefix, i))
+                        continue
+
+                    desc = type(w).__name__
+                    text = ""
+                    try:
+                        if hasattr(w, "text"):
+                            text = str(w.text() or "")
+                    except Exception:
+                        text = ""
+
+                    geo = w.geometry()
+                    if text:
+                        print(
+                            "{}    [{}] {} text='{}' visible={} geo={}x{}+{}+{} parent={}".format(
+                                prefix,
+                                i,
+                                desc,
+                                text,
+                                w.isVisible(),
+                                geo.width(),
+                                geo.height(),
+                                geo.x(),
+                                geo.y(),
+                                type(w.parent()).__name__ if w.parent() is not None else "None",
+                            )
+                        )
+                    else:
+                        print(
+                            "{}    [{}] {} visible={} geo={}x{}+{}+{} parent={}".format(
+                                prefix,
+                                i,
+                                desc,
+                                w.isVisible(),
+                                geo.width(),
+                                geo.height(),
+                                geo.x(),
+                                geo.y(),
+                                type(w.parent()).__name__ if w.parent() is not None else "None",
+                            )
+                        )
+        except Exception as e:
+            print("{} JamoBlock debug_dump_current_template failed: {}".format(prefix, e))
+
+    def hasHeightForWidth(self) -> bool:
+        return True
+
+    def heightForWidth(self, w: int) -> int:
+        return w  # 1:1 aspect ratio
+
+    def sizeHint(self) -> QSize:
+        return QSize(400, 400)
+
+    def minimumSizeHint(self) -> QSize:
+        return QSize(200, 200)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        item = self._inner_layout.itemAt(0)
+        if item is None:
+            return
+        child = item.widget()
+        if child is None:
+            return
+        side = min(self.width(), self.height())
+        left = (self.width() - side) // 2
+        top = (self.height() - side) // 2
+        self._inner_layout.setContentsMargins(left, top, left, top)
+        child.setMinimumSize(side, side)
+        child.setMaximumSize(side, side)
+
+    def setContainer(self, container: Any) -> None:
+        if not hasattr(container, "attach"):
+            raise TypeError("container must provide an attach(...) method")
+        self._container = container
+
+    def container(self) -> Optional[Any]:
+        return self._container
+
+    def stacked(self) -> Optional[QStackedWidget]:
+        """Return the internal stackedTemplates widget from jamo.ui, if present."""
+        return self._stacked
+
+    def render_demo(self) -> None:
+        """Public demo renderer (kept for callers that expect render_demo())."""
+        self.render_demo_on_current_page()
+
+    def render_demo_on_current_page(self) -> None:
+        """Smoke-render demo glyphs into the current page's segment frames."""
+        try:
+            page = self._current_page()
+            stacked = self._stacked
+            if stacked is None:
+                print("[DEBUG] render_demo_on_current_page: stackedTemplates not found")
+                return
+
+            idx = int(stacked.currentIndex())
+            page_name = page.objectName() if page is not None else "None"
+            print("[DEBUG] render_demo_on_current_page: index={} page={}".format(idx, page_name))
+            # If this line never appears, the demo renderer is not being invoked.
+            print("[DEBUG] render_demo_on_current_page: ENTER")
+
+            # Resolve segment frames from the CURRENT page only.
+            top_frame = self._find_segment_frame_on_current_page("Top")
+            mid_frame = self._find_segment_frame_on_current_page("Middle")
+            bot_frame = self._find_segment_frame_on_current_page("Bottom")
+
+            if top_frame is None or mid_frame is None or bot_frame is None:
+                print(
+                    "[DEBUG] render_demo_on_current_page: missing segment frame(s) top={} middle={} bottom={}".format(
+                        top_frame is not None, mid_frame is not None, bot_frame is not None
+                    )
+                )
+                self.debug_dump_current_template(prefix="[DEBUG]")
+                return
+
+            # [DEBUG] print which frames are being used (object names)
+            print(
+                "[DEBUG] render_demo_on_current_page: using frames top={} mid={} bot={}"
+                .format(top_frame.objectName(), mid_frame.objectName(), bot_frame.objectName())
+            )
+            # Clear existing widgets (layout items) safely.
+            for role, frame in (("Top", top_frame), ("Middle", mid_frame), ("Bottom", bot_frame)):
+                if frame.layout() is None:
+                    layout = QVBoxLayout(frame)
+                    layout.setContentsMargins(0, 0, 0, 0)
+                    layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                    frame.setLayout(layout)
+                    print(
+                        "[DEBUG] render_demo_on_current_page: created layout for role={} objName={}".format(
+                            role, frame.objectName()
+                        )
+                    )
+                else:
+                    print(
+                        "[DEBUG] render_demo_on_current_page: existing layout for role={} objName={} type={}".format(
+                            role, frame.objectName(), type(frame.layout()).__name__
+                        )
+                    )
+
+            for role, frame in (("Top", top_frame), ("Middle", mid_frame), ("Bottom", bot_frame)):
+                lay = frame.layout()
+                if lay is None:
+                    print(
+                        "[DEBUG] render_demo_on_current_page: ERROR layout is None after ensure for role={} objName={}".format(
+                            role, frame.objectName()
+                        )
+                    )
+                    continue
+
+                while lay.count():
+                    it = lay.takeAt(0)
+                    w = it.widget() if it is not None else None
+                    if w is not None:
+                        w.setParent(None)
+
+            # Add demo widgets via frame.layout().addWidget(...)
+            tl = top_frame.layout()
+            ml = mid_frame.layout()
+            bl = bot_frame.layout()
+
+            if tl is None or ml is None or bl is None:
+                print(
+                    "[DEBUG] render_demo_on_current_page: ERROR one or more layouts missing (tl={}, ml={}, bl={})".format(
+                        tl is not None, ml is not None, bl is not None
+                    )
+                )
+                self.debug_dump_current_template(prefix="[DEBUG]")
+                return
+
+            # --------------------------------------------------
+            # DEBUG SMOKE RENDER
+            # Use plain QLabel with loud styling so we can prove layout + painting
+            # works, independent of AutoFitLabel / palette issues.
+            # --------------------------------------------------
+            from PyQt6.QtGui import QFont
+
+            def _mk_label(text: str) -> QLabel:
+                lbl = QLabel(text)
+                lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                try:
+                    f = QFont()
+                    f.setPointSize(96)
+                    f.setBold(True)
+                    lbl.setFont(f)
+                except Exception:
+                    pass
+                # High-contrast debug styling
+                lbl.setStyleSheet("color: #ff0000; background: #ffffcc; border: 2px solid #ff0000;")
+                # Ensure it can expand inside the segment
+                sp = lbl.sizePolicy()
+                sp.setHorizontalPolicy(QSizePolicy.Policy.Expanding)
+                sp.setVerticalPolicy(QSizePolicy.Policy.Expanding)
+                lbl.setSizePolicy(sp)
+                return lbl
+
+            top_lbl = _mk_label("ㄱ")
+            mid_lbl = _mk_label("ㅏ")
+            bot_lbl = _mk_label("∅")
+
+            tl.addWidget(top_lbl)
+            ml.addWidget(mid_lbl)
+            bl.addWidget(bot_lbl)
+
+            # Force a layout pass and repaint, then dump what we actually attached.
+            self.updateGeometry()
+            self.update()
+            if page is not None:
+                page.update()
+            top_frame.update()
+            mid_frame.update()
+            bot_frame.update()
+            QTimer.singleShot(0, lambda: self.debug_dump_current_template(prefix="[DEBUG]"))
+        except Exception as e:
+            print("[DEBUG] render_demo_on_current_page failed: {}".format(e))

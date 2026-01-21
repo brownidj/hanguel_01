@@ -1,15 +1,22 @@
 # tests/conftest.py
-import os
 import importlib
-import pytest
+import os
 from typing import Optional
+
+import pytest
 from PyQt6.QtWidgets import QApplication
+
+from app.services.settings_store import SettingsStore
+
+# noinspection PyDuplicatedCode
+
 
 def _class_name(w) -> str:
     try:
         return w.metaObject().className()
     except Exception:
         return w.__class__.__name__
+
 
 def _extract_glyph_text(w) -> Optional[str]:
     for attr in ("char", "glyph", "text"):
@@ -35,11 +42,13 @@ def _extract_glyph_text(w) -> Optional[str]:
         pass
     return None
 
+
 @pytest.fixture(scope="module")
 def main_module():
     # Let tests request a “test mode” so the app exposes objectNames/roles
     os.environ.setdefault("HANGUL_TEST_MODE", "1")
     return importlib.import_module("main")
+
 
 @pytest.fixture
 def window(main_module, qtbot):
@@ -68,3 +77,13 @@ def window(main_module, qtbot):
     except Exception:
         pass
     return win
+
+
+@pytest.fixture
+def settings_store(tmp_path):
+    """
+    A SettingsStore pointing at a temp settings.yaml so tests never touch the real config.
+    """
+    settings_path = tmp_path / "settings.yaml"
+    settings_path.write_text("")  # ensure file exists
+    return SettingsStore(settings_path=str(settings_path))

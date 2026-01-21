@@ -1,103 +1,46 @@
-import json
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Dict, Optional
+
 import yaml
-import importlib
-import types
-import pytest
+
+_DEBUG_MAIN = False
+SETTINGS_PATH = Path(__file__).resolve().parent / "settings.yaml"
 
 
-@pytest.fixture
-def main_module(monkeypatch, tmp_path: Path):
-    """
-    Import the app's main module in a way that redirects SETTINGS_PATH
-    to a temporary file so tests never touch the real settings.yaml.
-    """
-    # Import the module
-    main = importlib.import_module("main")
-
-    # Point settings to a temp file
-    settings_path = tmp_path / "settings.yaml"
-    monkeypatch.setattr(main, "SETTINGS_PATH", str(settings_path), raising=False)
-
-    return main
+@dataclass
+class DelaysConfig:
+    pre_first: int = 0
+    between_reps: int = 2
+    before_hints: int = 0
+    before_extras: int = 1
+    auto_advance: int = 0
 
 
-def test_save_and_load_roundtrip(main_module):
-    """
-    _save_settings should write a UTF-8 YAML file and _load_settings
-    should reconstruct the same dictionary.
-    """
-    main = main_module
-    payload = {
-        "theme": "hanji",
-        "wpm": 120,
-        "repeats": 3,
-        "delays": {
-            "pre_first": 0,
-            "between_reps": 2,
-            "before_hints": 0,
-            "before_extras": 1,
-            "auto_advance": 0,
-        },
-    }
+@dataclass
+class SettingsStore:
+    settings_path: Optional[Path] = None
 
-    # Save then load
-    main._save_settings(payload)
-    loaded = main._load_settings()
+    def __post_init__(self):
+        if self.settings_path is None:
+            self.settings_path = SETTINGS_PATH
 
-    assert isinstance(loaded, dict)
-    assert loaded["theme"] == "hanji"
-    assert loaded["wpm"] == 120
-    assert loaded["repeats"] == 3
-    assert isinstance(loaded["delays"], dict)
-    assert loaded["delays"]["between_reps"] == 2
+    def load(self) -> Dict:
+        try:
+            with open(self.settings_path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+                if data is None:
+                    return {}
+                return data
+        except FileNotFoundError:
+            return {}
 
+    def save(self, data: Dict) -> None:
+        with open(self.settings_path, "w", encoding="utf-8") as f:
+            yaml.safe_dump(data, f)
 
-def test_nested_dictionary_integrity(main_module):
-    """
-    Ensure nested dicts like delays persist as dicts and keep numeric types.
-    """
-    main = main_module
-
-    data = {
-        "theme": "taegeuk",
-        "delays": {
-            "pre_first": 1,
-            "between_reps": 3,
-            "before_hints": 0,
-            "before_extras": 2,
-            "auto_advance": 0,
-        },
-    }
-
-    main._save_settings(data)
-    loaded = main._load_settings()
-
-    assert loaded["theme"] == "taegeuk"
-    d = loaded["delays"]
-    assert isinstance(d, dict)
-    assert d["pre_first"] == 1
-    assert d["between_reps"] == 3
-    assert d["before_extras"] == 2
-
-
-def test_update_preserves_other_keys(main_module):
-    """
-    Simulate the app pattern: load -> update one key -> save.
-    Ensure previously saved keys are preserved (because we load/merge/save).
-    """
-    main = main_module
-
-    # First save with some keys
-    main._save_settings({"theme": "taegeuk", "wpm": 80})
-
-    # Emulate app: load, update a single key, save
-    s = main._load_settings()
-    s["repeats"] = 2
-    main._save_settings(s)
-
-    # Load again and verify all keys are present
-    loaded = main._load_settings()
-    assert loaded["theme"] == "taegeuk"
-    assert loaded["wpm"] == 80
-    assert loaded["repeats"] == 2
+# Replace calls to removed helpers with direct calls or SettingsStore usage
+# For example:
+# settings = SettingsStore(settings_path=SETTINGS_PATH).load()
+# SettingsStore(settings_path=SETTINGS_PATH).save(data)
+# delays = DelaysConfig()

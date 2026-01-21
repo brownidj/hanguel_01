@@ -1,57 +1,62 @@
+# --------------------------------------------------
 # Python
+# --------------------------------------------------
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.pyc
 *.so
 
 # Virtual environments
 .venv/
 venv/
-env/
 ENV/
+env/
 
-# Build outputs
-build/
-dist/
-*.egg-info/
-*.egg
-
-# Logs and cache
-*.log
-*.tmp
-*.bak
-*.swp
-.DS_Store
-
+# --------------------------------------------------
 # PyCharm / JetBrains
+# --------------------------------------------------
 .idea/
 *.iml
 
-# Qt Designer / PyQt temp files
-*.ui~
-*.qrc~
-__pycache__/
-
-# User data and generated files
-data/*.yaml
-!data/consonants.yaml
-!data/vowels.yaml
-!data/syllables.yaml
-
-# OS
-Thumbs.db
+# --------------------------------------------------
+# macOS
+# --------------------------------------------------
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
 
-# Python package manager lock files
-poetry.lock
-Pipfile.lock
+# --------------------------------------------------
+# Qt / PySide / PyQt build artefacts
+# --------------------------------------------------
+*.qmlc
+*.jsc
+qrc_*.py
+ui_*.py
 
-# Test and coverage
-.coverage
-.tox/
+# --------------------------------------------------
+# Test artefacts / coverage
+# --------------------------------------------------
 .pytest_cache/
+.coverage
+htmlcov/
 
-# Jupyter / IPython
-.ipynb_checkpoints/
+# --------------------------------------------------
+# Runtime / logs
+# --------------------------------------------------
+*.log
+
+# --------------------------------------------------
+# Project-local scratch / reference files
+# (explicitly for refactor recovery, git archaeology)
+# --------------------------------------------------
+_ref_*.py
+_scratch_*.py
+
+# --------------------------------------------------
+# Editor backups
+# --------------------------------------------------
+*~
+*.swp
+*.bak

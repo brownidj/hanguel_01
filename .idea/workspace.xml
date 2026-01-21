@@ -106,7 +106,7 @@
       <recent name="$PROJECT_DIR$/assets/audio" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python tests.Python tests in tests">
     <configuration name="create_syllables" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Hangul_01" />
       <option name="ENV_FILES" value="" />
@@ -217,8 +217,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python tests.Python tests in tests" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.generate_wav" />
         <item itemvalue="Python.sanity_tts_ko" />
         <item itemvalue="Python.create_syllables" />

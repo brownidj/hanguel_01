@@ -1,324 +1,197 @@
+"""hangul_01.playback_orchestrator
 
+Phase 4D — Test debt (formal deferrals)
+--------------------------------------
+This module is a UI-agnostic boundary responsible for playback timing/sequencing.
 
-"""Playback orchestration for Hangul_01.
+The test suite currently contains *intentional skips* that MUST remain visible and
+owned. Nothing in this file should silently depend on skipped behaviour.
 
-This module centralises the "play N times with delays" behaviour so UI code can
-stay thin and tests can exercise the logic without needing to run the full app.
+Deferred items (with explicit ownership and re-enable criteria):
 
-Design goals:
-- No hard dependency on a specific UI layout.
-- Orchestrate *when* to pronounce and when to enable/disable controls.
-- Be safe under tests (qtbot) and when called repeatedly.
+1) Glyph discovery tests (HANGUL_TEST_MODE exposure)
+   - Status: Deferred (intentional skip)
+   - Owner: Hangul_01 maintainer
+   - Rationale: Production rendering may be custom-painted; widget discovery is not
+     guaranteed unless a dedicated test exposure mode is enabled.
+   - Re-enable / completion criteria:
+     a) Provide a deterministic, widget-discoverable representation of glyphs when
+        `HANGUL_TEST_MODE=1` (or equivalent flag) is set.
+     b) Document the exact exposure contract (objectNames, hierarchy, lifetime).
+     c) Update tests to assert against that contract (no heuristics).
 
-The orchestrator is intentionally callback-driven:
-- It does not know about concrete widgets.
-- UI layer provides:
-  - `pronounce_fn(text)` to speak/pronounce the current glyph.
-  - `lock_controls_fn()` / `unlock_controls_fn()` to toggle UI inputs.
-  - `on_cycle_start(i, n)` / `on_cycle_end(i, n)` optional hooks.
+2) Cached TTS ensure/get-or-build tests
+   - Status: Deferred (intentional skip)
+   - Owner: Hangul_01 maintainer
+   - Rationale: The application does not yet expose a stable public API for ensuring
+     cached WAV assets exist (e.g., `ensure_cached_wav(...)` / `get_or_build(...)`).
+   - Re-enable / completion criteria:
+     a) Introduce a public, importable cache boundary with a minimal contract:
+        - deterministic filename mapping
+        - existence check
+        - build/synthesis hook
+        - error signalling
+     b) Cover cache hit/miss paths with unit tests.
 
+If these deferrals are no longer desired, remove the skips by implementing the
+criteria above and updating the associated tests.
 """
-
+# TODO (Phase 4D follow-up)
+# --------------------------------------
+# The following test deferrals are INTENTIONAL but MUST be revisited.
+# Do not allow these skips to become permanent.
+#
+# 1) Glyph discovery tests (HANGUL_TEST_MODE)
+#    - Implement deterministic glyph/widget exposure for tests.
+#    - Remove skip once exposure contract is defined and documented.
+#
+# 2) Cached TTS ensure/get-or-build tests
+#    - Introduce a public cache boundary (ensure/get_or_build).
+#    - Remove skip once cache hit/miss behaviour is fully testable.
+#
+# Owner: Hangul_01 maintainer
+# Tracking: Phase 4D
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Optional
 
-from PyQt6.QtCore import QObject, QTimer
-
-
-PronounceFn = Callable[[str], None]
-VoidFn = Callable[[], None]
-CycleHook = Callable[[int, int], None]
-
-
-# --- Backward-compatible helper for UI code ---
-def set_controls_for_repeats_locked(*args, **kwargs) -> None:
-    """Backward-compatible helper used by older UI code.
-
-    Purpose:
-        Toggle UI controls only when repeats > 1.
-
-    Supported call patterns (best-effort):
-        - set_controls_for_repeats_locked(locked: bool, repeats: int, lock_fn: Callable, unlock_fn: Callable)
-        - set_controls_for_repeats_locked(repeats: int, locked: bool, lock_fn: Callable, unlock_fn: Callable)
-        - set_controls_for_repeats_locked(locked=..., repeats=..., lock_controls_fn=..., unlock_controls_fn=...)
-
-    If repeats <= 1, this is a no-op except that an explicit unlock request will
-    attempt to call the unlock callback.
-    """
-
-    # --- Extract kwargs first (preferred) ---
-    locked_kw = kwargs.get("locked", None)
-    repeats_kw = kwargs.get("repeats", None)
-    lock_fn_kw = kwargs.get("lock_controls_fn", None) or kwargs.get("lock_fn", None)
-    unlock_fn_kw = kwargs.get("unlock_controls_fn", None) or kwargs.get("unlock_fn", None)
-
-    locked: Optional[bool] = bool(locked_kw) if isinstance(locked_kw, bool) else None
-    repeats: Optional[int] = int(repeats_kw) if isinstance(repeats_kw, int) else None
-
-    lock_fn: Optional[VoidFn] = lock_fn_kw if callable(lock_fn_kw) else None
-    unlock_fn: Optional[VoidFn] = unlock_fn_kw if callable(unlock_fn_kw) else None
-
-    # --- Best-effort positional parsing ---
-    pos = list(args)
-
-    # Find the first bool and first int among args (order-insensitive)
-    if locked is None:
-        for v in pos:
-            if isinstance(v, bool):
-                locked = bool(v)
-                break
-
-    if repeats is None:
-        for v in pos:
-            if isinstance(v, int) and not isinstance(v, bool):
-                repeats = int(v)
-                break
-
-    # Collect callables from args (ignore non-callables)
-    callables = [v for v in pos if callable(v)]
-    if lock_fn is None and len(callables) >= 1:
-        lock_fn = callables[0]
-    if unlock_fn is None and len(callables) >= 2:
-        unlock_fn = callables[1]
-
-    # Sensible defaults
-    if repeats is None:
-        repeats = 1
-    if locked is None:
-        locked = True
-
-    # Only lock controls for repeats > 1.
-    if int(repeats) > 1:
-        if bool(locked):
-            try:
-                if lock_fn is not None:
-                    lock_fn()
-            except Exception:
-                pass
-        else:
-            try:
-                if unlock_fn is not None:
-                    unlock_fn()
-            except Exception:
-                pass
-    else:
-        # For repeats <= 1 we normally do nothing, but an explicit unlock request
-        # should be honoured.
-        if not bool(locked):
-            try:
-                if unlock_fn is not None:
-                    unlock_fn()
-            except Exception:
-                pass
-
-
-@dataclass(frozen=True)
-class PlaybackConfig:
-    """Configuration for a playback cycle."""
-
-    repeats: int = 1
-    info_delay_ms: int = 0
-    writing_delay_ms: int = 0
-
-    def normalised(self) -> "PlaybackConfig":
-        r = int(self.repeats)
-        if r < 1:
-            r = 1
-
-        info = int(self.info_delay_ms)
-        if info < 0:
-            info = 0
-
-        writing = int(self.writing_delay_ms)
-        if writing < 0:
-            writing = 0
-
-        return PlaybackConfig(repeats=r, info_delay_ms=info, writing_delay_ms=writing)
+from PyQt6.QtCore import QObject, QTimer, pyqtSignal
 
 
 class PlaybackOrchestrator(QObject):
-    """Orchestrates timed repeated pronunciations of a glyph.
+    """
+    Centralised controller for playback timing and sequencing.
 
-    Typical flow:
-        orchestrator.update_config(repeats, info_delay, writing_delay)
-        orchestrator.start(glyph)
+    Responsibilities:
+    - Own all QTimers
+    - Enforce repeat counts and delays
+    - Expose explicit lifecycle transitions
 
-    - If repeats <= 1, the orchestrator does *not* lock controls.
-    - If repeats > 1, it locks controls on start and unlocks after the final
-      cycle completes (or if stop() is called).
+    This class deliberately knows NOTHING about widgets.
 
-    The orchestrator is safe to re-start while already running: it will stop the
-    current schedule first.
+    Note: Some higher-level integration tests are intentionally deferred (Phase 4D).
+    See the module docstring for explicit ownership and completion criteria.
     """
 
-    def __init__(
-        self,
-        pronounce_fn: PronounceFn,
-        *,
-        lock_controls_fn: Optional[VoidFn] = None,
-        unlock_controls_fn: Optional[VoidFn] = None,
-        on_cycle_start: Optional[CycleHook] = None,
-        on_cycle_end: Optional[CycleHook] = None,
-        parent: Optional[QObject] = None,
-    ) -> None:
+    # ---- lifecycle signals ----
+    started = pyqtSignal()
+    stopped = pyqtSignal()
+    cycle_started = pyqtSignal(int)
+    cycle_finished = pyqtSignal(int)
+
+    def __init__(self, *, parent: Optional[QObject] = None) -> None:
         super().__init__(parent)
 
-        if not callable(pronounce_fn):
-            raise TypeError("pronounce_fn must be callable")
+        self._playing: bool = False
+        self._current_cycle: int = 0
+        self._repeats: int = 1
+        self._delay_pre_first: int = 0
+        self._delay_between_reps: int = 0
 
-        self._pronounce_fn: PronounceFn = pronounce_fn
-        self._lock_controls_fn: Optional[VoidFn] = lock_controls_fn
-        self._unlock_controls_fn: Optional[VoidFn] = unlock_controls_fn
-        self._on_cycle_start: Optional[CycleHook] = on_cycle_start
-        self._on_cycle_end: Optional[CycleHook] = on_cycle_end
-
-        self._config: PlaybackConfig = PlaybackConfig()
-        self._glyph: str = ""
-        self._running: bool = False
-        self._cycle_index: int = 0
-
-        self._timer: QTimer = QTimer(self)
+        # single internal timer
+        self._timer = QTimer(self)
         self._timer.setSingleShot(True)
-        self._timer.timeout.connect(self._advance)  # type: ignore
+        self._timer.timeout.connect(self._on_timeout)
 
-    # ----------------------------
+    # ------------------------------------------------------------
     # Public API
-    # ----------------------------
+    # ------------------------------------------------------------
 
-    def update_config(self, repeats: int, info_delay_ms: int, writing_delay_ms: int) -> None:
-        """Update playback configuration (values are clamped to safe ranges)."""
-        self._config = PlaybackConfig(
-            repeats=repeats,
-            info_delay_ms=info_delay_ms,
-            writing_delay_ms=writing_delay_ms,
-        ).normalised()
+    def play(self) -> None:
+        raise RuntimeError(
+            "play() is deprecated; use start(repeat_count=..., delay_pre_first=..., delay_between_reps=...)"
+        )
 
-    def config(self) -> PlaybackConfig:
-        return self._config
+    def start(
+        self,
+        *,
+        repeat_count: int,
+        delay_pre_first: int = 0,
+        delay_between_reps: int = 0,
+    ) -> None:
+        if self._playing:
+            raise RuntimeError("Playback already in progress")
 
-    def is_running(self) -> bool:
-        return bool(self._running)
+        if not isinstance(repeat_count, int) or repeat_count < 1:
+            raise ValueError("repeat_count must be an integer >= 1")
 
-    def start(self, glyph: str) -> None:
-        """Start playback for a glyph using the current config."""
-        if glyph is None:
-            glyph = ""
-        self.stop()
+        for name, value in {
+            "delay_pre_first": delay_pre_first,
+            "delay_between_reps": delay_between_reps,
+        }.items():
+            if not isinstance(value, int) or value < 0:
+                raise ValueError(f"{name} must be an integer >= 0")
 
-        self._glyph = str(glyph)
-        self._cycle_index = 0
-        self._running = True
+        self._repeats = repeat_count
+        self._delay_pre_first = delay_pre_first
+        self._delay_between_reps = delay_between_reps
 
-        # Lock controls only for multi-repeat playback.
-        if self._config.repeats > 1:
-            self._safe_call(self._lock_controls_fn)
+        self._playing = True
+        self._current_cycle = 0
+        self.started.emit()
 
-        # Kick off immediately (cycle 1). Any info delay is applied *after*
-        # the pronunciation (this matches typical UX: speak then show info).
-        self._advance()
+        if self._delay_pre_first > 0:
+            self._timer.start(self._delay_pre_first)
+        else:
+            self._begin_cycle()
 
     def stop(self) -> None:
-        """Stop any scheduled playback and unlock controls if needed."""
-        if self._timer.isActive():
-            try:
-                self._timer.stop()
-            except (RuntimeError, ValueError):
-                pass
-
-        was_running = self._running
-        was_repeating = self._config.repeats > 1
-
-        self._running = False
-        self._glyph = ""
-        self._cycle_index = 0
-
-        if was_running and was_repeating:
-            self._safe_call(self._unlock_controls_fn)
-
-    # ----------------------------
-    # Internal scheduling
-    # ----------------------------
-
-    def _advance(self) -> None:
-        if not self._running:
+        if not self._playing:
             return
 
-        n = int(self._config.repeats)
-        if n < 1:
-            n = 1
+        self._timer.stop()
+        self._playing = False
+        self._current_cycle = 0
+        self.stopped.emit()
 
-        i = int(self._cycle_index)
-        if i >= n:
-            # Done.
-            self._running = False
-            if n > 1:
-                self._safe_call(self._unlock_controls_fn)
+    def next(self) -> None:
+        """
+        Interrupt current playback and advance externally.
+        """
+        self.stop()
+
+    def prev(self) -> None:
+        """
+        Interrupt current playback and move backward externally.
+        """
+        self.stop()
+
+    def is_playing(self) -> bool:
+        return self._playing
+
+    # ------------------------------------------------------------
+    # Configuration
+    # ------------------------------------------------------------
+
+    # ------------------------------------------------------------
+    # Internal flow
+    # ------------------------------------------------------------
+
+    def _begin_cycle(self) -> None:
+        if not self._playing:
             return
 
-        # Cycle start hook (1-based index for readability)
-        self._safe_cycle_hook(self._on_cycle_start, i + 1, n)
+        self.cycle_started.emit(self._current_cycle)
 
-        # Pronounce
-        try:
-            self._pronounce_fn(self._glyph)
-        except (RuntimeError, ValueError, TypeError):
-            # Do not crash the UI/test runner; stop cleanly.
+        # In Phase 4 we complete the cycle immediately.
+        # Later phases will expand this with audio / hints / extras.
+        self._finish_cycle()
+
+    def _finish_cycle(self) -> None:
+        if not self._playing:
+            return
+
+        self.cycle_finished.emit(self._current_cycle)
+        self._current_cycle += 1
+
+        if self._current_cycle >= self._repeats:
             self.stop()
             return
 
-        # Cycle end hook
-        self._safe_cycle_hook(self._on_cycle_end, i + 1, n)
+        if self._delay_between_reps > 0:
+            self._timer.start(self._delay_between_reps)
+        else:
+            self._begin_cycle()
 
-        self._cycle_index = i + 1
-
-        # Schedule next tick if there are more cycles.
-        if self._cycle_index < n:
-            delay = self._next_delay_ms()
-            try:
-                self._timer.start(int(delay))
-            except (RuntimeError, ValueError, TypeError, OverflowError):
-                # If timers fail (rare in tests), just stop cleanly.
-                self.stop()
-
-    def _next_delay_ms(self) -> int:
-        """Compute the delay before the next cycle.
-
-        We treat info_delay as the pause after pronunciation for showing info.
-        writing_delay is an additional pause to allow user tracing/writing.
-        """
-        info = int(self._config.info_delay_ms)
-        writing = int(self._config.writing_delay_ms)
-
-        if info < 0:
-            info = 0
-        if writing < 0:
-            writing = 0
-
-        return info + writing
-
-    @staticmethod
-    def _safe_call(fn: Optional[VoidFn]) -> None:
-        if fn is None:
-            return
-        try:
-            fn()
-        except Exception:
-            pass
-
-    @staticmethod
-    def _safe_cycle_hook(fn: Optional[CycleHook], i: int, n: int) -> None:
-        if fn is None:
-            return
-        try:
-            fn(int(i), int(n))
-        except Exception:
-            pass
-
-
-__all__ = [
-    "PlaybackConfig",
-    "PlaybackOrchestrator",
-    "set_controls_for_repeats_locked",
-]
+    def _on_timeout(self) -> None:
+        self._begin_cycle()

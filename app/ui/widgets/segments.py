@@ -167,7 +167,9 @@ class JamoBlock(QWidget):
 
         # Keep references for debugging / discovery.
         self._ui_root = block
-        self._stacked: Optional[QStackedWidget] = block.findChild(QStackedWidget, "stackedTemplates")
+        self._stacked = self.findChild(QStackedWidget, "stackedTemplates")
+        if self._stacked is None:
+            raise RuntimeError("stackedTemplates not found in JamoBlock UI")
 
         for frame in block.findChildren(QFrame):
             name = frame.objectName() or ""
@@ -269,7 +271,7 @@ class JamoBlock(QWidget):
             frame.setLayout(layout)
             return layout
         # Best-effort: cast to QVBoxLayout-like API.
-        return lay  # type: ignore[return-value]
+        return cast(QVBoxLayout, lay)  # type: ignore[return-value]
 
     def debug_dump_current_template(self, prefix: str = "[DEBUG]") -> None:
         """Print what is currently attached inside the active template page."""
@@ -398,9 +400,21 @@ class JamoBlock(QWidget):
     def container(self) -> Optional[Any]:
         return self._container
 
-    def stacked(self) -> Optional[QStackedWidget]:
-        """Return the internal stackedTemplates widget from jamo.ui, if present."""
+    @property
+    def stacked(self) -> QStackedWidget:
         return self._stacked
+
+    def next_template(self) -> None:
+        if self._stacked.count() > 0:
+            self._stacked.setCurrentIndex(
+                (self._stacked.currentIndex() + 1) % self._stacked.count()
+            )
+
+    def prev_template(self) -> None:
+        if self._stacked.count() > 0:
+            self._stacked.setCurrentIndex(
+                (self._stacked.currentIndex() - 1) % self._stacked.count()
+            )
 
     def render_demo(self) -> None:
         """Public demo renderer (kept for callers that expect render_demo())."""

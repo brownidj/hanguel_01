@@ -1,6 +1,5 @@
 import sys
-from enum import Enum, auto
-from typing import Optional, cast
+from typing import Optional
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -23,59 +22,8 @@ from app.domain.jamo_data import (
 from app.domain.syllables import select_syllable_for_block
 from app.ui.jamo.block_container import BlockContainer
 from app.ui.main_window import create_main_window
-# -------------------------------------------------
-#      TEST WINDOW FACTORY FOR PYTEST
-# -------------------------------------------------
-
-
-def create_main_window_for_tests(settings_path: str | None = None):
-    """
-    Create the main window without starting the Qt event loop.
-
-    This factory exists solely for pytest scaffolds that need a fully
-    constructed window without calling app.exec().
-
-    Returns:
-        (window, handles) as returned by app.ui.main_window.create_main_window
-    """
-    app = QApplication.instance()
-    if app is None:
-        app = QApplication(sys.argv)
-
-    # If the UI layer supports dependency injection for settings, prefer it.
-    # Otherwise, fall back to a best-effort environment variable hint.
-    kwargs: dict = {"expose_handles": True}
-    if settings_path:
-        kwargs["settings_path"] = settings_path
-        kwargs["settings_file"] = settings_path
-        kwargs["settings_yaml"] = settings_path
-        try:
-            import os
-            os.environ["HANGUL_SETTINGS_PATH"] = settings_path
-            os.environ["SETTINGS_PATH"] = settings_path
-            os.environ["SETTINGS_FILE"] = settings_path
-        except Exception:
-            pass
-
-    import inspect
-
-    try:
-        sig = inspect.signature(create_main_window)
-        accepted = set(sig.parameters.keys())
-        call_kwargs = {k: v for k, v in kwargs.items() if k in accepted}
-    except Exception:
-        call_kwargs = {"expose_handles": True}
-
-    result = create_main_window(**call_kwargs)
-    if isinstance(result, tuple) and len(result) == 2:
-        window, handles = result
-        return window, handles
-    return result, None
-from app.ui.widgets.segments import Characters
 
 # --- Slow mode globals (module scope) ---
-_slow_mode_enabled = False
-_previous_wpm: int | None = None
 _DEBUG_MAIN = False
 
 
@@ -89,80 +37,9 @@ _DEBUG_MAIN = False
 # -------------------------------------------------
 
 
-# Detect if a segment contains any real glyph presenters
-def _has_glyph_content(seg_w: Optional[QWidget]) -> bool:
-    if seg_w is None:
-        return False
-    # If any Characters presenter exists inside, we consider it non-empty
-    for w in seg_w.findChildren(QWidget):
-        if isinstance(w, Characters):
-            return True
-    return False
-
-
-def set_controls_for_repeats_locked(window: QWidget, locked: bool) -> None:
-    """Enable/disable main controls during multi-repeat playback.
-
-    Args:
-        window: The main window instance.
-        locked: If True, disable controls; if False, re-enable.
-    """
-    try:
-        is_enabled = not bool(locked)
-
-        # These objectNames are referenced by tests and by the UI.
-        names = [
-            "chipPronounce",
-            "chipNext",
-            "chipPrev",
-            "chipSlow",
-            "buttonNext",
-            "buttonPrev",
-            "comboMode",
-        ]
-
-        for name in names:
-            try:
-                w = cast(Optional[QWidget], window.findChild(QWidget, name))
-                if w is not None:
-                    w.setEnabled(is_enabled)
-            except Exception:
-                pass
-
-    except Exception:
-        # Never allow UI locking to crash tests or runtime.
-        pass
-
-
 # -------------------------------------------------
 #           END HELPERS
 # -------------------------------------------------
-
-
-# --- Playback chip state management ---
-class PlayChipState(Enum):
-    PLAY = auto()
-    REPEAT = auto()
-
-
-current_chip_state = PlayChipState.PLAY
-
-
-class BlockSegment:
-    """One of the three segments inside a block container.
-
-    This is a logical/structural class (no UI coupling). UI widgets that
-    render the segment can attach later via composition.
-    """
-
-    def __init__(self, role: SegmentRole):
-        if not isinstance(role, SegmentRole):
-            raise TypeError("role must be a SegmentRole")
-        self._role: SegmentRole = role
-
-    @property
-    def role(self) -> SegmentRole:
-        return self._role
 
 
 # -------------------------------------------------

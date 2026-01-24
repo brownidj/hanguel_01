@@ -8,13 +8,12 @@ This suite is designed to evolve:
   entering the Qt event loop.
 
 Recommended next step (to enable the UI tests below):
-- Expose a factory in main.py, e.g. `create_main_window()` that returns
-  the loaded QMainWindow (without calling app.exec()) and wires widgets.
+- Keep `create_main_window_for_tests(...)` available for UI tests without
+  entering the Qt event loop.
 """
 
 from __future__ import annotations
 
-import importlib
 from pathlib import Path
 from typing import cast
 
@@ -23,11 +22,8 @@ import yaml
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QSpinBox, QPushButton, QWidget
 from app.services.settings_store import SettingsStore
-
-
-@pytest.fixture
-def main_module():
-    return importlib.import_module("main")
+from app.ui.main_window import create_main_window_for_tests
+from app.controllers.playback_controls_controller import set_controls_for_repeats_locked
 
 
 @pytest.fixture
@@ -85,7 +81,6 @@ def test_spinboxes_restore_from_settings_qt(qtbot, monkeypatch, tmp_path: Path):
     - Build main window via factory (no exec loop)
     - Assert spinboxes show saved values
     """
-    import main as m
     settings_path = tmp_path / "settings.yaml"
 
     SettingsStore(settings_path=str(settings_path)).save({
@@ -100,7 +95,7 @@ def test_spinboxes_restore_from_settings_qt(qtbot, monkeypatch, tmp_path: Path):
     })
 
     # Factory should return a fully wired QMainWindow, not start app.exec()
-    win, _handles = m.create_main_window_for_tests(settings_path=str(settings_path))
+    win, _handles = create_main_window_for_tests(settings_path=str(settings_path))
     qtbot.addWidget(win)
 
     spin_repeats = cast(QSpinBox | None, win.findChild(QSpinBox, "spinRepeats"))
@@ -124,7 +119,7 @@ def test_orchestrator_uses_current_values(monkeypatch, qtbot, tmp_path: Path):
     SettingsStore(settings_path=str(settings_path)).save({})
 
     # Build window with factory (to be provided by app)
-    win, _handles = m.create_main_window_for_tests(settings_path=str(settings_path))
+    win, _handles = create_main_window_for_tests(settings_path=str(settings_path))
     qtbot.addWidget(win)
 
     # Locate controls
@@ -155,7 +150,7 @@ def test_orchestrator_uses_current_values(monkeypatch, qtbot, tmp_path: Path):
 
 
 @pytest.mark.ui
-def test_repeats_eq_1_leaves_controls_enabled(window, qtbot, main_module):
+def test_repeats_eq_1_leaves_controls_enabled(window, qtbot):
     """
     When Repeats == 1, pressing Play should NOT lock the navigation/controls.
     Behaviour should remain as before the locking feature was added.
@@ -190,7 +185,7 @@ def test_repeats_eq_1_leaves_controls_enabled(window, qtbot, main_module):
 
 
 @pytest.mark.ui
-def test_repeats_gt_1_locks_and_unlocks_controls(window, qtbot, main_module):
+def test_repeats_gt_1_locks_and_unlocks_controls(window, qtbot):
     """
     When Repeats > 1, pressing Play should temporarily disable the main controls
     until the repeat sequence has finished, after which they are re-enabled.
@@ -233,7 +228,7 @@ def test_repeats_gt_1_locks_and_unlocks_controls(window, qtbot, main_module):
     controls = (chip_pronounce, chip_next, chip_prev, chip_slow, btn_next, btn_prev, combo_mode)
 
     # Lock controls as if a multi-repeat sequence had started.
-    main_module.set_controls_for_repeats_locked(window, True)
+    set_controls_for_repeats_locked(window, True)
 
     # All relevant controls should now be disabled (where present).
     for w in controls:
@@ -241,9 +236,66 @@ def test_repeats_gt_1_locks_and_unlocks_controls(window, qtbot, main_module):
             assert not w.isEnabled(), f"{w.objectName() or type(w).__name__} should be disabled while repeating"
 
     # Unlock again to simulate the sequence finishing.
-    main_module.set_controls_for_repeats_locked(window, False)
+    set_controls_for_repeats_locked(window, False)
 
     # All relevant controls should now be enabled again.
     for w in controls:
         if w is not None:
             assert w.isEnabled(), f"{w.objectName() or type(w).__name__} should be re-enabled after repeats"
+
+
+# ------------------------------
+# PlaybackOrchestrator signal contract tests
+# ------------------------------
+
+import pytest
+from app.services.playback_orchestrator import PlaybackOrchestrator, Delays
+
+
+@pytest.mark.qt
+def test_orchestrator_started_fires_once(qtbot):
+    """started fires exactly once when start() is called once."""
+    orchestrator = PlaybackOrchestrator(parent=None)
+    started_count = []
+    orchestrator.started.connect(lambda: started_count.append(1))
+    orchestrator.start(glyph="가", repeat_count=1, delays=Delays(), auto_mode=False)
+    # Wait for started signal (should fire quickly)
+    qtbot.waitUntil(lambda: len(started_count) > 0, timeout=500)
+    assert len(started_count) == 1
+
+
+@pytest.mark.qt
+def test_orchestrator_cycle_signal_ordering(qtbot):
+    """cycle_started and cycle_finished fire in strict ordering for each repeat."""
+    orchestrator = PlaybackOrchestrator(parent=None)
+    events = []
+    orchestrator.cycle_started.connect(lambda n: events.append(("started", n)))
+    orchestrator.cycle_finished.connect(lambda n: events.append(("finished", n)))
+    # 2 cycles, no delays
+    orchestrator.start(glyph="가", repeat_count=2, delays=Delays(), auto_mode=False)
+    # Wait until both cycles finish (should be quick)
+    qtbot.waitUntil(lambda: events and len([e for e in events if e[0] == "finished"]) == 2, timeout=1000)
+    # Should be: started 1, finished 1, started 2, finished 2
+    expected = [("started", 1), ("finished", 1), ("started", 2), ("finished", 2)]
+    assert events == expected
+
+
+@pytest.mark.qt
+def test_orchestrator_stopped_fires_on_complete_and_stop(qtbot):
+    """stopped fires once on natural completion and once when stop() is called."""
+    orchestrator = PlaybackOrchestrator(parent=None)
+    stopped_count = []
+    orchestrator.stopped.connect(lambda: stopped_count.append(1))
+    # Test natural completion
+    orchestrator.start(glyph="가", repeat_count=1, delays=Delays(), auto_mode=False)
+    qtbot.waitUntil(lambda: len(stopped_count) > 0, timeout=1000)
+    assert len(stopped_count) == 1
+
+    # Test stop() mid-run
+    stopped_count.clear()
+    orchestrator.start(glyph="가", repeat_count=10, delays=Delays(), auto_mode=False)
+    # Stop before natural completion
+    qtbot.waitUntil(lambda: orchestrator._is_running, timeout=500)
+    orchestrator.stop()
+    qtbot.waitUntil(lambda: len(stopped_count) > 0, timeout=500)
+    assert len(stopped_count) == 1

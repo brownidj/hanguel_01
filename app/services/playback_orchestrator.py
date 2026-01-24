@@ -55,6 +55,15 @@ from __future__ import annotations
 
 from typing import Optional
 
+from dataclasses import dataclass
+
+
+# Public API: Delays
+@dataclass(frozen=True)
+class Delays:
+    pre_first: int = 0
+    between_reps: int = 0
+
 from PyQt6.QtCore import QObject, QTimer, pyqtSignal
 
 
@@ -71,6 +80,17 @@ class PlaybackOrchestrator(QObject):
 
     Note: Some higher-level integration tests are intentionally deferred (Phase 4D).
     See the module docstring for explicit ownership and completion criteria.
+
+    API Stability: Methods marked "Public API" are considered stable; all others are internal and may change without notice.
+    """
+
+    # ---- Public API (Stable) ----
+    """
+    Stable interface:
+      - start(...)
+      - stop()
+      - is_playing()
+      - lifecycle signals: started, stopped, cycle_started, cycle_finished
     """
 
     # ---- lifecycle signals ----
@@ -83,10 +103,12 @@ class PlaybackOrchestrator(QObject):
         super().__init__(parent)
 
         self._playing: bool = False
+        self._is_running: bool = False
         self._current_cycle: int = 0
         self._repeats: int = 1
         self._delay_pre_first: int = 0
         self._delay_between_reps: int = 0
+        self._pending_finish: bool = False
 
         # single internal timer
         self._timer = QTimer(self)
@@ -102,13 +124,17 @@ class PlaybackOrchestrator(QObject):
             "play() is deprecated; use start(repeat_count=..., delay_pre_first=..., delay_between_reps=...)"
         )
 
+    # Public API
     def start(
         self,
         *,
+        glyph: str | None = None,
         repeat_count: int,
-        delay_pre_first: int = 0,
-        delay_between_reps: int = 0,
+        delays: Delays = Delays(),
+        auto_mode: bool = False,
     ) -> None:
+        # glyph and auto_mode are accepted for API compatibility
+        # PlaybackOrchestrator is UI-agnostic and does not act on them yet
         if self._playing:
             raise RuntimeError("Playback already in progress")
 
@@ -116,32 +142,43 @@ class PlaybackOrchestrator(QObject):
             raise ValueError("repeat_count must be an integer >= 1")
 
         for name, value in {
-            "delay_pre_first": delay_pre_first,
-            "delay_between_reps": delay_between_reps,
+            "delays.pre_first": delays.pre_first,
+            "delays.between_reps": delays.between_reps,
         }.items():
             if not isinstance(value, int) or value < 0:
                 raise ValueError(f"{name} must be an integer >= 0")
 
         self._repeats = repeat_count
-        self._delay_pre_first = delay_pre_first
-        self._delay_between_reps = delay_between_reps
+        self._delay_pre_first = delays.pre_first
+        self._delay_between_reps = delays.between_reps
 
         self._playing = True
-        self._current_cycle = 0
+        self._is_running = True
+        self._current_cycle = 1
+        self._pending_finish = False
         self.started.emit()
 
-        if self._delay_pre_first > 0:
-            self._timer.start(self._delay_pre_first)
-        else:
-            self._begin_cycle()
+        # If there is no pre-first delay, emit the first cycle_started synchronously so
+        # test waitUntil callbacks never see an empty (non-bool) return.
+        if self._delay_pre_first == 0:
+            self.cycle_started.emit(self._current_cycle)
+            self._pending_finish = True
+            self._timer.start(0)
+            return
 
+        # Otherwise begin after the configured pre-first delay.
+        self._timer.start(self._delay_pre_first)
+
+    # Public API
     def stop(self) -> None:
         if not self._playing:
             return
 
         self._timer.stop()
+        self._pending_finish = False
         self._playing = False
-        self._current_cycle = 0
+        self._is_running = False
+        self._current_cycle = 1
         self.stopped.emit()
 
     def next(self) -> None:
@@ -156,6 +193,7 @@ class PlaybackOrchestrator(QObject):
         """
         self.stop()
 
+    # Public API
     def is_playing(self) -> bool:
         return self._playing
 
@@ -167,16 +205,17 @@ class PlaybackOrchestrator(QObject):
     # Internal flow
     # ------------------------------------------------------------
 
+    # Internal API (not for external use)
     def _begin_cycle(self) -> None:
         if not self._playing:
             return
 
         self.cycle_started.emit(self._current_cycle)
+        self._pending_finish = True
+        # Yield to the Qt event loop so observers/tests can see intermediate state.
+        self._timer.start(0)
 
-        # In Phase 4 we complete the cycle immediately.
-        # Later phases will expand this with audio / hints / extras.
-        self._finish_cycle()
-
+    # Internal API (not for external use)
     def _finish_cycle(self) -> None:
         if not self._playing:
             return
@@ -184,14 +223,20 @@ class PlaybackOrchestrator(QObject):
         self.cycle_finished.emit(self._current_cycle)
         self._current_cycle += 1
 
-        if self._current_cycle >= self._repeats:
+        if self._current_cycle > self._repeats:
             self.stop()
             return
 
-        if self._delay_between_reps > 0:
-            self._timer.start(self._delay_between_reps)
-        else:
-            self._begin_cycle()
+        self._timer.start(self._delay_between_reps)
 
+    # Internal API (not for external use)
     def _on_timeout(self) -> None:
+        if not self._playing:
+            return
+
+        if self._pending_finish:
+            self._pending_finish = False
+            self._finish_cycle()
+            return
+
         self._begin_cycle()

@@ -19,7 +19,7 @@ from app.domain.enums import (
 )
 from app.domain.hangul_compose import compose_cv
 from app.domain.syllables import select_syllable_for_block
-from app.ui.util.layout import (
+from app.ui.utils.layout import (
     _deep_clear_container,
     _ensure_empty_placeholder,
     _enforce_equal_segment_heights,
@@ -66,7 +66,7 @@ def _vowel_labels_for_block(block_type: BlockType) -> Tuple[QLabel, str]:
 
 
 class BlockContainer:
-    """Holds one block type (A–D) and exactly three BlockSegments.
+    """Holds one block type (A–D) and renders three segment frames.
 
     Invariant:
       - Must be constructed with a non-null BlockType.

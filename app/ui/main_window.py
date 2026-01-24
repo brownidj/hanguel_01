@@ -20,8 +20,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
+import os
+import sys
+import inspect
 from PyQt6 import uic
 from PyQt6.QtWidgets import (
+    QApplication,
     QWidget,
     QLabel,
 )
@@ -100,3 +104,45 @@ def create_main_window(*, expose_handles: bool = True, settings_path: str | None
             pass
 
     return window
+
+
+def create_main_window_for_tests(settings_path: str | None = None):
+    """
+    Create the main window without starting the Qt event loop.
+
+    This factory exists solely for pytest scaffolds that need a fully
+    constructed window without calling app.exec().
+
+    Returns:
+        (window, handles) as returned by create_main_window
+    """
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication(sys.argv)
+
+    # If the UI layer supports dependency injection for settings, prefer it.
+    # Otherwise, fall back to a best-effort environment variable hint.
+    kwargs: dict = {"expose_handles": True}
+    if settings_path:
+        kwargs["settings_path"] = settings_path
+        kwargs["settings_file"] = settings_path
+        kwargs["settings_yaml"] = settings_path
+        try:
+            os.environ["HANGUL_SETTINGS_PATH"] = settings_path
+            os.environ["SETTINGS_PATH"] = settings_path
+            os.environ["SETTINGS_FILE"] = settings_path
+        except Exception:
+            pass
+
+    try:
+        sig = inspect.signature(create_main_window)
+        accepted = set(sig.parameters.keys())
+        call_kwargs = {k: v for k, v in kwargs.items() if k in accepted}
+    except Exception:
+        call_kwargs = {"expose_handles": True}
+
+    result = create_main_window(**call_kwargs)
+    if isinstance(result, tuple) and len(result) == 2:
+        window, handles = result
+        return window, handles
+    return result, None

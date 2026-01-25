@@ -7,6 +7,9 @@ from typing import Any
 import yaml
 
 from app.domain.enums import DelayKey, DelaySeconds
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SettingsStore:
@@ -41,7 +44,8 @@ class SettingsStore:
             with p.open("r", encoding="utf-8") as f:
                 data = yaml.safe_load(f) or {}
                 return data if isinstance(data, dict) else {}
-        except ():
+        except (OSError, yaml.YAMLError, ValueError) as e:
+            logger.warning("Failed to load settings from %s: %s", self._path, e)
             return {}
 
     def save(self, data: dict[str, Any]) -> None:
@@ -52,7 +56,8 @@ class SettingsStore:
             with tmp.open("w", encoding="utf-8") as f:
                 yaml.safe_dump(data or {}, f, allow_unicode=True, sort_keys=True)
             os.replace(str(tmp), str(p))
-        except ():
+        except (OSError, yaml.YAMLError, ValueError) as e:
+            logger.warning("Failed to save settings to %s: %s", self._path, e)
             # Best-effort persistence; callers should not crash on save failures.
             pass
 

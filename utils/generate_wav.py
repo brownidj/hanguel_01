@@ -1,7 +1,9 @@
 import os
 import sys
+from pathlib import Path
 
-AUDIO_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "audio")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+AUDIO_DIR = str(PROJECT_ROOT / "assets" / "audio")
 
 DEFAULT_VOICE = "ko-KR-Wavenet-A"
 WPM_BUCKETS = [40, 80, 120, 160]
@@ -72,9 +74,9 @@ import yaml
 
 def print_glyphs_from_yaml():
     yaml_files = [
-        os.path.join("../data", "vowels.yaml"),
-        os.path.join("../data", "consonants.yaml"),
-        os.path.join("../data", "syllables.yaml"),
+        str(PROJECT_ROOT / "data" / "vowels.yaml"),
+        str(PROJECT_ROOT / "data" / "consonants.yaml"),
+        str(PROJECT_ROOT / "data" / "syllables.yaml"),
     ]
 
     for path in yaml_files:
@@ -99,10 +101,10 @@ def print_glyphs_from_yaml():
 
 def _yaml_files_for(flags):
     mapping = {
-        "vowels": os.path.join("../data", "vowels.yaml"),
-        "consonants": os.path.join("../data", "consonants.yaml"),
-        "syllables": os.path.join("../data", "syllables.yaml"),
-        "examples": os.path.join("../data", "examples.yaml"),
+        "vowels": str(PROJECT_ROOT / "data" / "vowels.yaml"),
+        "consonants": str(PROJECT_ROOT / "data" / "consonants.yaml"),
+        "syllables": str(PROJECT_ROOT / "data" / "syllables.yaml"),
+        "examples": str(PROJECT_ROOT / "data" / "examples.yaml"),
     }
     if not flags or "all" in flags:
         return list(mapping.values())

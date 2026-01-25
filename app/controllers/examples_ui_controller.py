@@ -8,6 +8,10 @@ from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QLabel, QPushButton, QWidget, QToolTip
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 from app.controllers.examples_selector import ExamplesSelector
 from app.controllers.examples_repository import ExampleItem
 from app.services.tts_pronouncer import play_wav
@@ -16,6 +20,10 @@ from app.services.tts_pronouncer import play_wav
 class ExamplesUiController:
     """Owns Examples panel UI wiring and updates."""
 
+    _HANGUL_PT = 36
+    _META_PT = 14
+    _HANGUL_WEIGHT = 900
+    _META_WEIGHT = 500
     def __init__(
         self,
         *,
@@ -46,9 +54,11 @@ class ExamplesUiController:
         if self.btn_hear is not None:
             self.btn_hear.clicked.connect(self._on_hear_clicked)
         try:
-            QToolTip.setShowDelay(300)
-        except Exception:
-            pass
+            setter = getattr(QToolTip, "setShowDelay", None)
+            if callable(setter):
+                setter(300)
+        except (AttributeError, TypeError, RuntimeError) as e:
+            logger.debug("Failed to configure tooltip delay: %s", e)
 
         self.update()
 
@@ -62,17 +72,27 @@ class ExamplesUiController:
             try:
                 glyph = item.hangul if item is not None else ""
                 print("[DEBUG] Example render: {}".format(glyph))
-            except Exception:
-                pass
+            except (AttributeError, TypeError):
+                logger.debug("Failed to read example glyph for debug logging")
         if self.label_hangul is not None:
             if item:
                 # Use rich text so only the Hangul line is bold.
                 hangul = self._highlight_syllable(item.hangul, item.starts_with_syllable)
                 text = (
-                    "<span style=\"font-size:36pt; font-weight:900;\">{}</span>"
-                    "<br><span style=\"font-size:14pt; font-weight:500;\">Pronunciation: {}</span>"
-                    "<br><span style=\"font-size:14pt; font-weight:500;\">Meaning: {}</span>"
-                ).format(hangul, self._escape_html(item.rr), self._escape_html(item.gloss_en))
+                    "<span style=\"font-size:{}pt; font-weight:{};\">{}</span>"
+                    "<br><span style=\"font-size:{}pt; font-weight:{};\">Pronunciation: {}</span>"
+                    "<br><span style=\"font-size:{}pt; font-weight:{};\">Meaning: {}</span>"
+                ).format(
+                    self._HANGUL_PT,
+                    self._HANGUL_WEIGHT,
+                    hangul,
+                    self._META_PT,
+                    self._META_WEIGHT,
+                    self._escape_html(item.rr),
+                    self._META_PT,
+                    self._META_WEIGHT,
+                    self._escape_html(item.gloss_en),
+                )
             else:
                 text = ""
             self.label_hangul.setText(text)
@@ -93,14 +113,19 @@ class ExamplesUiController:
         if self._get_wpm is not None:
             try:
                 wpm = int(self._get_wpm())
-            except Exception:
+            except (TypeError, ValueError):
+                logger.debug("Invalid WPM from settings; using default")
                 wpm = 120
         bucket = self._nearest_wpm_bucket(wpm)
         filename = f"{glyph}__ko-KR-Wavenet-A__{bucket}.wav"
         path = Path(__file__).resolve().parents[2] / "assets" / "audio" / filename
         if not path.exists():
+            logger.debug("Example audio missing: %s", path)
             return
-        play_wav(path)
+        try:
+            play_wav(path)
+        except (RuntimeError, OSError) as e:
+            logger.warning("Failed to play example audio %s: %s", path, e)
 
     @staticmethod
     def _nearest_wpm_bucket(wpm: int) -> int:
@@ -145,12 +170,14 @@ class ExamplesUiController:
             self.label_image.setText("No image yet")
             self.label_image.setPixmap(QPixmap())
             self.label_image.setToolTip(item.image_prompt or "")
+            logger.debug("Example image missing: %s", path)
             return
         pixmap = QPixmap(str(path))
         if pixmap.isNull():
             self.label_image.setText("No image yet")
             self.label_image.setPixmap(QPixmap())
             self.label_image.setToolTip(item.image_prompt or "")
+            logger.warning("Failed to load example image: %s", path)
             return
         target = self.label_image.size()
         if not target.isValid():

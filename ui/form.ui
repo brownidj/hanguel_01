@@ -30,12 +30,15 @@
                 #MainWindow[theme="hanji"] { background-color: #FEFCF8; }
                 #JamoBlock[theme="hanji"] { background-color: #F5EAD8; }
 
-                QLabel, QGroupBox, QRadioButton, QPushButton {
+                QLabel, QGroupBox, QRadioButton, QPushButton, QComboBox {
                 color: #000000;
                 }
                 QComboBox {
-                color: #000000;
                 background: #ffffff;
+                }
+                QComboBox QAbstractItemView {
+                background: #ffffff;
+                color: #000000;
                 }
                 QPushButton {
                 background: #f2f2f2;
@@ -48,6 +51,11 @@
                 }
                 QPushButton:pressed {
                 background: #dddddd;
+                }
+                QScrollArea#scrollRrHint,
+                QWidget#scrollRrHintContents,
+                QLabel#labelRRHint {
+                background: transparent;
                 }
 
             </string>
@@ -1235,9 +1243,6 @@
                         <property name="title">
                             <string>Pronunciation Hints and Examples</string>
                         </property>
-                        <property name="styleSheet">
-                            <string notr="true">color: #000000;</string>
-                        </property>
                         <layout class="QHBoxLayout" name="layoutHintsExamplesRow">
                             <property name="spacing">
                                 <number>12</number>
@@ -1246,9 +1251,6 @@
                                 <widget class="QGroupBox" name="groupRrInner">
                                     <property name="title">
                                         <string>Revised Romanization (RR)</string>
-                                    </property>
-                                    <property name="styleSheet">
-                                        <string notr="true">color: #000000;</string>
                                     </property>
                                     <layout class="QVBoxLayout" name="layoutRrPanel">
                                         <property name="alignment">
@@ -1287,9 +1289,6 @@
                                         </item>
                                         <item>
                                             <widget class="QScrollArea" name="scrollRrHint">
-                                                <property name="styleSheet">
-                                                    <string notr="true">background: transparent;</string>
-                                                </property>
                                                 <property name="minimumSize">
                                                     <size>
                                                         <width>0</width>
@@ -1330,9 +1329,6 @@
                                                         </property>
                                                         <item>
                                                             <widget class="QLabel" name="labelRRHint">
-                                                                <property name="styleSheet">
-                                                                    <string notr="true">background: transparent;</string>
-                                                                </property>
                                                                 <property name="text">
                                                                     <string>RR hint</string>
                                                                 </property>
@@ -1394,9 +1390,6 @@
                                 <widget class="QGroupBox" name="groupExamplesPanel">
                                     <property name="title">
                                         <string>Examples</string>
-                                    </property>
-                                    <property name="styleSheet">
-                                        <string notr="true">color: #000000;</string>
                                     </property>
                                     <layout class="QVBoxLayout" name="layoutExamplesPanel">
                                         <property name="spacing">

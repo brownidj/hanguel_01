@@ -97,13 +97,21 @@ def print_glyphs_from_yaml():
 
             extract_glyphs(data)
 
-def generate_all_assets(voice_name=None, wpm_list=None, force=False):
-    """Generate .wav files for all glyphs in vowels, consonants, and syllables YAML files."""
-    yaml_files = [
-        os.path.join("../data", "vowels.yaml"),
-        os.path.join("../data", "consonants.yaml"),
-        os.path.join("../data", "syllables.yaml"),
-    ]
+def _yaml_files_for(flags):
+    mapping = {
+        "vowels": os.path.join("../data", "vowels.yaml"),
+        "consonants": os.path.join("../data", "consonants.yaml"),
+        "syllables": os.path.join("../data", "syllables.yaml"),
+        "examples": os.path.join("../data", "examples.yaml"),
+    }
+    if not flags or "all" in flags:
+        return list(mapping.values())
+    return [mapping[k] for k in mapping if k in flags]
+
+
+def generate_all_assets(voice_name=None, wpm_list=None, force=False, kinds=None, limit=None, offset=0):
+    """Generate .wav files for selected YAML sources."""
+    yaml_files = _yaml_files_for(kinds)
 
     for path in yaml_files:
         if not os.path.exists(path):
@@ -112,6 +120,35 @@ def generate_all_assets(voice_name=None, wpm_list=None, force=False):
 
         with open(path, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f)
+
+            is_examples = os.path.basename(path) == "examples.yaml"
+            if is_examples:
+                items = data.get("examples") if isinstance(data, dict) else []
+                if not isinstance(items, list):
+                    items = []
+                glyphs = []
+                for item in items:
+                    if isinstance(item, dict):
+                        g = item.get("hangul")
+                        if isinstance(g, str) and g.strip():
+                            glyphs.append(g.strip())
+                if offset:
+                    glyphs = glyphs[int(offset):]
+                if limit is not None:
+                    glyphs = glyphs[: int(limit)]
+                if voice_name is None:
+                    vname = DEFAULT_VOICE
+                else:
+                    vname = voice_name
+                wlist = WPM_BUCKETS if wpm_list is None else list(wpm_list)
+                for g in glyphs:
+                    for wpm in wlist:
+                        rate = _wpm_to_rate(wpm)
+                        outfile = os.path.join(AUDIO_DIR, f"{g}__{vname}__{wpm}.wav")
+                        if not force and os.path.exists(outfile):
+                            continue
+                        synthesize_ko(g, outfile, vname, rate)
+                continue
 
             if voice_name is None:
                 vname = DEFAULT_VOICE
@@ -128,6 +165,18 @@ def generate_all_assets(voice_name=None, wpm_list=None, force=False):
                         for wpm in wlist:
                             rate = _wpm_to_rate(wpm)
                             outfile = os.path.join(AUDIO_DIR, f"{g}__{vname}__{wpm}.wav")
+                            if not force and os.path.exists(outfile):
+                                continue
+                            synthesize_ko(g, outfile, vname, rate)
+                    if "hangul" in obj and isinstance(obj["hangul"], str):
+                        g = obj["hangul"].strip()
+                        if not g:
+                            return
+                        for wpm in wlist:
+                            rate = _wpm_to_rate(wpm)
+                            outfile = os.path.join(AUDIO_DIR, f"{g}__{vname}__{wpm}.wav")
+                            if not force and os.path.exists(outfile):
+                                continue
                             synthesize_ko(g, outfile, vname, rate)
                     for v in obj.values():
                         extract_and_generate(v)
@@ -139,8 +188,11 @@ def generate_all_assets(voice_name=None, wpm_list=None, force=False):
 
 if __name__ == "__main__":
     # Usage:
-    #   python3 utils/generate_wav.py                -> generate all assets into assets/audio
-    #   python3 utils/generate_wav.py --force        -> regenerate all assets (ignore cache)
+    #   python3 utils/generate_wav.py                     -> generate all assets into assets/audio
+    #   python3 utils/generate_wav.py --vowels            -> only vowels
+    #   python3 utils/generate_wav.py --examples          -> only examples
+    #   python3 utils/generate_wav.py --all               -> explicit all
+    #   python3 utils/generate_wav.py --force             -> regenerate all assets (ignore cache)
     #   python3 utils/generate_wav.py --sample 가 out.wav ko-KR-Wavenet-A 1.0
     args = sys.argv[1:]
 
@@ -149,12 +201,40 @@ if __name__ == "__main__":
         force = True
         args.remove("--force")
 
+    kinds = []
+    for flag in ("--vowels", "--consonants", "--syllables", "--examples", "--all"):
+        if flag in args:
+            kinds.append(flag.lstrip("-"))
+            args.remove(flag)
+
     if len(args) > 0 and args[0] == "--sample":
         text = args[1] if len(args) > 1 else u"가"
         outfile = args[2] if len(args) > 2 else os.path.join(AUDIO_DIR, "sample_ko.wav")
         voice_name = args[3] if len(args) > 3 else None
         rate = float(args[4]) if len(args) > 4 else 1.0
-        synthesize_ko(text, outfile, voice_name, rate, force=force)
+        synthesize_ko(text, outfile, voice_name, rate)
     else:
-        # bulk generation for vowels, consonants, syllables
-        generate_all_assets(voice_name=None, wpm_list=WPM_BUCKETS)
+        limit = None
+        offset = 0
+        if "--limit" in args:
+            idx = args.index("--limit")
+            try:
+                limit = int(args[idx + 1])
+            except Exception:
+                limit = None
+            del args[idx:idx + 2]
+        if "--offset" in args:
+            idx = args.index("--offset")
+            try:
+                offset = int(args[idx + 1])
+            except Exception:
+                offset = 0
+            del args[idx:idx + 2]
+        generate_all_assets(
+            voice_name=None,
+            wpm_list=WPM_BUCKETS,
+            force=force,
+            kinds=kinds,
+            limit=limit,
+            offset=offset,
+        )

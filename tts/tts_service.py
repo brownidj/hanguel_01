@@ -119,3 +119,12 @@ class TTSService:
                 engine.runAndWait()
             except Exception:
                 print(f"[TTS] {self.platform}: unable to speak. Text was: {text}")
+
+    def set_rate_wpm(self, wpm: int) -> None:
+        try:
+            self.rate = int(wpm)
+        except Exception:
+            pass
+
+    def set_wpm(self, wpm: int) -> None:
+        self.set_rate_wpm(wpm)

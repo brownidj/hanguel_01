@@ -64,3 +64,6 @@ class SyllableNavigation:
 
     def current_pair(self) -> tuple[str, str]:
         return self.current_consonant, self.current_vowel
+
+    def current_index(self) -> int:
+        return int(self.index)

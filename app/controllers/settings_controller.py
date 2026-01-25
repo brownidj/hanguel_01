@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from PyQt6.QtWidgets import QSpinBox
+from PyQt6.QtWidgets import QSpinBox, QDoubleSpinBox
 
 from app.domain.enums import DelayKey, DelaySeconds, DelaysConfig
 from app.services.settings_store import SettingsStore
@@ -18,7 +18,7 @@ class SettingsController:
         self._spin_between_reps: Optional[QSpinBox] = None
         self._spin_before_hints: Optional[QSpinBox] = None
         self._spin_before_extras: Optional[QSpinBox] = None
-        self._spin_auto_advance: Optional[QSpinBox] = None
+        self._spin_auto_advance: Optional[QDoubleSpinBox] = None
         self._spin_repeats: Optional[QSpinBox] = None
 
     def bind_delay_spinboxes(
@@ -28,7 +28,7 @@ class SettingsController:
             spin_between_reps: Optional[QSpinBox],
             spin_before_hints: Optional[QSpinBox],
             spin_before_extras: Optional[QSpinBox],
-            spin_auto_advance: Optional[QSpinBox],
+            spin_auto_advance: Optional[QDoubleSpinBox],
     ) -> None:
         self._spin_pre_first = spin_pre_first
         self._spin_between_reps = spin_between_reps
@@ -80,7 +80,7 @@ class SettingsController:
                 pass
 
             def _mk_handler(k: DelayKey):
-                return lambda val: self._store.set_delay_seconds(k, int(val))
+                return lambda val: self._store.set_delay_seconds(k, int(float(val)))
 
             sb.valueChanged.connect(_mk_handler(key))
 
@@ -104,10 +104,10 @@ class SettingsController:
     def current_delay_seconds(self) -> DelaySeconds:
         stored = self._store.get_delay_seconds()
 
-        def _read(sb: Optional[QSpinBox], default: int) -> int:
+        def _read(sb: Optional[QSpinBox | QDoubleSpinBox], default: int) -> int:
             try:
                 if sb is not None:
-                    return int(sb.value())
+                    return int(float(sb.value()))
             except Exception:
                 pass
             return int(default)

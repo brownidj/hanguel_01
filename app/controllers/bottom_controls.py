@@ -28,25 +28,25 @@ class BottomControls:
             on_auto: Callable[[], None],
             on_slow: Callable[[], None],
             on_prev: Callable[[], None],
-            on_audio: Callable[[], None],
             on_play: Callable[[], None],
+            on_next: Callable[[], None] | None = None,
     ) -> None:
         mapping: dict[str, str] = {
-            "🚀": "btnAuto",
-            "🐢": "btnSlow",
-            "◀": "btnPrevBottom",
-            "🔊": "btnAudio",
-            # Tests expect this exact objectName:
-            "▶": "chipPronounce",
+            "🚀": "chipAuto",
+            "🐢": "chipSlow",
+            "◀": "chipPrev",
+            "🔊": "chipPronounce",
+            "▶": "chipNext",
         }
 
         handlers: dict[str, Callable[[], None]] = {
-            "btnAuto": on_auto,
-            "btnSlow": on_slow,
-            "btnPrevBottom": on_prev,
-            "btnAudio": on_audio,
+            "chipAuto": on_auto,
+            "chipSlow": on_slow,
+            "chipPrev": on_prev,
             "chipPronounce": on_play,
         }
+        if on_next is not None:
+            handlers["chipNext"] = on_next
 
         try:
             buttons = list(window.findChildren(QPushButton))

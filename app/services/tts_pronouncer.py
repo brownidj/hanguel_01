@@ -42,6 +42,7 @@ class TtsRequest:
     text: str
     language_code: str = "ko-KR"
     voice_name: str = "ko-KR-Standard-A"
+    speaking_rate: float | None = None
 
 
 # ----------------------------
@@ -95,6 +96,7 @@ def cached_filename(
     text: str,
     language_code: str = "ko-KR",
     voice_name: str = "ko-KR-Standard-A",
+    speaking_rate: float | None = None,
 ) -> str:
     """Return a stable cache filename for the given request.
 
@@ -106,7 +108,7 @@ def cached_filename(
     Where sha1 is computed over: "<lang>\n<voice>\n<text>" encoded as UTF-8.
     """
     # Avoid f-strings by user preference.
-    material = "{}\n{}\n{}".format(language_code, voice_name, text)
+    material = "{}\n{}\n{}\n{}".format(language_code, voice_name, speaking_rate or "", text)
     digest = hashlib.sha1(material.encode("utf-8")).hexdigest()
 
     # Make voice safe for filenames.
@@ -118,7 +120,12 @@ def cached_filename(
 
 def cached_path(req: TtsRequest) -> Path:
     """Return the full path to the cached WAV file for a request."""
-    return get_cache_dir() / cached_filename(req.text, req.language_code, req.voice_name)
+    return get_cache_dir() / cached_filename(
+        req.text,
+        req.language_code,
+        req.voice_name,
+        req.speaking_rate,
+    )
 
 
 # ----------------------------
@@ -152,9 +159,15 @@ def _google_cloud_synthesize_wav(req: TtsRequest) -> bytes:
     )
 
     # LINEAR16 is standard WAV PCM.
-    audio_config = texttospeech.AudioConfig(
-        audio_encoding=texttospeech.AudioEncoding.LINEAR16,
-    )
+    if req.speaking_rate is not None:
+        audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.LINEAR16,
+            speaking_rate=float(req.speaking_rate),
+        )
+    else:
+        audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.LINEAR16,
+        )
 
     response = client.synthesize_speech(
         input=synthesis_input,
@@ -183,6 +196,7 @@ def ensure_cached_wav(
     *,
     language_code: str = "ko-KR",
     voice_name: str = "ko-KR-Standard-A",
+    speaking_rate: float | None = None,
     synthesizer: Optional[Synthesizer] = None,
 ) -> Path:
     """Ensure a cached WAV exists for `text` and return its path.
@@ -194,7 +208,12 @@ def ensure_cached_wav(
 
     If `synthesizer` is None, `default_synthesizer()` will be used.
     """
-    req = TtsRequest(text=text, language_code=language_code, voice_name=voice_name)
+    req = TtsRequest(
+        text=text,
+        language_code=language_code,
+        voice_name=voice_name,
+        speaking_rate=speaking_rate,
+    )
     out_path = cached_path(req)
 
     if out_path.exists() and out_path.is_file() and out_path.stat().st_size > 0:
@@ -260,6 +279,7 @@ def pronounce(
     *,
     language_code: str = "ko-KR",
     voice_name: str = "ko-KR-Standard-A",
+    speaking_rate: float | None = None,
     synthesizer: Optional[Synthesizer] = None,
     play: bool = True,
 ) -> Path:
@@ -273,6 +293,7 @@ def pronounce(
         text,
         language_code=language_code,
         voice_name=voice_name,
+        speaking_rate=speaking_rate,
         synthesizer=synthesizer,
     )
     if play:

@@ -6,6 +6,8 @@ from PyQt6 import uic
 from PyQt6.QtCore import Qt, QTimer, QSize
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QFrame, QLabel, QSizePolicy
 
+from app.ui.fit_text import _fit_label_font_to_label_rect
+
 
 class JamoBlock(QWidget):
     """A container widget that enforces a 1:1 aspect ratio for the Hangul block.
@@ -17,6 +19,7 @@ class JamoBlock(QWidget):
         super().__init__(parent)
 
         self._test_mode = str(os.getenv("HANGUL_TEST_MODE", "")).strip().lower() in ("1", "true", "yes", "on")
+        self._debug_demo = str(os.getenv("HANGUL_DEBUG_DEMO", "")).strip().lower() in ("1", "true", "yes", "on")
 
         # Outer layout used to center the inner square block
         self._inner_layout = QVBoxLayout(self)
@@ -77,9 +80,8 @@ class JamoBlock(QWidget):
         # relying on external callers to invoke render_demo().
         # This runs after the widget is in a layout.
         # --------------------------------------------------
-        # Do not rely on deferred demo rendering for tests. Tests use the stable
-        # `_testExposure` labels which are inserted into layouts immediately.
-        if not self._test_mode:
+        # Demo rendering is only for explicit debug/test runs.
+        if self._test_mode or self._debug_demo:
             try:
                 QTimer.singleShot(0, self.render_demo_on_current_page)
             except Exception:
@@ -444,33 +446,22 @@ class JamoBlock(QWidget):
 
             # --------------------------------------------------
             # DEBUG SMOKE RENDER
-            # Use plain QLabel with loud styling so we can prove layout + painting
-            # works, independent of AutoFitLabel / palette issues.
+            # Use plain labels but fit text to the segment bounds.
             # --------------------------------------------------
-            from PyQt6.QtGui import QFont
 
-            def _mk_label(text: str) -> QLabel:
+            def _mk_label(text: str, target: QFrame) -> QLabel:
                 lbl = QLabel(text)
                 lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                try:
-                    f = QFont()
-                    f.setPointSize(96)
-                    f.setBold(True)
-                    lbl.setFont(f)
-                except Exception:
-                    pass
-                # High-contrast debug styling
-                lbl.setStyleSheet("color: #ff0000; background: #ffffcc; border: 2px solid #ff0000;")
-                # Ensure it can expand inside the segment
                 sp = lbl.sizePolicy()
                 sp.setHorizontalPolicy(QSizePolicy.Policy.Expanding)
                 sp.setVerticalPolicy(QSizePolicy.Policy.Expanding)
                 lbl.setSizePolicy(sp)
+                _fit_label_font_to_label_rect(lbl, target, min_pt=12, max_pt=120, padding_px=8)
                 return lbl
 
-            top_lbl = _mk_label("ㄱ")
-            mid_lbl = _mk_label("ㅏ")
-            bot_lbl = _mk_label("∅")
+            top_lbl = _mk_label("ㄱ", top_frame)
+            mid_lbl = _mk_label("ㅏ", mid_frame)
+            bot_lbl = _mk_label("∅", bot_frame)
 
             tl.addWidget(top_lbl)
             ml.addWidget(mid_lbl)

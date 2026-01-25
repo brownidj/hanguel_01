@@ -107,3 +107,59 @@ class SettingsStore:
             self.save(s)
         except Exception as e:
             print("[WARN] Failed to persist repeats:", e)
+
+    def get_wpm(self) -> int:
+        try:
+            s = self.load()
+            v = int(s.get("wpm", 120))
+            return max(40, min(160, v))
+        except Exception as e:
+            print("[WARN] Failed to get wpm:", e)
+            return 120
+
+    def set_wpm(self, value: int) -> None:
+        try:
+            s = self.load()
+            v = max(40, min(160, int(value)))
+            s["wpm"] = v
+            self.save(s)
+        except Exception as e:
+            print("[WARN] Failed to persist wpm:", e)
+
+    def get_mode(self) -> str | None:
+        try:
+            s = self.load()
+            mode = s.get("mode")
+            if isinstance(mode, str) and mode.strip():
+                return mode.strip()
+        except Exception:
+            pass
+        return None
+
+    def set_mode(self, mode: str) -> None:
+        try:
+            s = self.load()
+            value = (mode or "").strip()
+            if value:
+                s["mode"] = value
+                self.save(s)
+        except Exception:
+            pass
+
+    def get_rr_cues(self) -> bool | None:
+        try:
+            s = self.load()
+            val = s.get("rr_show_cues")
+            if isinstance(val, bool):
+                return val
+        except Exception:
+            pass
+        return None
+
+    def set_rr_cues(self, value: bool) -> None:
+        try:
+            s = self.load()
+            s["rr_show_cues"] = bool(value)
+            self.save(s)
+        except Exception:
+            pass

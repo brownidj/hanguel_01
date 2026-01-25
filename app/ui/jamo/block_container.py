@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional, List, Tuple
+from typing import Optional, List
 
-from PyQt6.QtCore import QSize, Qt, QTimer
+from PyQt6.QtCore import QSize, Qt
 # --- PyQt6 multimedia imports (for QSoundEffect) ---
 from PyQt6.QtWidgets import (
     QWidget,
@@ -23,13 +23,8 @@ from app.ui.utils.layout import (
     _deep_clear_container,
     _ensure_empty_placeholder,
     _enforce_equal_segment_heights,
-    _extract_title_and_glyph,
 )
-from app.ui.widgets.labels import (
-    _mk_title_label,
-    _make_labeled_column,
-    _make_labeled_column_custom,
-)
+from app.ui.widgets.labels import _mk_title_label
 from app.ui.widgets.segments import SegmentView, ConsonantView, VowelView
 
 # --- Segment label text (tooltips and titles) ---
@@ -45,24 +40,6 @@ SEG_TIPS = {
     "V": "Medial vowel.",
     "T": "Trailing consonant (final).",
 }
-
-
-def _vowel_labels_for_block(block_type: BlockType) -> Tuple[QLabel, str]:
-    """Return a title label + tooltip text for the vowel segment.
-
-    This logic previously lived in main.py. For now we keep it simple and stable:
-    - Always use a centered title label.
-    - Provide a consistent tooltip explaining the vowel role.
-
-    If we later want per-block wording (A/B/C/D), extend here.
-    """
-    try:
-        title_text = "V"
-        tip_text = SEG_TIPS.get("V", "Medial vowel.")
-        return _mk_title_label(title_text), tip_text
-    except Exception:
-        # Extremely defensive: ensure caller always receives a QLabel.
-        return QLabel("V"), "Medial vowel."
 
 
 class BlockContainer:
@@ -276,186 +253,123 @@ class BlockContainer:
         if bot_w is not None:
             _deep_clear_container(bot_w)
 
-        # TYPE A
-        if self._type == BlockType.A_RightBranch:
-            # Top: L (left) + V (right) with per-glyph subtitles
-            if top_w is not None:
-                cons = ConsonantView(top_w, cons_char, ConsonantPosition.Initial)
-                cons.setToolTip(SEG_TIPS["L"])  # Leading consonant
-                vow = VowelView(top_w, vowel_char)
-                vow.setToolTip(SEG_TIPS["V"])  # Medial vowel
-                colL = _make_labeled_column("L", cons, top_w)
-                v_title, v_tip = _vowel_labels_for_block(self._type)
-                try:
-                    v_title.setToolTip(v_tip)
-                except Exception:
-                    pass
-                colV = _make_labeled_column_custom(v_title, vow, parent=top_w)
-                _add_row(top_w, [colL, colV])
-
-                # Ensure the vowel isn't visually narrower than consonant or its title
-                def _enforce_a():
+        def _segment_layout(w: Optional[QWidget], title: str | None, tooltip: Optional[str] = None) -> Optional[QVBoxLayout]:
+            if w is None:
+                return None
+            layout = w.layout()
+            if layout is None:
+                layout = QVBoxLayout(w)
+            layout.setContentsMargins(4, 4, 4, 4)
+            layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            if title:
+                t = _mk_title_label(title)
+                if tooltip:
                     try:
-                        _, cons_lbl = _extract_title_and_glyph(colL)
-                        v_title_lbl, v_lbl = _extract_title_and_glyph(colV)
-                        cons_w = cons_lbl.width() if cons_lbl else 0
-                        v_title_w = v_title_lbl.sizeHint().width() if v_title_lbl else 0
-                        want = max(cons_w, v_title_w)
-                        if v_lbl:
-                            v_lbl.setMinimumWidth(want)
-                            v_lbl.update()
+                        t.setToolTip(tooltip)
                     except Exception:
                         pass
+                layout.addWidget(t)
+            return layout  # type: ignore[return-value]
 
-                QTimer.singleShot(0, _enforce_a)
+        # TYPE A
+        if self._type == BlockType.A_RightBranch:
+            # Top: L+V side by side
+            if top_w is not None:
+                _segment_layout(top_w, None)
+                cons = ConsonantView(top_w, cons_char, ConsonantPosition.Initial)
+                cons.setToolTip("Leading")
+                vow = VowelView(top_w, vowel_char)
+                vow.setToolTip("Vowel")
+                _add_row(top_w, [cons, vow])
             # Middle: empty (by design)
             # Bottom: empty (no T)
             if bot_w is not None:
-                bot_layout = bot_w.layout()
-                if bot_layout is None:
-                    bot_layout = QVBoxLayout(bot_w)
-                bot_layout.setContentsMargins(4, 4, 4, 4)
-                bot_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                t_title = _mk_title_label(SEG_TITLES["T"])
-                try:
-                    t_title.setToolTip(SEG_TIPS["T"])
-                except Exception:
-                    pass
-                bot_layout.addWidget(t_title)
+                _segment_layout(bot_w, SEG_TITLES["T"], SEG_TIPS["T"])
 
         # TYPE B
         elif self._type == BlockType.B_TopBranch:
-            # Top: V (with contextual subtitle); Middle: L (with subtitle)
+            # Top: V; Middle: L; Bottom: T
             if top_w is not None:
+                _segment_layout(top_w, None)
                 v_top = VowelView(top_w, vowel_char)
-                v_top.setToolTip(SEG_TIPS["V"])  # base tooltip
-                v_title, v_tip = _vowel_labels_for_block(self._type)
-                try:
-                    v_title.setToolTip(v_tip)
-                except Exception:
-                    pass
-                colV_top = _make_labeled_column_custom(v_title, v_top, parent=top_w)
+                v_top.setToolTip("Vowel")
                 top_layout = top_w.layout()
                 if top_layout is None:
                     top_layout = QVBoxLayout(top_w)
-                top_layout.addWidget(colV_top)
+                top_layout.addWidget(v_top)
 
             if mid_w is not None:
+                _segment_layout(mid_w, None)
                 c_mid = ConsonantView(mid_w, cons_char, ConsonantPosition.Initial)
-                c_mid.setToolTip(SEG_TIPS["L"])  # Leading consonant
-                colL_mid = _make_labeled_column("L", c_mid, mid_w)
+                c_mid.setToolTip("Leading")
                 mid_layout = mid_w.layout()
                 if mid_layout is None:
                     mid_layout = QVBoxLayout(mid_w)
-                mid_layout.addWidget(colL_mid)
-
-            # Ensure the vowel (top) isn't narrower than its own title
-            def _enforce_b():
-                try:
-                    v_title_lbl, v_glyph_lbl = _extract_title_and_glyph(colV_top)
-                    want = v_title_lbl.sizeHint().width() if v_title_lbl else 0
-                    if v_glyph_lbl:
-                        v_glyph_lbl.setMinimumWidth(want)
-                        v_glyph_lbl.update()
-                except Exception:
-                    pass
-
-            QTimer.singleShot(0, _enforce_b)
+                mid_layout.addWidget(c_mid)
 
             # Bottom: T subtitle only (no glyph)
             if bot_w is not None:
-                bot_layout = bot_w.layout()
-                if bot_layout is None:
-                    bot_layout = QVBoxLayout(bot_w)
-                bot_layout.setContentsMargins(4, 4, 4, 4)
-                bot_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                t_title = _mk_title_label(SEG_TITLES["T"])
-                try:
-                    t_title.setToolTip(SEG_TIPS["T"])
-                except Exception:
-                    pass
-                bot_layout.addWidget(t_title)
+                _segment_layout(bot_w, SEG_TITLES["T"], SEG_TIPS["T"])
 
         elif self._type == BlockType.C_BottomBranch:
-            # Top: L (with subtitle); Middle: V (with subtitle)
+            # Top: L; Middle: V; Bottom: T
             if top_w is not None:
+                _segment_layout(top_w, None)
                 c_top = ConsonantView(top_w, cons_char, ConsonantPosition.Initial)
-                c_top.setToolTip(SEG_TIPS["L"])  # Leading consonant
-                colL_top = _make_labeled_column("L", c_top, top_w)
+                c_top.setToolTip("Leading")
                 top_layout = top_w.layout()
                 if top_layout is None:
                     top_layout = QVBoxLayout(top_w)
-                top_layout.addWidget(colL_top)
+                top_layout.addWidget(c_top)
             if mid_w is not None:
+                _segment_layout(mid_w, None)
                 v_mid = VowelView(mid_w, vowel_char)
-                v_mid.setToolTip(SEG_TIPS["V"])
-                v_title, v_tip = _vowel_labels_for_block(self._type)
-                try:
-                    v_title.setToolTip(v_tip)
-                except Exception:
-                    pass
-                colV_mid = _make_labeled_column_custom(v_title, v_mid, parent=mid_w)
+                v_mid.setToolTip("Vowel")
                 mid_layout = mid_w.layout()
                 if mid_layout is None:
                     mid_layout = QVBoxLayout(mid_w)
-                mid_layout.addWidget(colV_mid)
+                mid_layout.addWidget(v_mid)
             # Bottom: T subtitle only (no glyph)
             if bot_w is not None:
-                bot_layout = bot_w.layout()
-                if bot_layout is None:
-                    bot_layout = QVBoxLayout(bot_w)
-                bot_layout.setContentsMargins(4, 4, 4, 4)
-                bot_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                t_title = _mk_title_label(SEG_TITLES["T"])
-                try:
-                    t_title.setToolTip(SEG_TIPS["T"])
-                except Exception:
-                    pass
-                bot_layout.addWidget(t_title)
+                _segment_layout(bot_w, SEG_TITLES["T"], SEG_TIPS["T"])
 
         elif self._type == BlockType.D_Horizontal:
-            # Top: L (with subtitle); Middle: V (with subtitle)
+            # Top: L; Middle: V; Bottom: T
             if top_w is not None:
+                _segment_layout(top_w, None)
                 c_top = ConsonantView(top_w, cons_char, ConsonantPosition.Initial)
-                c_top.setToolTip(SEG_TIPS["L"])  # Leading consonant
-                colL_top = _make_labeled_column("L", c_top, top_w)
+                c_top.setToolTip("Leading")
                 top_layout = top_w.layout()
                 if top_layout is None:
                     top_layout = QVBoxLayout(top_w)
-                top_layout.addWidget(colL_top)
+                top_layout.addWidget(c_top)
             if mid_w is not None:
+                _segment_layout(mid_w, None)
                 v_mid = VowelView(mid_w, vowel_char)
-                v_mid.setToolTip(SEG_TIPS["V"])
-                v_title, v_tip = _vowel_labels_for_block(self._type)
-                try:
-                    v_title.setToolTip(v_tip)
-                except Exception:
-                    pass
-                colV_mid = _make_labeled_column_custom(v_title, v_mid, parent=mid_w)
+                v_mid.setToolTip("Vowel")
                 mid_layout = mid_w.layout()
                 if mid_layout is None:
                     mid_layout = QVBoxLayout(mid_w)
-                mid_layout.addWidget(colV_mid)
+                mid_layout.addWidget(v_mid)
             # Bottom: T subtitle only (no glyph)
             if bot_w is not None:
-                bot_layout = bot_w.layout()
-                if bot_layout is None:
-                    bot_layout = QVBoxLayout(bot_w)
-                bot_layout.setContentsMargins(4, 4, 4, 4)
-                bot_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                t_title = _mk_title_label(SEG_TITLES["T"])
+                _segment_layout(bot_w, SEG_TITLES["T"], SEG_TIPS["T"])
+
+        def _ensure_placeholder_if_empty(w: Optional[QWidget]) -> None:
+            if w is None:
+                return
+            layout = w.layout()
+            if layout is None or layout.count() == 0:
+                ph = _ensure_empty_placeholder(w)
                 try:
-                    t_title.setToolTip(SEG_TIPS["T"])
+                    ph.setText("")
+                    ph.setVisible(False)
                 except Exception:
                     pass
-                bot_layout.addWidget(t_title)
 
-        if top_w is not None:
-            _ensure_empty_placeholder(top_w)
-        if mid_w is not None:
-            _ensure_empty_placeholder(mid_w)
-        if bot_w is not None:
-            _ensure_empty_placeholder(bot_w)
+        _ensure_placeholder_if_empty(top_w)
+        _ensure_placeholder_if_empty(mid_w)
+        _ensure_placeholder_if_empty(bot_w)
         _enforce_equal_segment_heights([w for w in (top_w, mid_w, bot_w) if w is not None])
         page.updateGeometry()
         page.update()
@@ -503,30 +417,55 @@ class BlockContainer:
         mid_w = role_to_widget.get(SegmentRole.Middle)
         bot_w = role_to_widget.get(SegmentRole.Bottom)
         # Clear any existing layouts/widgets
-        top_lay = _deep_clear_container(top_w)
+        _deep_clear_container(top_w)
         _deep_clear_container(mid_w)  # ensure any prior vowel is gone
-        bot_lay = _deep_clear_container(bot_w)
+        _deep_clear_container(bot_w)
+
+        def _segment_layout(w: Optional[QWidget], title: str | None, tooltip: Optional[str] = None) -> Optional[QVBoxLayout]:
+            if w is None:
+                return None
+            layout = w.layout()
+            if layout is None:
+                layout = QVBoxLayout(w)
+            layout.setContentsMargins(4, 4, 4, 4)
+            layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            if title:
+                t = _mk_title_label(title)
+                if tooltip:
+                    try:
+                        t.setToolTip(tooltip)
+                    except Exception:
+                        pass
+                layout.addWidget(t)
+            return layout  # type: ignore[return-value]
 
         # Add title + consonant glyph in top
+        top_lay = _segment_layout(top_w, None)
         if top_lay is not None:
             cons = ConsonantView(top_w, consonant, ConsonantPosition.Initial)
-            cons.setToolTip(SEG_TIPS["L"])  # Leading consonant
-            col = _make_labeled_column("L", cons, top_w)
-            top_lay.addWidget(col, 1)
-        # Bottom: T subtitle only (no glyph)
-        if bot_lay is not None:
-            t_title = _mk_title_label(SEG_TITLES["T"])
-            try:
-                t_title.setToolTip(SEG_TIPS["T"])
-            except Exception:
-                pass
-            bot_lay.addWidget(t_title)
-        if top_w is not None:
-            _ensure_empty_placeholder(top_w)
-        if mid_w is not None:
-            _ensure_empty_placeholder(mid_w)
-        if bot_w is not None:
-            _ensure_empty_placeholder(bot_w)
+            cons.setToolTip("Leading")  # Leading consonant
+            top_lay.addWidget(cons, 1)
+
+        # Middle: V title only (no glyph)
+        _segment_layout(mid_w, None)
+
+        # Bottom: T title only (no glyph)
+        _segment_layout(bot_w, SEG_TITLES["T"], SEG_TIPS["T"])
+        def _ensure_placeholder_if_empty(w: Optional[QWidget]) -> None:
+            if w is None:
+                return
+            layout = w.layout()
+            if layout is None or layout.count() == 0:
+                ph = _ensure_empty_placeholder(w)
+                try:
+                    ph.setText("")
+                    ph.setVisible(False)
+                except Exception:
+                    pass
+
+        _ensure_placeholder_if_empty(top_w)
+        _ensure_placeholder_if_empty(mid_w)
+        _ensure_placeholder_if_empty(bot_w)
         _enforce_equal_segment_heights([w for w in (top_w, mid_w, bot_w) if w is not None])
         page.updateGeometry()
         page.update()

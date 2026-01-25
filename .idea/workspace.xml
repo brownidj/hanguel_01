@@ -4,29 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f99d5883-1264-4767-9e65-2673746d4b79" name="Changes" comment="working_current_phase4">
-      <change afterPath="$PROJECT_DIR$/app/controllers/bottom_controls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/controllers/mode_controller.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/controllers/playback_controls_controller.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/controllers/study_item_repository.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/controllers/syllable_navigation.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/controllers/template_navigator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/ui/utils/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/ui/widgets/jamo_block.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/testing_deferred.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_study_item_repository.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/list_component_names.py" afterDir="false" />
+    <list default="true" id="f99d5883-1264-4767-9e65-2673746d4b79" name="Changes" comment="Continuing with the refactoring using Codex">
+      <change afterPath="$PROJECT_DIR$/app/controllers/playback_ui_controller.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/controllers/romanization_ui_controller.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/domain/romanization_rr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/block_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/block_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/bottom_controls.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/bottom_controls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/controllers/main_window_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/main_window_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/playback_orchestrator.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/playback_orchestrator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/settings_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/settings_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/syllable_navigation.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/syllable_navigation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/settings_store.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/settings_store.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/tts_pronouncer.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/tts_pronouncer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/ui/jamo/block_container.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/ui/jamo/block_container.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/ui/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/ui/main_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/ui/util/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/block_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/ui/util/layout.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/ui/utils/layout.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/ui/widgets/segments.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/ui/widgets/segments.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/ui/widgets/jamo_block.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/ui/widgets/jamo_block.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/consonants.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/data/consonants.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/vowels.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/data/vowels.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pytest.ini" beforeDir="false" afterPath="$PROJECT_DIR$/pytest.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/settings.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_main_window_wiring.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_main_window_wiring.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_repeats_and_delays.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_repeats_and_delays.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tts/tts_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tts/tts_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/form.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/form.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/generate_wav.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/generate_wav.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,10 +103,10 @@
 }]]></component>
   <component name="RecapSpentCounter">
     <option name="endsOfQuotaMs" value="1769742013280" />
-    <option name="spentUsd" value="0.0106225" />
+    <option name="spentUsd" value="0.1806833" />
   </component>
   <component name="RecapUselessUpdatesCounter">
-    <option name="suspendCountdown" value="6" />
+    <option name="suspendCountdown" value="0" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -264,7 +266,7 @@
       <workItem from="1765520013546" duration="30000" />
       <workItem from="1768795640822" duration="114476000" />
       <workItem from="1769216130722" duration="974000" />
-      <workItem from="1769217230586" duration="3485000" />
+      <workItem from="1769217230586" duration="44421000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -346,7 +348,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769116222247</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Continuing with the refactoring using Codex">
+      <option name="closed" value="true" />
+      <created>1769230536326</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1769230536326</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -361,14 +371,15 @@
     <MESSAGE value="&#9;•&#9;JamoBlock renders correctly&#10;&#9;•&#9;Segment frames are wired&#10;&#9;•&#9;show_pair() works&#10;&#9;•&#9;labelSyllableRight is populated (even if not yet visually correct)&#10;&#9;•&#9;No crashes on startup" />
     <MESSAGE value="&#9;•&#9;JamoBlock renders correctly&#10;&#9;•&#9;Segment frames are wired&#10;&#9;•&#9;show_pair() works&#10;&#9;•&#9;labelSyllableRight is populated (even if not yet visually correct)&#10;&#9;•&#9;No crashes on startup&#10;&#9;Added assets" />
     <MESSAGE value="working_current_phase4" />
-    <option name="LAST_COMMIT_MESSAGE" value="working_current_phase4" />
+    <MESSAGE value="Continuing with the refactoring using Codex" />
+    <option name="LAST_COMMIT_MESSAGE" value="Continuing with the refactoring using Codex" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Hangul_01$main.coverage" NAME="main Coverage Results" MODIFIED="1769230453531" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Hangul_01$main.coverage" NAME="main Coverage Results" MODIFIED="1769333841513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Hangul_01$generate_wav.coverage" NAME="generate_wav Coverage Results" MODIFIED="1762917523230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/Hangul_01$list_component_names.coverage" NAME="list_component_names Coverage Results" MODIFIED="1769126571780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/Hangul_01$create_syllables.coverage" NAME="create_syllables Coverage Results" MODIFIED="1762689925032" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
-    <SUITE FILE_PATH="coverage/Hangul_01$.coverage" NAME=" Coverage Results" MODIFIED="1769230440143" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/Hangul_01$.coverage" NAME=" Coverage Results" MODIFIED="1769321119618" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/Hangul_01$sanity_tts_ko.coverage" NAME="sanity_tts_ko Coverage Results" MODIFIED="1762907762959" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
   </component>
 </project>

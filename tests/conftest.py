@@ -1,10 +1,17 @@
 # tests/conftest.py
 import importlib
 import os
+import sys
+from pathlib import Path
 from typing import Optional
 
 import pytest
 from PyQt6.QtWidgets import QApplication
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    # Ensure local imports like "app" resolve when pytest is run via a venv entrypoint.
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from app.services.settings_store import SettingsStore
 

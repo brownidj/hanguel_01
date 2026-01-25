@@ -1,9 +1,11 @@
 import pytest
 from PyQt6.QtCore import Qt
 
-from PyQt6.QtWidgets import QLabel, QFrame, QStackedWidget, QPushButton
+from PyQt6.QtWidgets import QLabel, QFrame, QStackedWidget, QPushButton, QComboBox
 
 from app.ui.main_window import create_main_window
+from app.controllers.study_item_repository import StudyItemRepository
+from app.domain.hangul_compose import compose_cv
 
 
 @pytest.mark.qt
@@ -57,12 +59,8 @@ class TestMainWindowWiring:
         assert text, "labelSyllableRight text is empty"
         assert len(text) == 1, f"Expected single Hangul syllable, got '{text}'"
 
-    def test_next_prev_cycle_changes_block_type(self, qtbot):
-        """Verify that Next/Prev wiring changes the JamoBlock template page.
-
-        We deliberately avoid assuming a specific ownership model (window vs controller)
-        or a single objectName for the buttons.
-        """
+    def test_next_prev_advances_syllable(self, qtbot):
+        """Verify that Next/Prev advance the current item based on mode."""
 
         window = create_main_window(expose_handles=True)
         qtbot.addWidget(window)
@@ -70,10 +68,6 @@ class TestMainWindowWiring:
 
         controller = getattr(window, "_controller", None)
         assert controller is not None
-
-        jamo_block = window._jamo_block
-        stacked = jamo_block.findChild(QStackedWidget, "stackedTemplates")
-        assert stacked is not None
 
         def _resolve_button(attr_names: list[str], name_hints: list[str]) -> QPushButton | None:
             # 1) Prefer explicit controller handles if present.
@@ -109,10 +103,44 @@ class TestMainWindowWiring:
         assert next_btn is not None, "Unable to locate Next button (controller handle or window child)"
         assert prev_btn is not None, "Unable to locate Prev button (controller handle or window child)"
 
-        initial_index = stacked.currentIndex()
+        syll_label = window.findChild(QLabel, "labelSyllableRight")
+        assert syll_label is not None
+        initial_text = syll_label.text()
 
         qtbot.mouseClick(next_btn, Qt.MouseButton.LeftButton)
-        assert stacked.currentIndex() != initial_index
+        qtbot.waitUntil(lambda: syll_label.text() != initial_text, timeout=1000)
+        next_text = syll_label.text()
+        assert next_text != initial_text
 
         qtbot.mouseClick(prev_btn, Qt.MouseButton.LeftButton)
-        assert stacked.currentIndex() == initial_index
+        qtbot.waitUntil(lambda: syll_label.text() == initial_text, timeout=1000)
+
+    def test_mode_switch_changes_render(self, qtbot):
+        window = create_main_window(expose_handles=True)
+        qtbot.addWidget(window)
+        window.show()
+
+        combo = window.findChild(QComboBox, "comboMode")
+        syll_label = window.findChild(QLabel, "labelSyllableRight")
+        assert combo is not None
+        assert syll_label is not None
+
+        repo = StudyItemRepository()
+        vowels = repo.vowel_pairs()
+        consonants = repo.consonant_pairs()
+
+        vowel = vowels[0][1] if vowels else "ㅏ"
+        consonant = consonants[0][0] if consonants else "ㄱ"
+
+        v_idx = combo.findText("Vowels")
+        c_idx = combo.findText("Consonants")
+        assert v_idx >= 0
+        assert c_idx >= 0
+
+        combo.setCurrentIndex(v_idx)
+        qtbot.waitUntil(lambda: (syll_label.text() or "").strip() != "", timeout=1000)
+        assert syll_label.text() == compose_cv("ㅇ", vowel)
+
+        combo.setCurrentIndex(c_idx)
+        qtbot.waitUntil(lambda: (syll_label.text() or "").strip() != "", timeout=1000)
+        assert syll_label.text() == consonant

@@ -1,75 +1,36 @@
 from __future__ import annotations
 
-import logging
-from typing import Any, cast, TypeVar
-
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QLabel,
-    QFrame,
-    QLayout,
-    QPushButton,
-    QSpinBox,
-    QStackedWidget,
-    QWidget,
-    QComboBox,
-)
+from PyQt6.QtWidgets import QLabel, QPushButton, QStackedWidget, QWidget
 
 # from app.domain.hangul_compose import compose_cv
-from app.controllers.block_manager import BlockManager
 from app.controllers.bottom_controls import BottomControls
-from app.controllers.mode_controller import ModeController
+from app.controllers.debug_controller import DebugController
+from app.controllers.drawer_ui_controller import DrawerUiController
+from app.controllers.examples_repository import ExamplesRepository
+from app.controllers.examples_selector import ExamplesSelector
+from app.controllers.examples_ui_controller import ExamplesUiController
+from app.controllers.jamo_block_controller import JamoBlockController
+from app.controllers.consonant_sidebar_controller import ConsonantSidebarController
+from app.controllers.mode_persistence_controller import ModePersistenceController
+from app.controllers.mode_ui_controller import ModeUiController
+from app.controllers.navigation_controller import NavigationController
+from app.controllers.notes_ui_controller import NotesUiController
+from app.controllers.playback_adapter import PlaybackAdapter
+from app.controllers.playback_ui_controller import PlaybackUiController
+from app.controllers.pronunciation_controller import PronunciationController
+from app.controllers.romanization_ui_controller import RomanizationUiController
+from app.controllers.rr_cues_persistence_controller import RrCuesPersistenceController
+from app.controllers.settings_ui_controller import SettingsUiController
 from app.controllers.study_item_repository import StudyItemRepository
+from app.controllers.playback_controls_controller import set_controls_for_repeats_locked
 from app.controllers.syllable_navigation import SyllableNavigation
-from app.controllers.template_navigator import TemplateNavigator
-from app.ui.widgets.jamo_block import JamoBlock
+from app.controllers.syllable_index_ui_controller import SyllableIndexUiController
+from app.controllers.layout_stretch_controller import LayoutStretchController
+from app.domain.hangul_compose import compose_cv
+from app.services.tts_backend import HybridTTSBackend
+from app.ui.utils.qt_find import find_child
 
-T = TypeVar("T", bound=QWidget)
-
-logger = logging.getLogger(__name__)
-
-
-def create_main_window(*, expose_handles: bool = False, settings_path: str | None = None):
-    """Factory for tests: builds and wires the main window, returning the QWidget."""
-    # ... (omitted code for brevity)
-    # Assume window is constructed and wired up as 'window'
-    # (This is a placeholder; insert your actual window construction code here.)
-    window = ...  # your main window construction logic
-    # ... (other setup code)
-
-    # Ensure the initial demo render happens synchronously so tests that
-    # inspect the segment frames immediately after construction can see
-    # populated layouts (no deferred QTimer rendering).
-    try:
-        jamo_block = getattr(window, "_jamo_block", None)
-        if jamo_block is None:
-            jamo_block = getattr(window, "jamo_block", None)
-        if jamo_block is not None and hasattr(jamo_block, "render_demo_on_current_page"):
-            jamo_block.render_demo_on_current_page()
-    except (AttributeError, RuntimeError):
-        # Rendering is best-effort during construction; avoid breaking startup.
-        pass
-
-    return window
-
-
-
-def _require_child(parent: QWidget, cls: type[T], object_name: str) -> T:
-    """Find a named Qt child and raise a clear error if missing."""
-    w = parent.findChild(cls, object_name)
-    if w is None:
-        raise RuntimeError(f"{object_name} not found (expected {cls.__name__})")
-    return w
-
-
-def _find_child(parent: QWidget, cls: type[T], object_name: str) -> T | None:
-    """Typed wrapper around Qt's findChild() to keep IDE type inference precise."""
-    return cast(T | None, parent.findChild(cls, object_name))
-
-
-def _find_children(parent: QWidget, cls: type[T]) -> list[T]:
-    """Typed wrapper around Qt's findChildren() to keep IDE type inference precise."""
-    return cast(list[T], parent.findChildren(cls))
+_find_child = find_child
 
 
 
@@ -87,7 +48,8 @@ class MainWindowController:
 
         self._items_repo = StudyItemRepository()
 
-        self.jamo_block: JamoBlock | None = None
+        self._jamo_block_controller: JamoBlockController | None = None
+        self.jamo_block = None
         self.block_manager = None
 
         self.stacked_templates: QStackedWidget | None = None
@@ -96,240 +58,307 @@ class MainWindowController:
         # --- Study item navigation state (YAML-backed) ---
         # Backed by YAML data files in `data/`.
         # The active list is selected by the Mode combobox (Syllables / Vowels / Consonants).
-        self._mode_combo: QComboBox | None = None
-
         self._nav = SyllableNavigation(self._items_repo)
 
         # Load an initial mode list (best-effort) before first render.
-        self._nav.reload_for_mode("Syllables", reset_index=True)
-        self._template_nav: TemplateNavigator | None = None
-        self._mode_controller: ModeController | None = None
+        self._nav.reload_for_mode("Vowels", reset_index=True)
+        self._navigation: NavigationController | None = None
+        self._mode_ui: ModeUiController | None = None
+        self._pronouncer: PronunciationController | None = None
+        self._drawer_ui: DrawerUiController | None = None
+        self._settings_controller = None
+        self._settings_store = None
+        self._playback_ui: PlaybackUiController | None = None
+        self._playback_adapter: PlaybackAdapter | None = None
+        self._settings_ui: SettingsUiController | None = None
+        self._wpm_controller = None
+        self._debug_controller: DebugController | None = None
+        self._rr_ui: RomanizationUiController | None = None
+        self._mode_persistence: ModePersistenceController | None = None
+        self._rr_cues_persistence: RrCuesPersistenceController | None = None
+        self._notes_ui: NotesUiController | None = None
+        self._syllable_index_ui: SyllableIndexUiController | None = None
+        self._consonant_sidebar: ConsonantSidebarController | None = None
+        self._examples_repo: ExamplesRepository | None = None
+        self._examples_selector: ExamplesSelector | None = None
+        self._examples_ui: ExamplesUiController | None = None
 
         # Expose handles for tests that try controller attributes first
         self.next_button: QPushButton | None = None
         self.prev_button: QPushButton | None = None
 
+        self._init_pronouncer()
         self._wire_jamo_block()
+        self._debug_controller = DebugController(jamo_block=self.jamo_block)
+        self._debug_controller.dump_jamo_if_enabled()
         self._wire_controls()
-        if self.settings_path:
-            self._apply_persisted_settings()
+        self._wire_drawer()
 
-    def _reload_pairs_from_mode(self, *, reset_index: bool) -> None:
-        """Reload navigation pairs from YAML based on the mode combobox."""
-        mode_text = "Syllables"
-        if self._mode_combo is not None:
-            try:
-                mode_text = self._mode_combo.currentText() or mode_text
-            except (AttributeError, RuntimeError):
-                pass
+    def _init_pronouncer(self) -> None:
+        try:
+            self._pronouncer = PronunciationController(HybridTTSBackend())
+        except Exception:
+            self._pronouncer = None
 
-        self._nav.reload_for_mode(mode_text, reset_index=reset_index)
+        try:
+            if self._pronouncer is None:
+                self._playback_ui = None
+                return
+
+            def _tts_play(glyph: str, on_done) -> None:
+                self._pronouncer.pronounce_syllable(glyph, on_complete=on_done)
+
+            def _next_item() -> None:
+                self._go_next_syllable()
+
+            def _prev_item() -> None:
+                self._go_prev_syllable()
+
+            self._playback_adapter = PlaybackAdapter(
+                navigation=self._navigation,
+                nav_fallback=self._nav,
+                syllable_label=self.syllable_label,
+                settings=self._settings_controller,
+            )
+            self._playback_ui = PlaybackUiController(
+                window=self.window,
+                tts_play=_tts_play,
+                get_glyph=self._playback_adapter.current_glyph,
+                get_repeats=self._playback_adapter.current_repeats,
+                get_delays=self._playback_adapter.current_delays,
+                on_next=_next_item,
+                on_prev=_prev_item,
+            )
+        except Exception:
+            self._playback_ui = None
+
+    def _current_mode_text(self) -> str:
+        if self._mode_ui is None:
+            return "Syllables"
+        return self._mode_ui.current_text()
 
     def _wire_jamo_block(self) -> None:
-
-        jamo_block = JamoBlock()
-
-        frame = _require_child(self.window, QFrame, "frameJamoBorder")
-
-        layout = frame.layout()
-        if layout is None:
-            raise RuntimeError("frameJamoBorder has no layout")
-
-        layout = cast(QLayout, layout)
-        layout.addWidget(jamo_block)
-
-        self.jamo_block = jamo_block
-        setattr(self.window, "_jamo_block", jamo_block)
-
-        stacked = _require_child(jamo_block, QStackedWidget, "stackedTemplates")
-        self.stacked_templates = stacked
-        self._template_nav = TemplateNavigator(stacked)
-
-        self.block_manager = BlockManager()
-        setattr(self.window, "_block_manager", self.block_manager)
-
-        syll_label = self.window.findChild(QLabel, "labelSyllableRight")
-        self.syllable_label = syll_label
-        if syll_label is not None:
-            syll_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            syll_label.setText("")
-
+        self._jamo_block_controller = JamoBlockController(
+            window=self.window,
+            get_current_pair=self._nav.current_pair,
+        )
         consonant, vowel = self._nav.current_pair()
-        self.block_manager.show_pair(
-            stacked=stacked,
-            consonant=consonant,
-            vowel=vowel,
-            syll_label=syll_label,
-            type_label=None,
+        self._jamo_block_controller.wire(
+            initial_consonant=consonant,
+            initial_vowel=vowel,
         )
 
-    def _on_mode_changed(self, mode_text: str, stacked: QStackedWidget, syll_label: QLabel | None) -> None:
-        self._nav.reload_for_mode(mode_text, reset_index=True)
-        self._render_current_on_page(stacked, syll_label)
+        self.jamo_block = self._jamo_block_controller.jamo_block
+        self.stacked_templates = self._jamo_block_controller.stacked
+        self.block_manager = self._jamo_block_controller.block_manager
+        self.syllable_label = self._jamo_block_controller.syllable_label
+
+        if self.block_manager is None or self.stacked_templates is None:
+            return
+        self._navigation = NavigationController(
+            nav=self._nav,
+            block_manager=self.block_manager,
+            stacked=self.stacked_templates,
+            syllable_label=self.syllable_label,
+            get_mode_text=self._current_mode_text,
+            compose_cv=compose_cv,
+        )
+        self._navigation.render_current()
+        if self._playback_adapter is not None:
+            self._playback_adapter.set_navigation(self._navigation)
+            self._playback_adapter.set_syllable_label(self.syllable_label)
 
     def _wire_controls(self) -> None:
         jamo_block = self.jamo_block
         if jamo_block is None:
             return
 
-        stacked = self.stacked_templates
-        if stacked is None:
-            stacked = _find_child(jamo_block, QStackedWidget, "stackedTemplates")
-            if stacked is None:
-                return
-            self.stacked_templates = stacked
-
-        syll_label = self.syllable_label
-        if syll_label is None:
-            syll_label = _find_child(self.window, QLabel, "labelSyllableRight")
-            self.syllable_label = syll_label
-
         # --- Mode selector (Syllables / Vowels / Consonants) ---
-        mode_combo = (
-                _find_child(self.window, QComboBox, "comboMode")
-                or _find_child(self.window, QComboBox, "comboStudyMode")
-                or _find_child(self.window, QComboBox, "comboBoxMode")
-        )
-        self._mode_combo = mode_combo
-        if mode_combo is not None:
-            self._mode_controller = ModeController(
-                mode_combo,
-                lambda text: self._on_mode_changed(text, stacked, syll_label),
+        self._mode_ui = ModeUiController(window=self.window, navigation=self._navigation)
+        self._mode_ui.wire()
+        store = self._ensure_settings_store()
+        if self._mode_ui.combo is not None:
+            self._mode_persistence = ModePersistenceController(
+                combo=self._mode_ui.combo,
+                settings_store=store,
             )
-            self._mode_controller.wire()
+            self._mode_persistence.wire()
+        if self._navigation is not None:
+            self._navigation.on_mode_changed(self._mode_ui.current_text())
+
+        self._rr_ui = RomanizationUiController(
+            window=self.window,
+            get_current_pair=self._nav.current_pair,
+            get_mode_text=self._current_mode_text,
+            get_current_text=self._navigation.current_glyph if self._navigation is not None else (lambda: ""),
+            on_hear=self._on_listen_clicked,
+        )
+        self._rr_ui.wire()
+        if self._navigation is not None:
+            self._navigation.set_on_item_changed(self._rr_ui.update)
+        if self._rr_ui.radio_cues is not None:
+            self._rr_cues_persistence = RrCuesPersistenceController(
+                radio=self._rr_ui.radio_cues,
+                settings_store=store,
+            )
+            self._rr_cues_persistence.wire()
+
+        self._notes_ui = NotesUiController(
+            window=self.window,
+            get_mode_text=self._current_mode_text,
+            get_current_pair=self._nav.current_pair,
+        )
+        self._notes_ui.wire()
+        if self._navigation is not None:
+            self._navigation.add_on_item_changed(self._notes_ui.update)
+
+        self._consonant_sidebar = ConsonantSidebarController(
+            window=self.window,
+            get_mode_text=self._current_mode_text,
+            get_current_pair=self._nav.current_pair,
+            repo=self._items_repo,
+        )
+        self._consonant_sidebar.wire()
+        if self._navigation is not None:
+            self._navigation.add_on_item_changed(self._consonant_sidebar.update)
+
+        self._syllable_index_ui = SyllableIndexUiController(
+            window=self.window,
+            navigation=self._nav,
+            get_mode_text=self._current_mode_text,
+        )
+        self._syllable_index_ui.wire()
+        if self._navigation is not None:
+            self._navigation.add_on_item_changed(self._syllable_index_ui.update)
+
+        self._examples_repo = ExamplesRepository()
+        self._examples_selector = ExamplesSelector(
+            get_mode_text=self._current_mode_text,
+            get_current_pair=self._nav.current_pair,
+            get_current_index=self._nav.current_index,
+            repository=self._examples_repo,
+        )
+        self._examples_ui = ExamplesUiController(
+            window=self.window,
+            selector=self._examples_selector,
+            get_wpm=self._ensure_settings_store().get_wpm,
+        )
+        self._examples_ui.wire()
+        if self._navigation is not None:
+            self._navigation.add_on_item_changed(self._examples_ui.update)
+
+        LayoutStretchController(
+            window=self.window,
+            layout_name="layoutHintsExamplesRow",
+            stretches=(13, 7),
+        ).wire()
 
         # --- Top-level text buttons: advance syllable index ---
         syll_next_btn = _find_child(self.window, QPushButton, "buttonNext")
         syll_prev_btn = _find_child(self.window, QPushButton, "buttonPrev")
 
-        # --- Secondary nav buttons (if present): cycle template page ---
-        def _find_button_excluding(hints: list[str], exclude: set[QPushButton]) -> QPushButton | None:
-            for btn in _find_children(self.window, QPushButton):
-                if btn in exclude:
-                    continue
-                obj = (btn.objectName() or "").lower()
-                tip = (btn.toolTip() or "").lower()
-                if any(h in obj for h in hints) or any(h in tip for h in hints):
-                    return btn
-            return None
-
-        exclude: set[QPushButton] = set()
-        if syll_next_btn is not None:
-            exclude.add(syll_next_btn)
-        if syll_prev_btn is not None:
-            exclude.add(syll_prev_btn)
-
-        tmpl_next_btn = _find_child(self.window, QPushButton, "next_btn") or _find_button_excluding(["next"], exclude)
-        tmpl_prev_btn = _find_child(self.window, QPushButton, "prev_btn") or _find_button_excluding(["prev"], exclude)
-
-        # controller attributes for test discovery (retain existing semantics)
-        # - `next_button` / `prev_button` remain the *template* navigation buttons
-        #   (used by tests that expect block-type cycling).
-        self.next_button = tmpl_next_btn
-        self.prev_button = tmpl_prev_btn
+        # controller attributes for test discovery
+        self.next_button = syll_next_btn
+        self.prev_button = syll_prev_btn
 
         def _connect(btn: QPushButton | None, fn) -> None:
             if btn is not None:
                 btn.clicked.connect(fn)
 
         # Syllable navigation
-        _connect(syll_next_btn, lambda: self._go_next_syllable(stacked, syll_label))
-        _connect(syll_prev_btn, lambda: self._go_prev_syllable(stacked, syll_label))
-
-        # Template navigation
-        _connect(tmpl_next_btn, lambda: self._go_next_template(stacked, syll_label))
-        _connect(tmpl_prev_btn, lambda: self._go_prev_template(stacked, syll_label))
+        _connect(syll_next_btn, self._go_next_syllable)
+        _connect(syll_prev_btn, self._go_prev_syllable)
 
         BottomControls().wire(
             self.window,
-            on_auto=lambda: self._on_bottom_control("btnAuto"),
-            on_slow=lambda: self._on_bottom_control("btnSlow"),
-            on_prev=lambda: self._on_bottom_control("btnPrevBottom"),
-            on_audio=lambda: self._on_bottom_control("btnAudio"),
-            on_play=lambda: self._on_bottom_control("chipPronounce"),
+            on_auto=self._on_auto_clicked,
+            on_slow=self._on_slow_clicked,
+            on_prev=self._on_chip_prev,
+            on_play=self._on_listen_clicked,
+            on_next=self._on_chip_next,
         )
+        if self._playback_ui is not None:
+            self._playback_ui.init_chips()
+        # Ensure controls start enabled (some Qt stylesheets may retain disabled state).
+        set_controls_for_repeats_locked(self.window, False)
 
-    def _on_bottom_control(self, name: str) -> None:
-        """Phase 1 no-op handler for bottom-row controls.
+        self._wire_settings_controls()
 
-        This is intentionally non-functional for now: it provides a stable hook
-        and keeps the UI responsive via logging without changing app state.
-        """
+    def _on_listen_clicked(self) -> None:
+        if self._playback_ui is None:
+            return
+        self._playback_ui.on_listen_clicked()
+
+    def _on_chip_next(self) -> None:
+        if self._playback_ui is None:
+            return
+        self._playback_ui.on_chip_next()
+
+    def _on_chip_prev(self) -> None:
+        if self._playback_ui is None:
+            return
+        self._playback_ui.on_chip_prev()
+
+    def _on_auto_clicked(self) -> None:
+        if self._playback_ui is None:
+            return
+        self._playback_ui.on_auto_clicked()
+
+    def _on_slow_clicked(self) -> None:
+        if self._wpm_controller is None:
+            return
+        self._wpm_controller.on_slow_clicked()
+
+    def _wire_drawer(self) -> None:
         try:
-            logger.debug("Bottom control clicked: %s", name)
-        except ():
+            self._drawer_ui = DrawerUiController(window=self.window)
+            self._drawer_ui.wire()
+        except Exception:
             pass
 
-    def _render_current_on_page(self, stacked: QStackedWidget, syll_label: QLabel | None) -> None:
-        """Ensure the currently selected template page is populated for the current pair."""
-        if self.block_manager is None:
-            return
+    def _wire_settings_controls(self) -> None:
         try:
-            self.block_manager.show_pair(
-                stacked=stacked,
-                consonant=self._nav.current_consonant,
-                vowel=self._nav.current_vowel,
-                syll_label=syll_label,
-                type_label=None,
+            store = self._ensure_settings_store()
+            self._settings_ui = SettingsUiController(window=self.window, settings_store=store)
+            self._settings_ui.set_pronouncer(self._pronouncer)
+            self._settings_ui.wire()
+            if self.settings_path:
+                self._settings_ui.apply_persisted_settings()
+            self._settings_controller = self._settings_ui.settings_controller
+            self._wpm_controller = self._settings_ui.wpm_controller
+            if self._playback_adapter is not None:
+                self._playback_adapter.set_settings(self._settings_controller)
+        except Exception:
+            self._settings_controller = None
+            self._wpm_controller = None
+            self._settings_ui = None
+
+    def _ensure_settings_store(self):
+        if self._settings_store is None:
+            from app.services.settings_store import SettingsStore
+            self._settings_store = (
+                SettingsStore(settings_path=str(self.settings_path))
+                if self.settings_path
+                else SettingsStore()
             )
-        except (AttributeError, RuntimeError, TypeError):
-            # Rendering is best-effort; avoid breaking UI wiring.
+        return self._settings_store
+
+    def _go_next_syllable(self) -> None:
+        if self._navigation is None:
             return
+        self._navigation.go_next()
 
-    def _advance_syllable(self, delta: int, stacked: QStackedWidget, syll_label: QLabel | None) -> None:
-        """Advance the study-item index and re-render via the single authoritative path."""
-        mode_text = "Syllables"
-        if self._mode_combo is not None:
-            try:
-                mode_text = self._mode_combo.currentText() or mode_text
-            except (AttributeError, RuntimeError):
-                pass
-
-        self._nav.advance(int(delta), mode_text=mode_text)
-        self._render_current_on_page(stacked, syll_label)
-
-    def _go_next_syllable(self, stacked: QStackedWidget, syll_label: QLabel | None) -> None:
-        self._advance_syllable(+1, stacked, syll_label)
-
-    def _go_prev_syllable(self, stacked: QStackedWidget, syll_label: QLabel | None) -> None:
-        self._advance_syllable(-1, stacked, syll_label)
-
-    def _go_next_template(self, stacked: QStackedWidget, syll_label: QLabel | None) -> None:
-        """Cycle the template page (block type) and then re-render on that page."""
-        if self._template_nav is None:
+    def _go_prev_syllable(self) -> None:
+        if self._navigation is None:
             return
+        self._navigation.go_prev()
 
-        self._template_nav.next()
-        self._render_current_on_page(stacked, syll_label)
-
-    def _go_prev_template(self, stacked: QStackedWidget, syll_label: QLabel | None) -> None:
-        """Cycle the template page (block type) and then re-render on that page."""
-        if self._template_nav is None:
+    def _go_next_template(self) -> None:
+        if self._jamo_block_controller is None:
             return
+        self._jamo_block_controller.go_next_template()
 
-        self._template_nav.prev()
-        self._render_current_on_page(stacked, syll_label)
-
-    def _apply_persisted_settings(self) -> None:
-        from app.services.settings_store import SettingsStore
-
-        store = SettingsStore(settings_path=str(self.settings_path))
-        data = store.load() or {}
-
-        repeats = data.get("repeats")
-        delays = data.get("delays", {}) if isinstance(data.get("delays", {}), dict) else {}
-
-        def _set(names: list[str], value: Any) -> None:
-            if value is None:
-                return
-            for nm in names:
-                w = _find_child(self.window, QSpinBox, nm)
-                if w is not None:
-                    w.setValue(int(value))
-
-        _set(["spinRepeats"], repeats)
-        _set(["spinDelayPreFirst", "spinPreFirst"], delays.get("pre_first"))
-        _set(["spinDelayBetweenReps", "spinBetweenReps"], delays.get("between_reps"))
-        _set(["spinDelayBeforeHints", "spinBeforeHints"], delays.get("before_hints"))
-        _set(["spinDelayBeforeExtras", "spinBeforeExtras"], delays.get("before_extras"))
-        _set(["spinDelayAutoAdvance", "spinAutoAdvance"], delays.get("auto_advance"))
+    def _go_prev_template(self) -> None:
+        if self._jamo_block_controller is None:
+            return
+        self._jamo_block_controller.go_prev_template()

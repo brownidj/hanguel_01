@@ -33,10 +33,10 @@ class JamoBlockController:
     def wire(self, *, initial_consonant: str, initial_vowel: str) -> None:
         jamo_block = JamoBlock()
 
-        frame = require_child(self._window, QFrame, "frameJamoBorder")
+        frame = require_child(self._window, QFrame, "frameJamoInner")
         layout = frame.layout()
         if layout is None:
-            raise RuntimeError("frameJamoBorder has no layout")
+            raise RuntimeError("frameJamoInner has no layout")
 
         cast(QLayout, layout).addWidget(jamo_block)
 

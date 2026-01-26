@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional, Callable
+import re
 
 from PyQt6.QtWidgets import QLabel, QPushButton, QRadioButton, QWidget
 
@@ -89,14 +90,22 @@ class RomanizationUiController:
         blocks: list[str] = []
         if mode_text == "syllables":
             if consonant:
-                cons_hint = romanize_cv(consonant, "").hint
-                cons_block = self._format_rr_block(consonant_rr(consonant))
+                cons_rr = consonant_rr(consonant)
+                cons_hint = self._compact_with_best(romanize_cv(consonant, "").hint, cons_rr)
+                cons_block = self._format_rr_block(cons_rr)
                 blocks.append(self._format_section(cons_hint, cons_block))
             if vowel:
-                vowel_hint = romanize_cv("", vowel).hint
-                vowel_block = self._format_rr_block(vowel_rr(vowel))
+                vowel_rr_data = vowel_rr(vowel)
+                vowel_hint = self._compact_with_best(romanize_cv("", vowel).hint, vowel_rr_data)
+                vowel_block = self._format_rr_block(vowel_rr_data)
                 blocks.append(self._format_section(vowel_hint, vowel_block))
             return "<br><br>".join([b for b in blocks if b])
+
+        rr_data: dict[str, str] = {}
+        if mode_text == "vowels":
+            rr_data = vowel_rr(vowel)
+        elif mode_text == "consonants":
+            rr_data = consonant_rr(consonant)
 
         if mode_text != "vowels" and consonant:
             blocks.append(self._format_rr_block(consonant_rr(consonant)))
@@ -106,7 +115,7 @@ class RomanizationUiController:
         if not joined:
             return compact_hint
         html_blocks = self._to_html(joined)
-        compact_html = self._to_html(compact_hint)
+        compact_html = self._to_html(self._compact_with_best(compact_hint, rr_data))
         return f"<b>{compact_html}</b><br><br>{html_blocks}"
 
     @staticmethod
@@ -115,17 +124,11 @@ class RomanizationUiController:
             return ""
         lines: list[str] = []
         target = rr.get("target_sound", "").strip()
-        best = rr.get("best_approx", "").strip()
         alt = rr.get("alternative", "").strip()
-        recommended = rr.get("recommended", "").strip()
         if target:
             lines.append(f"Target sound: {target}")
-        if best:
-            lines.append(f"Best approximation: {best}")
         if alt:
             lines.append(f"Alternative (less good, but common): {alt}")
-        if recommended:
-            lines.append(f"Recommended: {recommended}")
         return "\n".join(lines)
 
     def _format_section(self, heading: str, block: str) -> str:
@@ -136,6 +139,15 @@ class RomanizationUiController:
         if heading_html:
             return f"{heading_html}<br>{block_html}"
         return block_html
+
+    @staticmethod
+    def _compact_with_best(compact_hint: str, rr: dict[str, str]) -> str:
+        if not compact_hint:
+            return compact_hint
+        best = rr.get("best_approx", "").strip()
+        if not best or "as in" not in compact_hint:
+            return compact_hint
+        return re.sub(r"as in\\s+[^,.]+", best, compact_hint, count=1)
 
     @staticmethod
     def _to_html(text: str) -> str:

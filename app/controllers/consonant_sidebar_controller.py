@@ -49,7 +49,10 @@ class ConsonantSidebarController:
             return
         mode = (self._get_mode_text() or "").strip().lower()
         if mode != "syllables":
-            self._container.setVisible(False)
+            self._container.setVisible(True)
+            for label in self._labels:
+                label.setText("")
+                label.setStyleSheet("color: transparent;")
             return
         self._container.setVisible(True)
         if not self._consonants:

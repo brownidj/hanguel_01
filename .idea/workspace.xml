@@ -4,13 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f99d5883-1264-4767-9e65-2673746d4b79" name="Changes" comment="Added assets">
+    <list default="true" id="f99d5883-1264-4767-9e65-2673746d4b79" name="Changes" comment="Almost feature complete">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/bottom_controls.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/bottom_controls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/consonant_sidebar_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/consonant_sidebar_controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/controllers/examples_ui_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/examples_ui_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/settings_store.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/settings_store.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/jamo_block_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/jamo_block_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/main_window_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/main_window_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/notes_ui_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/notes_ui_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/playback_ui_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/playback_ui_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/romanization_ui_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/romanization_ui_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/ui/widgets/jamo_block.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/ui/widgets/jamo_block.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/ui/widgets/segments.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/ui/widgets/segments.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/settings.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/settings.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_examples_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_examples_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/form.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/form.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/generate_wav.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/generate_wav.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/jamo.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/jamo.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +81,7 @@
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/david/PycharmProjects/Hangul_01/assets/images",
+    "last_opened_file_path": "/Users/david/PycharmProjects/Hangul_01/assets/audio",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -248,7 +257,7 @@
       <workItem from="1765520013546" duration="30000" />
       <workItem from="1768795640822" duration="114476000" />
       <workItem from="1769216130722" duration="974000" />
-      <workItem from="1769217230586" duration="47473000" />
+      <workItem from="1769217230586" duration="62681000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -354,7 +363,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769334135729</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Almost feature complete">
+      <option name="closed" value="true" />
+      <created>1769371719434</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1769371719434</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -372,14 +389,15 @@
     <MESSAGE value="Continuing with the refactoring using Codex" />
     <MESSAGE value="Progress update: UI restructure + RR/Examples work, persistence, audio&#10;•Split “Pronunciation Hints and Examples” into RR + Examples subpanels with 65/35 layout&#10;•Added RR cues toggle persistence + mode persistence; RR hints now use YAML rr blocks&#10;•Examples panel: image placement tweaks, rich text with highlighted syllable, hear button wired to example WAVs&#10;•Added RR/Examples styling fixes (colors, spacing, scrollable hints) and layout adjustments&#10;•Added tests for mode/rr cues persistence; extended wav generator for examples and per-type flags" />
     <MESSAGE value="Added assets" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added assets" />
+    <MESSAGE value="Almost feature complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="Almost feature complete" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Hangul_01$main.coverage" NAME="main Coverage Results" MODIFIED="1769371450132" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Hangul_01$main.coverage" NAME="main Coverage Results" MODIFIED="1769389603448" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Hangul_01$generate_wav.coverage" NAME="generate_wav Coverage Results" MODIFIED="1762917523230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/Hangul_01$list_component_names.coverage" NAME="list_component_names Coverage Results" MODIFIED="1769126571780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/Hangul_01$create_syllables.coverage" NAME="create_syllables Coverage Results" MODIFIED="1762689925032" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
-    <SUITE FILE_PATH="coverage/Hangul_01$.coverage" NAME=" Coverage Results" MODIFIED="1769334690656" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/Hangul_01$.coverage" NAME=" Coverage Results" MODIFIED="1769386449989" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/Hangul_01$sanity_tts_ko.coverage" NAME="sanity_tts_ko Coverage Results" MODIFIED="1762907762959" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
   </component>
 </project>

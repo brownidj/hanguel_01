@@ -15,20 +15,80 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QStackedWidget" name="stackedTemplates">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <widget class="QFrame" name="frameStackedBorder">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
-     <property name="currentIndex">
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
       <number>0</number>
      </property>
+     <property name="midLineWidth">
+      <number>0</number>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: none; background: #ffffff;</string>
+     </property>
+     <layout class="QVBoxLayout" name="layoutStackedBorder">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QStackedWidget" name="stackedTemplates">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="lineWidth">
+         <number>0</number>
+        </property>
+        <property name="midLineWidth">
+         <number>0</number>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: none;</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
 
      <!-- Right-branching vowels page -->
      <widget class="QWidget" name="typeA_RightBranch">
       <layout class="QGridLayout" name="gridRightBranch">
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>4</number>
+       </property>
+       <property name="bottomMargin">
+        <number>4</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
        <attribute name="rowstretch">
         <string>1,1,1</string>
        </attribute>
@@ -98,6 +158,21 @@
      <!-- Top-branching vowels page -->
      <widget class="QWidget" name="typeB_TopBranch">
       <layout class="QGridLayout" name="gridTopBranch">
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>4</number>
+       </property>
+       <property name="bottomMargin">
+        <number>4</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
        <attribute name="rowstretch">
         <string>1,1,1</string>
        </attribute>
@@ -167,6 +242,21 @@
      <!-- Bottom-branching vowels page -->
      <widget class="QWidget" name="typeC_BottomBranch">
       <layout class="QGridLayout" name="gridBottomBranch">
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>4</number>
+       </property>
+       <property name="bottomMargin">
+        <number>4</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
        <attribute name="rowstretch">
         <string>1,1,1</string>
        </attribute>
@@ -236,6 +326,21 @@
      <!-- Horizontal vowels page -->
      <widget class="QWidget" name="typeD_Horizontal">
       <layout class="QGridLayout" name="gridHorizontal">
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>4</number>
+       </property>
+       <property name="bottomMargin">
+        <number>4</number>
+       </property>
+       <property name="spacing">
+        <number>4</number>
+       </property>
        <attribute name="rowstretch">
         <string>1,1,1</string>
        </attribute>
@@ -302,6 +407,9 @@
       </layout>
      </widget>
 
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

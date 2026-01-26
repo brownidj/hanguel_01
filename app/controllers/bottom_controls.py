@@ -36,6 +36,7 @@ class BottomControls:
             "🐢": "chipSlow",
             "◀": "chipPrev",
             "🔊": "chipPronounce",
+            "Listen": "chipPronounce",
             "▶": "chipNext",
         }
 
@@ -59,10 +60,17 @@ class BottomControls:
             except (AttributeError, RuntimeError):
                 continue
 
-            if text not in mapping:
-                continue
+            try:
+                obj_name = (btn.objectName() or "").strip()
+            except (AttributeError, RuntimeError):
+                obj_name = ""
 
-            desired_name = mapping[text]
+            if obj_name in handlers or obj_name in mapping.values():
+                desired_name = obj_name
+            elif not obj_name and text in mapping:
+                desired_name = mapping[text]
+            else:
+                continue
 
             # Preserve a stable identity (useful if UI objectNames change later).
             try:

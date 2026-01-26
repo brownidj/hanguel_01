@@ -1,8 +1,8 @@
 delays:
   between_reps: 1
   pre_first: 0
-mode: Vowels
-repeats: 2
+mode: Consonants
+repeats: 1
 rr_show_cues: true
 theme: taegeuk
 wpm: 80

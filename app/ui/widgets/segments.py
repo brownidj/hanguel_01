@@ -71,15 +71,19 @@ class _QtABCMeta(ABCMeta, type(QWidget)):
 class Characters(QWidget, metaclass=_QtABCMeta):
     """Abstract base for glyph presenters (consonant/vowel)."""
 
+    DEFAULT_MIN_PT = 24
+    DEFAULT_MAX_PT = 128
+    DEFAULT_PADDING = 4
+
     def __init__(
             self,
             parent: Optional[QWidget] = None,
             grapheme: str = "",
             ipa: Optional[str] = None,
             *,
-            min_pt: int = 24,
-            max_pt: int = 128,
-            padding: int = 4,
+            min_pt: int = DEFAULT_MIN_PT,
+            max_pt: int = DEFAULT_MAX_PT,
+            padding: int = DEFAULT_PADDING,
     ) -> None:
         super().__init__(parent)
         self._grapheme = grapheme
@@ -126,7 +130,14 @@ class ConsonantView(Characters):
             position: Optional[ConsonantPosition] = None,
             ipa: Optional[str] = None,
     ):
-        super().__init__(parent, grapheme=grapheme, ipa=ipa, min_pt=24, max_pt=128, padding=4)
+        super().__init__(
+            parent,
+            grapheme=grapheme,
+            ipa=ipa,
+            min_pt=self.DEFAULT_MIN_PT,
+            max_pt=self.DEFAULT_MAX_PT,
+            padding=self.DEFAULT_PADDING,
+        )
         self._position = position
 
     def set_position(self, p: ConsonantPosition) -> None:
@@ -138,8 +149,14 @@ class ConsonantView(Characters):
 
 class VowelView(Characters):
     def __init__(self, parent: Optional[QWidget] = None, grapheme: str = "", ipa: Optional[str] = None):
-        super().__init__(parent, grapheme=grapheme, ipa=ipa, min_pt=24, max_pt=128, padding=4)
+        super().__init__(
+            parent,
+            grapheme=grapheme,
+            ipa=ipa,
+            min_pt=self.DEFAULT_MIN_PT,
+            max_pt=self.DEFAULT_MAX_PT,
+            padding=self.DEFAULT_PADDING,
+        )
 
     def kind(self) -> str:
         return "vowel"
-

@@ -119,8 +119,9 @@ class ExamplesUiController:
         bucket = self._nearest_wpm_bucket(wpm)
         filename = f"{glyph}__ko-KR-Wavenet-A__{bucket}.wav"
         path = Path(__file__).resolve().parents[2] / "assets" / "audio" / filename
+        print("[DEBUG] Example audio request: glyph={} wpm={} bucket={} file={}".format(glyph, wpm, bucket, path))
         if not path.exists():
-            logger.debug("Example audio missing: %s", path)
+            print("[DEBUG] Example audio missing: {}".format(path))
             return
         try:
             play_wav(path)

@@ -15,6 +15,8 @@ class JamoBlock(QWidget):
     This widget owns rendering and loads `jamo.ui` internally.
     """
 
+    _EXTRA_WIDTH = 50
+
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
 
@@ -301,13 +303,13 @@ class JamoBlock(QWidget):
         return True
 
     def heightForWidth(self, w: int) -> int:
-        return w  # 1:1 aspect ratio
+        return max(0, w - self._EXTRA_WIDTH)
 
     def sizeHint(self) -> QSize:
-        return QSize(400, 400)
+        return QSize(400 + self._EXTRA_WIDTH, 400)
 
     def minimumSizeHint(self) -> QSize:
-        return QSize(200, 200)
+        return QSize(200 + self._EXTRA_WIDTH, 200)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -317,12 +319,13 @@ class JamoBlock(QWidget):
         child = item.widget()
         if child is None:
             return
-        side = min(self.width(), self.height())
-        left = (self.width() - side) // 2
-        top = (self.height() - side) // 2
+        height = min(self.height(), max(0, self.width() - self._EXTRA_WIDTH))
+        width = height + self._EXTRA_WIDTH
+        left = (self.width() - width) // 2
+        top = (self.height() - height) // 2
         self._inner_layout.setContentsMargins(left, top, left, top)
-        child.setMinimumSize(side, side)
-        child.setMaximumSize(side, side)
+        child.setMinimumSize(width, height)
+        child.setMaximumSize(width, height)
 
     def setContainer(self, container: Any) -> None:
         if not hasattr(container, "attach"):

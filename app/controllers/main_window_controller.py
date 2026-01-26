@@ -22,7 +22,6 @@ from app.controllers.romanization_ui_controller import RomanizationUiController
 from app.controllers.rr_cues_persistence_controller import RrCuesPersistenceController
 from app.controllers.settings_ui_controller import SettingsUiController
 from app.controllers.study_item_repository import StudyItemRepository
-from app.controllers.playback_controls_controller import set_controls_for_repeats_locked
 from app.controllers.syllable_navigation import SyllableNavigation
 from app.controllers.syllable_index_ui_controller import SyllableIndexUiController
 from app.controllers.layout_stretch_controller import LayoutStretchController
@@ -279,8 +278,13 @@ class MainWindowController:
         )
         if self._playback_ui is not None:
             self._playback_ui.init_chips()
-        # Ensure controls start enabled (some Qt stylesheets may retain disabled state).
-        set_controls_for_repeats_locked(self.window, False)
+        if self._mode_ui is not None and self._mode_ui.combo is not None and self._playback_ui is not None:
+            try:
+                self._mode_ui.combo.currentTextChanged.connect(
+                    lambda _text: self._playback_ui.init_chips()
+                )
+            except (AttributeError, RuntimeError):
+                pass
 
         self._wire_settings_controls()
 

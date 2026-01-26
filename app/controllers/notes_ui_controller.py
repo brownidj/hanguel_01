@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Callable, Optional
 
-from PyQt6.QtWidgets import QLabel, QWidget
+from PyQt6.QtWidgets import QLabel, QGroupBox, QWidget
 
 from app.domain.hangul_compose import compose_cv
 
@@ -21,9 +21,11 @@ class NotesUiController:
         self._get_mode_text = get_mode_text
         self._get_current_pair = get_current_pair
         self._label: Optional[QLabel] = None
+        self._panel: Optional[QGroupBox] = None
 
     def wire(self) -> None:
         self._label = self._window.findChild(QLabel, "labelNotesPlaceholder")
+        self._panel = self._window.findChild(QGroupBox, "groupNotesPanel")
         self.update()
 
     def update(self) -> None:
@@ -34,6 +36,8 @@ class NotesUiController:
             try:
                 self._label.setText("")
                 self._label.setVisible(False)
+                if self._panel is not None:
+                    self._panel.setVisible(False)
             except Exception:
                 pass
             return
@@ -45,5 +49,7 @@ class NotesUiController:
         try:
             self._label.setText(text)
             self._label.setVisible(True)
+            if self._panel is not None:
+                self._panel.setVisible(True)
         except Exception:
             pass

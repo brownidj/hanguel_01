@@ -37,6 +37,9 @@ class PlaybackUiController:
         self._chips_armed: bool = False
 
     def init_chips(self) -> None:
+        self._chips_armed = False
+        self._auto_mode_enabled = False
+        self._chip_state = PlayChipState.PLAY
         self._init_auto_chip()
         self._set_bottom_chips_enabled(False, keep_listen_enabled=True, keep_auto_enabled=False)
 
@@ -82,7 +85,6 @@ class PlaybackUiController:
             return
         if not self._chips_armed:
             self._chips_armed = True
-            self._set_bottom_chips_enabled(True)
         self.start_playback(auto_mode=False)
         if self._chip_state == PlayChipState.PLAY:
             self._chip_state = PlayChipState.REPEAT

@@ -135,6 +135,8 @@ def guess_block_type_for_vowel(vowel_entry: Dict[str, Any]) -> str:
     return t
 
 
+
+
 def build_ipa(consonant_entry: Dict[str, Any], vowel_entry: Dict[str, Any]) -> Optional[str]:
     c_ipa = consonant_entry.get("ipa")
     v_ipa = vowel_entry.get("ipa")

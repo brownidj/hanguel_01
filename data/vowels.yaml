@@ -7,6 +7,7 @@ vowels:
   - glyph: "ㅏ"
     ipa: "a"
     type: A_RightBranch
+    vowel_type: core
     rr:
       target_sound: "open a; similar to 'ah'"
       best_approx: "as in 'father'"
@@ -15,6 +16,7 @@ vowels:
   - glyph: "ㅑ"
     ipa: "ja"
     type: A_RightBranch
+    vowel_type: y_glide
     rr:
       target_sound: "ya; palatalized 'ah'"
       best_approx: "as in 'yard'"
@@ -23,6 +25,7 @@ vowels:
   - glyph: "ㅓ"
     ipa: "ʌ"
     type: A_RightBranch
+    vowel_type: core
     rr:
       target_sound: "open uh; more open than 'uh'"
       best_approx: "as in 'sun'"
@@ -31,6 +34,7 @@ vowels:
   - glyph: "ㅕ"
     ipa: "jʌ"
     type: A_RightBranch
+    vowel_type: y_glide
     rr:
       target_sound: "yeo; palatalized 'uh'"
       best_approx: "as in 'young' (starting sound)"
@@ -39,6 +43,7 @@ vowels:
   - glyph: "ㅣ"
     ipa: "i"
     type: A_RightBranch
+    vowel_type: core
     rr:
       target_sound: "ee; close front vowel"
       best_approx: "as in 'see'"
@@ -47,6 +52,7 @@ vowels:
   - glyph: "ㅐ"
     ipa: "ɛ"
     type: A_RightBranch
+    vowel_type: mid_front
     rr:
       target_sound: "ae; between 'a' and 'e'"
       best_approx: "as in 'cat'"
@@ -55,6 +61,7 @@ vowels:
   - glyph: "ㅔ"
     ipa: "e"
     type: A_RightBranch
+    vowel_type: mid_front
     rr:
       target_sound: "e; mid front vowel"
       best_approx: "as in 'bed'"
@@ -63,6 +70,7 @@ vowels:
   - glyph: "ㅖ"
     ipa: "je"
     type: A_RightBranch
+    vowel_type: y_glide
     rr:
       target_sound: "ye; palatalized 'e'"
       best_approx: "as in 'yes' (starting sound)"
@@ -71,6 +79,7 @@ vowels:
   - glyph: "ㅙ"
     ipa: "wɛ"
     type: A_RightBranch
+    vowel_type: compound
     rr:
       target_sound: "wae; 'w' + 'ae'"
       best_approx: "as in 'wax' (starting sound)"
@@ -79,6 +88,7 @@ vowels:
   - glyph: "ㅚ"
     ipa: "we~ø"
     type: A_RightBranch
+    vowel_type: compound
     rr:
       target_sound: "oe; like 'we' or 'weh'"
       best_approx: "as in 'way'"
@@ -87,6 +97,7 @@ vowels:
   - glyph: "ㅟ"
     ipa: "wi"
     type: A_RightBranch
+    vowel_type: compound
     rr:
       target_sound: "wi; 'wee'"
       best_approx: "as in 'we'"
@@ -97,6 +108,7 @@ vowels:
   - glyph: "ㅗ"
     ipa: "o"
     type: B_TopBranch
+    vowel_type: core
     rr:
       target_sound: "o; mid back rounded"
       best_approx: "as in 'go'"
@@ -105,6 +117,7 @@ vowels:
   - glyph: "ㅛ"
     ipa: "jo"
     type: B_TopBranch
+    vowel_type: y_glide
     rr:
       target_sound: "yo; palatalized 'o'"
       best_approx: "as in 'yoga' (starting sound)"
@@ -113,6 +126,7 @@ vowels:
   - glyph: "ㅘ"
     ipa: "wa"
     type: B_TopBranch
+    vowel_type: compound
     rr:
       target_sound: "wa; 'w' + 'a'"
       best_approx: "as in 'water' (starting sound)"
@@ -123,6 +137,7 @@ vowels:
   - glyph: "ㅜ"
     ipa: "u"
     type: C_BottomBranch
+    vowel_type: core
     rr:
       target_sound: "oo; close back rounded"
       best_approx: "as in 'food'"
@@ -131,6 +146,7 @@ vowels:
   - glyph: "ㅠ"
     ipa: "ju"
     type: C_BottomBranch
+    vowel_type: y_glide
     rr:
       target_sound: "yu; 'y' + 'oo'"
       best_approx: "as in 'you'"
@@ -139,6 +155,7 @@ vowels:
   - glyph: "ㅝ"
     ipa: "wʌ"
     type: C_BottomBranch
+    vowel_type: compound
     rr:
       target_sound: "wo; 'w' + 'uh'"
       best_approx: "as in 'wonder' (starting sound)"
@@ -147,6 +164,7 @@ vowels:
   - glyph: "ㅞ"
     ipa: "we"
     type: C_BottomBranch
+    vowel_type: compound
     rr:
       target_sound: "we; 'w' + 'e'"
       best_approx: "as in 'wet'"
@@ -157,6 +175,7 @@ vowels:
   - glyph: "ㅡ"
     ipa: "ɯ"
     type: D_Horizontal
+    vowel_type: core
     rr:
       target_sound: "eu; unrounded 'oo' sound"
       best_approx: "as in the 'a' of 'sofa' (unstressed)"
@@ -165,6 +184,7 @@ vowels:
   - glyph: "ㅢ"
     ipa: "ɰi"
     type: D_Horizontal
+    vowel_type: compound
     rr:
       target_sound: "ui; 'eu' + 'i'"
       best_approx: "as in 'we' (quickly)"

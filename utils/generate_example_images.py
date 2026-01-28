@@ -5,6 +5,7 @@ import base64
 import json
 import os
 import re
+import time
 import select
 import sys
 from pathlib import Path
@@ -76,7 +77,7 @@ def _call_openai_image(prompt: str, *, api_key: str, model: str) -> bytes:
     except Exception:
         context = ssl.create_default_context()
     try:
-        with urlopen(req, timeout=60, context=context) as resp:
+        with urlopen(req, timeout=480, context=context) as resp:
             raw = resp.read()
     except HTTPError as e:
         try:
@@ -92,7 +93,7 @@ def _call_openai_image(prompt: str, *, api_key: str, model: str) -> bytes:
         return base64.b64decode(first["b64_json"])
     if "url" in first:
         img_req = Request(first["url"], method="GET")
-        with urlopen(img_req, timeout=60, context=context) as resp:
+        with urlopen(img_req, timeout=480, context=context) as resp:
             return resp.read()
     raise RuntimeError("OpenAI image response missing image data")
 
@@ -110,17 +111,23 @@ def _maybe_abort() -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate example images via DALL-E.")
-    parser.add_argument("--examples", default="data/examples.yaml")
-    parser.add_argument("--output-dir", default="assets/images/examples")
+    parser.add_argument("--examples", default="flutter_app/assets/data/examples.yaml")
+    parser.add_argument("--syllables", default="flutter_app/assets/data/syllables.yaml")
+    parser.add_argument("--output-dir", default="flutter_app/assets/images/examples")
     parser.add_argument("--context", choices=["syllable", "vowel", "consonant"], default="syllable")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", type=int, default=0, help="Max images to generate (0 = no limit).")
     parser.add_argument("--all", action="store_true", help="Ignore --limit and process all items.")
+    parser.add_argument("--batch-size", type=int, default=10, help="Images per batch (0 = all).")
+    parser.add_argument("--batch-index", type=int, default=1, help="1-based batch index to process.")
+    parser.add_argument("--auto-batches", action="store_true", help="Run batches sequentially with pauses.")
+    parser.add_argument("--batch-pause", type=int, default=10, help="Seconds to pause between batches.")
     args = parser.parse_args()
 
     examples_path = Path(args.examples)
+    syllables_path = Path(args.syllables)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -132,51 +139,102 @@ def main() -> int:
     if not items:
         print("No examples found in {}".format(examples_path))
         return 1
+    syllables = yaml.safe_load(syllables_path.read_text(encoding="utf-8")) or {}
+    syllable_glyphs = {
+        s.get("glyph") for s in syllables.get("syllables", []) if isinstance(s, dict) and s.get("glyph")
+    }
 
     background = PASTEL_BACKGROUNDS.get(args.context, PASTEL_BACKGROUNDS["syllable"])
-    used_names: dict[str, int] = {}
-
-    generated = 0
+    candidates: list[dict[str, Any]] = []
     for item in items:
         if not isinstance(item, dict):
             continue
-        gloss = item.get("gloss_en", "")
-        prompt = item.get("image_prompt", "")
-        if not isinstance(gloss, str) or not gloss.strip():
+        syllable = item.get("starts_with_syllable", "")
+        if isinstance(syllable, str) and syllable_glyphs and syllable not in syllable_glyphs:
             continue
-        if not isinstance(prompt, str) or not prompt.strip():
+        filename = item.get("image_filename", "")
+        if not isinstance(filename, str) or not filename.strip():
             continue
-
-        base_name = _slugify(gloss)
-        count = used_names.get(base_name, 0)
-        used_names[base_name] = count + 1
-        if count:
-            filename = "{}_{}.png".format(base_name, count + 1)
-        else:
-            filename = "{}.png".format(base_name)
-
         out_path = output_dir / filename
         if out_path.exists() and not args.overwrite:
-            item["image_filename"] = filename
             continue
+        candidates.append(item)
 
-        full_prompt = _build_prompt(prompt, background=background)
-        if args.dry_run:
-            print("[dry-run] Would generate {} -> {}".format(gloss, out_path))
+    total_missing = len(candidates)
+    if total_missing == 0:
+        print("All example images already exist in {}".format(output_dir))
+        return 0
+
+    if args.batch_size and args.batch_size > 0:
+        batches = (total_missing + args.batch_size - 1) // args.batch_size
+        batch_index = max(1, args.batch_index)
+        if batch_index > batches:
+            print("Batch index {} is out of range (1-{}).".format(batch_index, batches))
+            return 1
+        if args.auto_batches:
+            start_batch = batch_index
         else:
-            if _maybe_abort():
-                print("[abort] Received 'q' - exiting.")
-                break
-            print("[image] Generating '{}' -> {}".format(gloss, out_path))
-            image_bytes = _call_openai_image(full_prompt, api_key=api_key, model=args.model)
-            out_path.write_bytes(image_bytes)
-        item["image_filename"] = filename
+            start_batch = batch_index
+            batch_list = [(batch_index, batches)]
+        if args.auto_batches:
+            batch_list = [(idx, batches) for idx in range(start_batch, batches + 1)]
+    else:
+        batches = 1
+        batch_index = 1
+        batch_list = [(1, 1)]
 
-        if not args.dry_run:
-            print("Saved {}".format(out_path))
-        generated += 1
-        if not args.all and args.limit > 0 and generated >= args.limit:
+    total_generated = 0
+    for batch_index, batches in batch_list:
+        if args.batch_size and args.batch_size > 0:
+            start = (batch_index - 1) * args.batch_size
+            end = min(start + args.batch_size, total_missing)
+            batch_candidates = candidates[start:end]
+        else:
+            batch_candidates = candidates
+        batch_total = len(batch_candidates)
+        print("Processing batch {} of {} ({} items).".format(batch_index, batches, batch_total))
+        generated = 0
+        for item in batch_candidates:
+            gloss = item.get("gloss_en", "")
+            prompt = item.get("image_prompt", "")
+            filename = item.get("image_filename", "")
+            if not isinstance(gloss, str) or not gloss.strip():
+                continue
+            if not isinstance(prompt, str) or not prompt.strip():
+                continue
+            if not isinstance(filename, str) or not filename.strip():
+                continue
+
+            out_path = output_dir / filename
+            full_prompt = _build_prompt(prompt, background=background)
+            if args.dry_run:
+                print("[dry-run] Would generate {} -> {}".format(gloss, out_path))
+            else:
+                if _maybe_abort():
+                    print("[abort] Received 'q' - exiting.")
+                    return 1
+                print("[image] Generating '{}' -> {}".format(gloss, out_path))
+                image_bytes = _call_openai_image(full_prompt, api_key=api_key, model=args.model)
+                out_path.write_bytes(image_bytes)
+
+            if not args.dry_run:
+                generated += 1
+                total_generated += 1
+                print(
+                    "Saved {} ({} of {}, batch {} of {})".format(
+                        out_path, generated, batch_total, batch_index, batches
+                    )
+                )
+            else:
+                generated += 1
+                total_generated += 1
+            if not args.all and args.limit > 0 and total_generated >= args.limit:
+                break
+        if not args.all and args.limit > 0 and total_generated >= args.limit:
             break
+        if args.auto_batches and batch_index < batches:
+            print("Pausing {}s before next batch...".format(args.batch_pause))
+            time.sleep(max(0, args.batch_pause))
 
     if args.dry_run:
         print("[dry-run] Skipping examples.yaml write")

@@ -7,7 +7,7 @@ examples:
   starts_with_syllable: 가
   starts_with_consonant: ㄱ
   starts_with_vowel: ㅏ
-  image_filename: bag.png
+  image_filename: 가방-bag.png
 - hangul: 가족
   rr: gajok
   gloss_en: family
@@ -16,7 +16,7 @@ examples:
   starts_with_syllable: 가
   starts_with_consonant: ㄱ
   starts_with_vowel: ㅏ
-  image_filename: family.png
+  image_filename: 가족-family.png
 - hangul: 가게
   rr: gage
   gloss_en: shop
@@ -25,7 +25,7 @@ examples:
   starts_with_syllable: 가
   starts_with_consonant: ㄱ
   starts_with_vowel: ㅏ
-  image_filename: shop.png
+  image_filename: 가게-shop.png
 - hangul: 가위
   rr: gawi
   gloss_en: scissors
@@ -34,7 +34,7 @@ examples:
   starts_with_syllable: 가
   starts_with_consonant: ㄱ
   starts_with_vowel: ㅏ
-  image_filename: scissors.png
+  image_filename: 가위-scissors.png
 - hangul: 가을
   rr: gaeul
   gloss_en: autumn
@@ -43,7 +43,7 @@ examples:
   starts_with_syllable: 가
   starts_with_consonant: ㄱ
   starts_with_vowel: ㅏ
-  image_filename: autumn.png
+  image_filename: 가을-autumn.png
 - hangul: 나무
   rr: namu
   gloss_en: tree
@@ -61,7 +61,7 @@ examples:
   starts_with_syllable: 나
   starts_with_consonant: ㄴ
   starts_with_vowel: ㅏ
-  image_filename: country.png
+  image_filename: 나라-country.png
 - hangul: 나비
   rr: nabi
   gloss_en: butterfly
@@ -70,7 +70,7 @@ examples:
   starts_with_syllable: 나
   starts_with_consonant: ㄴ
   starts_with_vowel: ㅏ
-  image_filename: butterfly.png
+  image_filename: 나비-butterfly.png
 - hangul: 나침반
   rr: nachimban
   gloss_en: compass
@@ -79,7 +79,7 @@ examples:
   starts_with_syllable: 나
   starts_with_consonant: ㄴ
   starts_with_vowel: ㅏ
-  image_filename: compass.png
+  image_filename: 나침반-compass.png
 - hangul: 나사
   rr: nasa
   gloss_en: screw
@@ -88,7 +88,7 @@ examples:
   starts_with_syllable: 나
   starts_with_consonant: ㄴ
   starts_with_vowel: ㅏ
-  image_filename: screw.png
+  image_filename: 나사-screw.png
 - hangul: 다리
   rr: dari
   gloss_en: leg
@@ -97,7 +97,7 @@ examples:
   starts_with_syllable: 다
   starts_with_consonant: ㄷ
   starts_with_vowel: ㅏ
-  image_filename: leg.png
+  image_filename: 다리-leg.png
 - hangul: 도로
   rr: doro
   gloss_en: road
@@ -115,7 +115,7 @@ examples:
   starts_with_syllable: 도
   starts_with_consonant: ㄷ
   starts_with_vowel: ㅗ
-  image_filename: library.png
+  image_filename: 도서관-library.png
 - hangul: 다람쥐
   rr: daramjwi
   gloss_en: squirrel
@@ -124,7 +124,7 @@ examples:
   starts_with_syllable: 다
   starts_with_consonant: ㄷ
   starts_with_vowel: ㅏ
-  image_filename: squirrel.png
+  image_filename: 다람쥐-squirrel.png
 - hangul: 두부
   rr: dubu
   gloss_en: tofu
@@ -133,7 +133,7 @@ examples:
   starts_with_syllable: 두
   starts_with_consonant: ㄷ
   starts_with_vowel: ㅜ
-  image_filename: tofu.png
+  image_filename: 두부-tofu.png
 - hangul: 라디오
   rr: radio
   gloss_en: radio
@@ -142,7 +142,7 @@ examples:
   starts_with_syllable: 라
   starts_with_consonant: ㄹ
   starts_with_vowel: ㅏ
-  image_filename: radio.png
+  image_filename: 라디오-radio.png
 - hangul: 라면
   rr: ramyeon
   gloss_en: noodles
@@ -151,7 +151,7 @@ examples:
   starts_with_syllable: 라
   starts_with_consonant: ㄹ
   starts_with_vowel: ㅏ
-  image_filename: noodles.png
+  image_filename: 라면-noodles.png
 - hangul: 마늘
   rr: maneul
   gloss_en: garlic
@@ -160,7 +160,7 @@ examples:
   starts_with_syllable: 마
   starts_with_consonant: ㅁ
   starts_with_vowel: ㅏ
-  image_filename: garlic.png
+  image_filename: 마늘-garlic.png
 - hangul: 마차
   rr: macha
   gloss_en: cart
@@ -169,7 +169,7 @@ examples:
   starts_with_syllable: 마
   starts_with_consonant: ㅁ
   starts_with_vowel: ㅏ
-  image_filename: cart.png
+  image_filename: 마차-cart.png
 - hangul: 바다
   rr: bada
   gloss_en: sea
@@ -178,7 +178,7 @@ examples:
   starts_with_syllable: 바
   starts_with_consonant: ㅂ
   starts_with_vowel: ㅏ
-  image_filename: sea.png
+  image_filename: 바다-sea.png
 - hangul: 바나나
   rr: banana
   gloss_en: banana
@@ -187,7 +187,7 @@ examples:
   starts_with_syllable: 바
   starts_with_consonant: ㅂ
   starts_with_vowel: ㅏ
-  image_filename: banana.png
+  image_filename: 바나나-banana.png
 - hangul: 배추
   rr: baechu
   gloss_en: cabbage
@@ -196,7 +196,7 @@ examples:
   starts_with_syllable: 배
   starts_with_consonant: ㅂ
   starts_with_vowel: ㅐ
-  image_filename: cabbage.png
+  image_filename: 배추-cabbage.png
 - hangul: 바지
   rr: baji
   gloss_en: pants
@@ -205,7 +205,7 @@ examples:
   starts_with_syllable: 바
   starts_with_consonant: ㅂ
   starts_with_vowel: ㅏ
-  image_filename: pants.png
+  image_filename: 바지-pants.png
 - hangul: 사과
   rr: sagwa
   gloss_en: apple
@@ -214,7 +214,7 @@ examples:
   starts_with_syllable: 사
   starts_with_consonant: ㅅ
   starts_with_vowel: ㅏ
-  image_filename: apple.png
+  image_filename: 사과-apple.png
 - hangul: 사자
   rr: saja
   gloss_en: lion
@@ -223,7 +223,7 @@ examples:
   starts_with_syllable: 사
   starts_with_consonant: ㅅ
   starts_with_vowel: ㅏ
-  image_filename: lion.png
+  image_filename: 사자-lion.png
 - hangul: 새우
   rr: saeu
   gloss_en: shrimp
@@ -232,7 +232,7 @@ examples:
   starts_with_syllable: 새
   starts_with_consonant: ㅅ
   starts_with_vowel: ㅐ
-  image_filename: shrimp.png
+  image_filename: 새우-shrimp.png
 - hangul: 서점
   rr: seojeom
   gloss_en: bookstore
@@ -241,7 +241,7 @@ examples:
   starts_with_syllable: 서
   starts_with_consonant: ㅅ
   starts_with_vowel: ㅓ
-  image_filename: bookstore.png
+  image_filename: 서점-bookstore.png
 - hangul: 소금
   rr: sogeum
   gloss_en: salt
@@ -250,7 +250,7 @@ examples:
   starts_with_syllable: 소
   starts_with_consonant: ㅅ
   starts_with_vowel: ㅗ
-  image_filename: salt.png
+  image_filename: 소금-salt.png
 - hangul: 수박
   rr: subak
   gloss_en: watermelon
@@ -259,7 +259,7 @@ examples:
   starts_with_syllable: 수
   starts_with_consonant: ㅅ
   starts_with_vowel: ㅜ
-  image_filename: watermelon.png
+  image_filename: 수박-watermelon.png
 - hangul: 시계
   rr: sigye
   gloss_en: clock
@@ -268,7 +268,7 @@ examples:
   starts_with_syllable: 시
   starts_with_consonant: ㅅ
   starts_with_vowel: ㅣ
-  image_filename: clock.png
+  image_filename: 시계-clock.png
 - hangul: 아기
   rr: agi
   gloss_en: baby
@@ -277,7 +277,7 @@ examples:
   starts_with_syllable: 아
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅏ
-  image_filename: baby.png
+  image_filename: 아기-baby.png
 - hangul: 어머니
   rr: eomeoni
   gloss_en: mother
@@ -286,7 +286,7 @@ examples:
   starts_with_syllable: 어
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅓ
-  image_filename: mother.png
+  image_filename: 어머니-mother.png
 - hangul: 오리
   rr: ori
   gloss_en: duck
@@ -295,7 +295,7 @@ examples:
   starts_with_syllable: 오
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅗ
-  image_filename: duck.png
+  image_filename: 오리-duck.png
 - hangul: 우산
   rr: usan
   gloss_en: umbrella
@@ -304,7 +304,7 @@ examples:
   starts_with_syllable: 우
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅜ
-  image_filename: umbrella.png
+  image_filename: 우산-umbrella.png
 - hangul: 으뜸
   rr: eutteum
   gloss_en: best
@@ -313,7 +313,7 @@ examples:
   starts_with_syllable: 으
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅡ
-  image_filename: best.png
+  image_filename: 으뜸-best.png
 - hangul: 이불
   rr: ibul
   gloss_en: blanket
@@ -322,7 +322,7 @@ examples:
   starts_with_syllable: 이
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅣ
-  image_filename: blanket.png
+  image_filename: 이불-blanket.png
 - hangul: 여우
   rr: yeou
   gloss_en: fox
@@ -331,7 +331,7 @@ examples:
   starts_with_syllable: 여
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅕ
-  image_filename: fox.png
+  image_filename: 여우-fox.png
 - hangul: 여자
   rr: yeoja
   gloss_en: woman
@@ -340,7 +340,7 @@ examples:
   starts_with_syllable: 여
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅕ
-  image_filename: woman.png
+  image_filename: 여자-woman.png
 - hangul: 요리
   rr: yori
   gloss_en: cooking
@@ -349,7 +349,7 @@ examples:
   starts_with_syllable: 요
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅛ
-  image_filename: cooking.png
+  image_filename: 요리-cooking.png
 - hangul: 유리
   rr: yuri
   gloss_en: glass
@@ -358,7 +358,7 @@ examples:
   starts_with_syllable: 유
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅠ
-  image_filename: glass.png
+  image_filename: 유리-glass.png
 - hangul: 야구
   rr: yagu
   gloss_en: baseball
@@ -367,7 +367,7 @@ examples:
   starts_with_syllable: 야
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅑ
-  image_filename: baseball.png
+  image_filename: 야구-baseball.png
 - hangul: 야채
   rr: yachae
   gloss_en: vegetables
@@ -376,7 +376,7 @@ examples:
   starts_with_syllable: 야
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅑ
-  image_filename: vegetables.png
+  image_filename: 야채-vegetables.png
 - hangul: 예술
   rr: yesul
   gloss_en: art
@@ -385,7 +385,7 @@ examples:
   starts_with_syllable: 예
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅖ
-  image_filename: art.png
+  image_filename: 예술-art.png
 - hangul: 얘기
   rr: yaegi
   gloss_en: story
@@ -394,7 +394,7 @@ examples:
   starts_with_syllable: 얘
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅒ
-  image_filename: story.png
+  image_filename: 얘기-story.png
 - hangul: 외국
   rr: oeguk
   gloss_en: foreign country
@@ -403,7 +403,7 @@ examples:
   starts_with_syllable: 외
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅚ
-  image_filename: foreign_country.png
+  image_filename: 외국-foreign_country.png
 - hangul: 왼손
   rr: oenson
   gloss_en: left hand
@@ -412,7 +412,7 @@ examples:
   starts_with_syllable: 왼
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅚ
-  image_filename: left_hand.png
+  image_filename: 왼손-left_hand.png
 - hangul: 웨딩
   rr: weding
   gloss_en: wedding
@@ -421,7 +421,7 @@ examples:
   starts_with_syllable: 웨
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅞ
-  image_filename: wedding.png
+  image_filename: 웨딩-wedding.png
 - hangul: 원숭이
   rr: wonsungi
   gloss_en: monkey
@@ -430,7 +430,7 @@ examples:
   starts_with_syllable: 원
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅝ
-  image_filename: monkey.png
+  image_filename: 원숭이-monkey.png
 - hangul: 과자
   rr: gwaja
   gloss_en: snack
@@ -439,7 +439,7 @@ examples:
   starts_with_syllable: 과
   starts_with_consonant: ㄱ
   starts_with_vowel: ㅘ
-  image_filename: snack.png
+  image_filename: 과자-snack.png
 - hangul: 괭이
   rr: gwaengi
   gloss_en: hoe
@@ -448,7 +448,7 @@ examples:
   starts_with_syllable: 괭
   starts_with_consonant: ㄱ
   starts_with_vowel: ㅙ
-  image_filename: hoe.png
+  image_filename: 괭이-hoe.png
 - hangul: 의자
   rr: uija
   gloss_en: chair
@@ -457,7 +457,7 @@ examples:
   starts_with_syllable: 의
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅢ
-  image_filename: chair.png
+  image_filename: 의자-chair.png
 - hangul: 위치
   rr: wichi
   gloss_en: location
@@ -466,7 +466,7 @@ examples:
   starts_with_syllable: 위
   starts_with_consonant: ㅇ
   starts_with_vowel: ㅟ
-  image_filename: location.png
+  image_filename: 위치-location.png
 - hangul: 차표
   rr: chapyo
   gloss_en: ticket
@@ -475,7 +475,7 @@ examples:
   starts_with_syllable: 차
   starts_with_consonant: ㅊ
   starts_with_vowel: ㅏ
-  image_filename: ticket.png
+  image_filename: 차표-ticket.png
 - hangul: 추억
   rr: chueok
   gloss_en: memory
@@ -484,7 +484,7 @@ examples:
   starts_with_syllable: 추
   starts_with_consonant: ㅊ
   starts_with_vowel: ㅜ
-  image_filename: memory.png
+  image_filename: 추억-memory.png
 - hangul: 코끼리
   rr: kokkiri
   gloss_en: elephant
@@ -493,7 +493,7 @@ examples:
   starts_with_syllable: 코
   starts_with_consonant: ㅋ
   starts_with_vowel: ㅗ
-  image_filename: elephant.png
+  image_filename: 코끼리-elephant.png
 - hangul: 카메라
   rr: kamera
   gloss_en: camera
@@ -502,7 +502,7 @@ examples:
   starts_with_syllable: 카
   starts_with_consonant: ㅋ
   starts_with_vowel: ㅏ
-  image_filename: camera.png
+  image_filename: 카메라-camera.png
 - hangul: 토마토
   rr: tomato
   gloss_en: tomato
@@ -511,7 +511,7 @@ examples:
   starts_with_syllable: 토
   starts_with_consonant: ㅌ
   starts_with_vowel: ㅗ
-  image_filename: tomato.png
+  image_filename: 토마토-tomato.png
 - hangul: 타조
   rr: tajo
   gloss_en: ostrich
@@ -520,7 +520,7 @@ examples:
   starts_with_syllable: 타
   starts_with_consonant: ㅌ
   starts_with_vowel: ㅏ
-  image_filename: ostrich.png
+  image_filename: 타조-ostrich.png
 - hangul: 포도
   rr: podo
   gloss_en: grapes
@@ -529,7 +529,7 @@ examples:
   starts_with_syllable: 포
   starts_with_consonant: ㅍ
   starts_with_vowel: ㅗ
-  image_filename: grapes.png
+  image_filename: 포도-grapes.png
 - hangul: 파도
   rr: pado
   gloss_en: wave
@@ -538,7 +538,7 @@ examples:
   starts_with_syllable: 파
   starts_with_consonant: ㅍ
   starts_with_vowel: ㅏ
-  image_filename: wave.png
+  image_filename: 파도-wave.png
 - hangul: 하늘
   rr: haneul
   gloss_en: sky
@@ -547,7 +547,7 @@ examples:
   starts_with_syllable: 하
   starts_with_consonant: ㅎ
   starts_with_vowel: ㅏ
-  image_filename: sky.png
+  image_filename: 하늘-sky.png
 - hangul: 후추
   rr: huchu
   gloss_en: pepper
@@ -556,7 +556,7 @@ examples:
   starts_with_syllable: 후
   starts_with_consonant: ㅎ
   starts_with_vowel: ㅜ
-  image_filename: pepper.png
+  image_filename: 후추-pepper.png
 - hangul: 까치
   rr: kkachi
   gloss_en: magpie
@@ -565,7 +565,7 @@ examples:
   starts_with_syllable: 까
   starts_with_consonant: ㄲ
   starts_with_vowel: ㅏ
-  image_filename: magpie.png
+  image_filename: 까치-magpie.png
 - hangul: 따로
   rr: ttaro
   gloss_en: separate
@@ -574,7 +574,7 @@ examples:
   starts_with_syllable: 따
   starts_with_consonant: ㄸ
   starts_with_vowel: ㅏ
-  image_filename: separate.png
+  image_filename: 따로-separate.png
 - hangul: 빠지
   rr: ppaji
   gloss_en: gorge
@@ -583,7 +583,7 @@ examples:
   starts_with_syllable: 빠
   starts_with_consonant: ㅃ
   starts_with_vowel: ㅏ
-  image_filename: gorge.png
+  image_filename: 빠지-gorge.png
 - hangul: 싸움
   rr: ssaum
   gloss_en: fight
@@ -592,7 +592,7 @@ examples:
   starts_with_syllable: 싸
   starts_with_consonant: ㅆ
   starts_with_vowel: ㅏ
-  image_filename: fight.png
+  image_filename: 싸움-fight.png
 - hangul: 짜장면
   rr: jjajangmyeon
   gloss_en: noodles with black bean sauce
@@ -601,7 +601,7 @@ examples:
   starts_with_syllable: 짜
   starts_with_consonant: ㅉ
   starts_with_vowel: ㅏ
-  image_filename: noodles_with_black_bean_sauce.png
+  image_filename: 짜장면-noodles_with_black_bean_sauce.png
 - hangul: 세탁기
   rr: setakgi
   gloss_en: washing machine
@@ -610,4 +610,4 @@ examples:
   starts_with_syllable: 세
   starts_with_consonant: ㅅ
   starts_with_vowel: ㅔ
-  image_filename: washing_machine.png
+  image_filename: 세탁기-washing_machine.png

@@ -44,7 +44,7 @@ class NotesUiController:
         consonant, vowel = self._get_current_pair()
         syllable = compose_cv("ㅇ", vowel) or ""
         text = (
-            "Standalone vowels are written with a silent ㅇ onset, so {} is written as {} (ㅇ + {})."
+            "Standalone vowels are written with a silent ㅇ onset, so {} is written as ㅇ{} (ㅇ + {})."
         ).format(vowel or "ㅏ", syllable or "아", vowel or "ㅏ")
         try:
             self._label.setText(text)

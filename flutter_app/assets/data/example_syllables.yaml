@@ -1,0 +1,2720 @@
+- hangul: 가
+  rr: ga
+  gloss_en: store
+  image_prompt: Store
+  image_filename: 가게-store.png
+  example_word: 가게
+  example_rr: gage
+- hangul: 갸
+  rr: gya
+  gloss_en: blue watermelon
+  image_prompt: Blue Watermelon
+  image_filename: 갸_파란_수박-blue_watermelon.png
+  example_word: 갸 파란 수박
+  example_rr: gya para suba
+- hangul: 거
+  rr: geo
+  gloss_en: a road or street
+  image_prompt: A Road Or Street
+  image_filename: 거리-a_road_or_street.png
+  example_word: 거리
+  example_rr: geori
+- hangul: 겨
+  rr: gyeo
+  gloss_en: winter
+  image_prompt: Winter
+  image_filename: 겨울-winter.png
+  example_word: 겨울
+  example_rr: gyeou
+- hangul: 기
+  rr: gi
+  gloss_en: machine
+  image_prompt: Machine
+  image_filename: 기계-machine.png
+  example_word: 기계
+  example_rr: gigye
+- hangul: 개
+  rr: gae
+  gloss_en: a dog
+  image_prompt: A Dog
+  image_filename: 개-a_dog.png
+  example_word: 개
+  example_rr: gae
+- hangul: 게
+  rr: ge
+  gloss_en: game
+  image_prompt: Game
+  image_filename: 게임-game.png
+  example_word: 게임
+  example_rr: gei
+- hangul: 계
+  rr: gye
+  gloss_en: square
+  image_prompt: Square
+  image_filename: 계급-square.png
+  example_word: 계급
+  example_rr: gyegeu
+- hangul: 괘
+  rr: gwae
+  gloss_en: black umbrella
+  image_prompt: Black Umbrella
+  image_filename: 괘_검은_우산-black_umbrella.png
+  example_word: 괘 검은 우산
+  example_rr: gwae geoeu usa
+- hangul: 괴
+  rr: goe
+  gloss_en:
+  - bizarrerie
+  - fantasticality
+  - gothic novel
+  image_prompt: Bizarrerie
+  image_filename: 괴기-bizarrerie.png
+  example_word: 괴기
+  example_rr: goegi
+- hangul: 귀
+  rr: gwi
+  gloss_en: ear
+  image_prompt: Ear
+  image_filename: 귀-ear.png
+  example_word: 귀
+  example_rr: gwi
+- hangul: 고
+  rr: go
+  gloss_en: example
+  image_prompt: Example
+  image_filename: 고개-example.png
+  example_word: 고개
+  example_rr: gogae
+- hangul: 교
+  rr: gyo
+  gloss_en: school gate
+  image_prompt: School Gate
+  image_filename: 교문-school_gate.png
+  example_word: 교문
+  example_rr: gyomu
+- hangul: 과
+  rr: gwa
+  gloss_en: lesson/section/department
+  image_prompt: Lesson/Section/Department
+  image_filename: 과-lesson/section/department.png
+  example_word: 과
+  example_rr: gwa
+- hangul: 구
+  rr: gu
+  gloss_en: enjoyable sight or spectacle
+  image_prompt: Enjoyable Sight Or Spectacle
+  image_filename: 구경-enjoyable_sight_or_spectacle.png
+  example_word: 구경
+  example_rr: gugyeo
+- hangul: 규
+  rr: gyu
+  gloss_en: grudge
+  image_prompt: Grudge
+  image_filename: 규모-grudge.png
+  example_word: 규모
+  example_rr: gyumo
+- hangul: 궤
+  rr: gwe
+  gloss_en: chest
+  image_prompt: Chest
+  image_filename: 궤-chest.png
+  example_word: 궤
+  example_rr: gwe
+- hangul: 그
+  rr: geu
+  gloss_en: that day or that same day
+  image_prompt: That Day Or That Same Day
+  image_filename: 그날-that_day_or_that_same_day.png
+  example_word: 그날
+  example_rr: geuna
+- hangul: 까
+  rr: kka
+  gloss_en: magpie
+  image_prompt: Magpie
+  image_filename: 까치-magpie.png
+  example_word: 까치
+  example_rr: kkachi
+- hangul: 꺼
+  rr: kkeo
+  gloss_en: awn
+  image_prompt: Awn
+  image_filename: 꺼끄러기-awn.png
+  example_word: 꺼끄러기
+  example_rr: kkeokkeureogi
+- hangul: 껴
+  rr: kkyeo
+  gloss_en: black wave
+  image_prompt: Black Wave
+  image_filename: 껴_검은_파도-black_wave.png
+  example_word: 껴 검은 파도
+  example_rr: kkyeo geoeu pado
+- hangul: 끼
+  rr: kki
+  gloss_en: vest
+  image_prompt: Vest
+  image_filename: 조끼-vest.png
+  example_word: 조끼
+  example_rr: jokki
+- hangul: 깨
+  rr: kkae
+  gloss_en: shoulder
+  image_prompt: Shoulder
+  image_filename: 어깨-shoulder.png
+  example_word: 어깨
+  example_rr: eokkae
+- hangul: 께
+  rr: kke
+  gloss_en:
+  - measurement
+  - ply
+  - thickness
+  image_prompt: Measurement
+  image_filename: 두께-measurement.png
+  example_word: 두께
+  example_rr: dukke
+- hangul: 꼐
+  rr: kkye
+  gloss_en: black tree
+  image_prompt: Black Tree
+  image_filename: 검은_가꼐도-black_tree.png
+  example_word: 검은 가꼐도
+  example_rr: geoeu gakkyedo
+- hangul: 꽤
+  rr: kkwae
+  gloss_en: fairly or considerably
+  image_prompt: Fairly Or Considerably
+  image_filename: 꽤-fairly_or_considerably.png
+  example_word: 꽤
+  example_rr: kkwae
+- hangul: 꾀
+  rr: kkoe
+  gloss_en:
+  - trickery
+  - devices
+  - artifices
+  image_prompt: Trickery
+  image_filename: 꾀-trickery.png
+  example_word: 꾀
+  example_rr: kkoe
+- hangul: 뀌
+  rr: kkwi
+  gloss_en: white vegetables
+  image_prompt: White Vegetables
+  image_filename: 뀌_하얀_야채-white_vegetables.png
+  example_word: 뀌 하얀 야채
+  example_rr: kkwi haya yachae
+- hangul: 꼬
+  rr: kko
+  gloss_en: tail
+  image_prompt: Tail
+  image_filename: 꼬리-tail.png
+  example_word: 꼬리
+  example_rr: kkori
+- hangul: 꽈
+  rr: kkwa
+  gloss_en: groundcherry
+  image_prompt: Groundcherry
+  image_filename: 꽈리-groundcherry.png
+  example_word: 꽈리
+  example_rr: kkwari
+- hangul: 꾸
+  rr: kku
+  gloss_en: machinery
+  image_prompt: Machinery
+  image_filename: 꾸밈-machinery.png
+  example_word: 꾸밈
+  example_rr: kkumi
+- hangul: 꿔
+  rr: kkwo
+  gloss_en: blue monkey
+  image_prompt: Blue Monkey
+  image_filename: 꿔_파란_원숭이-blue_monkey.png
+  example_word: 꿔 파란 원숭이
+  example_rr: kkwo para wosui
+- hangul: 꿰
+  rr: kkwe
+  gloss_en: green tree
+  image_prompt: Green Tree
+  image_filename: 꿰_초록_가꼐도-green_tree.png
+  example_word: 꿰 초록 가꼐도
+  example_rr: kkwe choro gakkyedo
+- hangul: 끄
+  rr: kkeu
+  gloss_en: cat's-paw
+  image_prompt: Cat'S-Paw
+  image_filename: 끄나불-cat's-paw.png
+  example_word: 끄나불
+  example_rr: kkeunabu
+- hangul: 카
+  rr: ka
+  gloss_en: card
+  image_prompt: Card
+  image_filename: 카드-card.png
+  example_word: 카드
+  example_rr: kadeu
+- hangul: 커
+  rr: keo
+  gloss_en: curtain
+  image_prompt: Curtain
+  image_filename: 커튼-curtain.png
+  example_word: 커튼
+  example_rr: keoteu
+- hangul: 켜
+  rr: kyeo
+  gloss_en:
+  - fold
+  - layer
+  - ply
+  image_prompt: Fold
+  image_filename: 켜-fold.png
+  example_word: 켜
+  example_rr: kyeo
+- hangul: 키
+  rr: ki
+  gloss_en: stature/height
+  image_prompt: Stature/Height
+  image_filename: 키-stature/height.png
+  example_word: 키
+  example_rr: ki
+- hangul: 캐
+  rr: kae
+  gloss_en: looper
+  image_prompt: Looper
+  image_filename: 캐디-looper.png
+  example_word: 캐디
+  example_rr: kaedi
+- hangul: 케
+  rr: ke
+  gloss_en: skates
+  image_prompt: Skates
+  image_filename: 스케이트-skates.png
+  example_word: 스케이트
+  example_rr: seukeiteu
+- hangul: 쾌
+  rr: kwae
+  gloss_en:
+  - a pleasant sensation
+  - a good feeling
+  image_prompt: A Pleasant Sensation
+  image_filename: 쾌감-a_pleasant_sensation.png
+  example_word: 쾌감
+  example_rr: kwaega
+- hangul: 퀴
+  rr: kwi
+  gloss_en: curie
+  image_prompt: Curie
+  image_filename: 퀴리-curie.png
+  example_word: 퀴리
+  example_rr: kwiri
+- hangul: 코
+  rr: ko
+  gloss_en: the nose
+  image_prompt: The Nose
+  image_filename: 코-the_nose.png
+  example_word: 코
+  example_rr: ko
+- hangul: 쿄
+  rr: kyo
+  gloss_en: black umbrella
+  image_prompt: Black Umbrella
+  image_filename: 쿄_검은_우산-black_umbrella.png
+  example_word: 쿄 검은 우산
+  example_rr: kyo geoeu usa
+- hangul: 콰
+  rr: kwa
+  gloss_en: blue monkey
+  image_prompt: Blue Monkey
+  image_filename: 콰_파란_원숭이-blue_monkey.png
+  example_word: 콰 파란 원숭이
+  example_rr: kwa para wosui
+- hangul: 쿠
+  rr: ku
+  gloss_en: cushion
+  image_prompt: Cushion
+  image_filename: 쿠션-cushion.png
+  example_word: 쿠션
+  example_rr: kusyeo
+- hangul: 큐
+  rr: kyu
+  gloss_en: cue
+  image_prompt: Cue
+  image_filename: 큐-cue.png
+  example_word: 큐
+  example_rr: kyu
+- hangul: 쿼
+  rr: kwo
+  gloss_en: red clock
+  image_prompt: Red Clock
+  image_filename: 쿼_빨간_시계-red_clock.png
+  example_word: 쿼 빨간 시계
+  example_rr: kwo ppaga sigye
+- hangul: 퀘
+  rr: kwe
+  gloss_en: green washing machine
+  image_prompt: Green Washing Machine
+  image_filename: 퀘_초록_세탁기-green_washing_machine.png
+  example_word: 퀘 초록 세탁기
+  example_rr: kwe choro setagi
+- hangul: 크
+  rr: keu
+  gloss_en: size
+  image_prompt: Size
+  image_filename: 크기-size.png
+  example_word: 크기
+  example_rr: keugi
+- hangul: 나
+  rr: na
+  gloss_en: a country
+  image_prompt: A Country
+  image_filename: 나라-a_country.png
+  example_word: 나라
+  example_rr: nara
+- hangul: 냐
+  rr: nya
+  gloss_en: uhhuh
+  image_prompt: Uhhuh
+  image_filename: 오냐-uhhuh.png
+  example_word: 오냐
+  example_rr: onya
+- hangul: 너
+  rr: neo
+  gloss_en: corner
+  image_prompt: Corner
+  image_filename: 코너-corner.png
+  example_word: 코너
+  example_rr: koneo
+- hangul: 녀
+  rr: nyeo
+  gloss_en: man and woman
+  image_prompt: Man And Woman
+  image_filename: 남녀-man_and_woman.png
+  example_word: 남녀
+  example_rr: nanyeo
+- hangul: 니
+  rr: ni
+  gloss_en: older sister
+  image_prompt: Older Sister
+  image_filename: 언니-older_sister.png
+  example_word: 언니
+  example_rr: eoni
+- hangul: 내
+  rr: nae
+  gloss_en: high school student
+  image_prompt: High School Student
+  image_filename: 내기-high_school_student.png
+  example_word: 내기
+  example_rr: naegi
+- hangul: 네
+  rr: ne
+  gloss_en: swings
+  image_prompt: Swings
+  image_filename: 그네-swings.png
+  example_word: 그네
+  example_rr: geune
+- hangul: 녜
+  rr: nye
+  gloss_en: black family
+  image_prompt: Black Family
+  image_filename: 녜_검은_가족-black_family.png
+  example_word: 녜 검은 가족
+  example_rr: nye geoeu gajo
+- hangul: 뇌
+  rr: noe
+  gloss_en: bribe
+  image_prompt: Bribe
+  image_filename: 뇌물-bribe.png
+  example_word: 뇌물
+  example_rr: noemu
+- hangul: 뉘
+  rr: nwi
+  gloss_en: nuance
+  image_prompt: Nuance
+  image_filename: 뉘앙스-nuance.png
+  example_word: 뉘앙스
+  example_rr: nwiaseu
+- hangul: 노
+  rr: 'no'
+  gloss_en: labor
+  image_prompt: Labor
+  image_filename: 노동-labor.png
+  example_word: 노동
+  example_rr: nodo
+- hangul: 뇨
+  rr: nyo
+  gloss_en: glycosuria
+  image_prompt: Glycosuria
+  image_filename: 당뇨-glycosuria.png
+  example_word: 당뇨
+  example_rr: danyo
+- hangul: 놔
+  rr: nwa
+  gloss_en: green noodles with black bean sauce
+  image_prompt: Green Noodles With Black Bean Sauce
+  image_filename: 놔_초록_짜장면-green_noodles_with_black_bean_sauce.png
+  example_word: 놔 초록 짜장면
+  example_rr: nwa choro jjajamyeo
+- hangul: 누
+  rr: nu
+  gloss_en: older sister
+  image_prompt: Older Sister
+  image_filename: 누나-older_sister.png
+  example_word: 누나
+  example_rr: nuna
+- hangul: 뉴
+  rr: nyu
+  gloss_en: news
+  image_prompt: News
+  image_filename: 뉴스-news.png
+  example_word: 뉴스
+  example_rr: nyuseu
+- hangul: 느
+  rr: neu
+  gloss_en: feeling
+  image_prompt: Feeling
+  image_filename: 느낌-feeling.png
+  example_word: 느낌
+  example_rr: neukki
+- hangul: 늬
+  rr: nui
+  gloss_en: design
+  image_prompt: Design
+  image_filename: 무늬-design.png
+  example_word: 무늬
+  example_rr: munui
+- hangul: 다
+  rr: da
+  gloss_en: all
+  image_prompt: All
+  image_filename: 다-all.png
+  example_word: 다
+  example_rr: da
+- hangul: 더
+  rr: deo
+  gloss_en: the heat
+  image_prompt: The Heat
+  image_filename: 더위-the_heat.png
+  example_word: 더위
+  example_rr: deowi
+- hangul: 뎌
+  rr: dyeo
+  gloss_en: green leg
+  image_prompt: Green Leg
+  image_filename: 뎌_초록_다리-green_leg.png
+  example_word: 뎌 초록 다리
+  example_rr: dyeo choro dari
+- hangul: 디
+  rr: di
+  gloss_en: design
+  image_prompt: Design
+  image_filename: 디자인-design.png
+  example_word: 디자인
+  example_rr: dijai
+- hangul: 대
+  rr: dae
+  gloss_en: an answer
+  image_prompt: An Answer
+  image_filename: 대답-an_answer.png
+  example_word: 대답
+  example_rr: daeda
+- hangul: 데
+  rr: de
+  gloss_en: date
+  image_prompt: Date
+  image_filename: 데이트-date.png
+  example_word: 데이트
+  example_rr: deiteu
+- hangul: 돼
+  rr: dwae
+  gloss_en: pig
+  image_prompt: Pig
+  image_filename: 돼지-pig.png
+  example_word: 돼지
+  example_rr: dwaeji
+- hangul: 되
+  rr: doe
+  gloss_en:
+  - replication
+  - repetition
+  - iteration
+  image_prompt: Replication
+  image_filename: 되풀이-replication.png
+  example_word: 되풀이
+  example_rr: doepui
+- hangul: 뒤
+  rr: dwi
+  gloss_en: 1) back 2) future 3) following
+  image_prompt: 1) Back 2) Future 3) Following
+  image_filename: 뒤-1)_back_2)_future_3)_following.png
+  example_word: 뒤
+  example_rr: dwi
+- hangul: 도
+  rr: do
+  gloss_en: tool
+  image_prompt: Tool
+  image_filename: 도구-tool.png
+  example_word: 도구
+  example_rr: dogu
+- hangul: 됴
+  rr: dyo
+  gloss_en: red ball
+  image_prompt: Red Ball
+  image_filename: 됴_빨간_툐숲-red_ball.png
+  example_word: 됴 빨간 툐숲
+  example_rr: dyo ppaga tyosu
+- hangul: 두
+  rr: du
+  gloss_en: characteristic
+  image_prompt: Characteristic
+  image_filename: 두통-characteristic.png
+  example_word: 두통
+  example_rr: duto
+- hangul: 듀
+  rr: dyu
+  gloss_en: producer
+  image_prompt: Producer
+  image_filename: 프로듀서-producer.png
+  example_word: 프로듀서
+  example_rr: peurodyuseo
+- hangul: 둬
+  rr: dwo
+  gloss_en: white mother
+  image_prompt: White Mother
+  image_filename: 둬_하얀_어머니-white_mother.png
+  example_word: 둬 하얀 어머니
+  example_rr: dwo haya eomeoni
+- hangul: 뒈
+  rr: dwe
+  gloss_en: green washing machine
+  image_prompt: Green Washing Machine
+  image_filename: 뒈_초록_세탁기-green_washing_machine.png
+  example_word: 뒈 초록 세탁기
+  example_rr: dwe choro setagi
+- hangul: 드
+  rr: deu
+  gloss_en: department store
+  image_prompt: Department Store
+  image_filename: 드라마-department_store.png
+  example_word: 드라마
+  example_rr: deurama
+- hangul: 따
+  rr: tta
+  gloss_en: separate
+  image_prompt: Separate
+  image_filename: 따로-separate.png
+  example_word: 따로
+  example_rr: ttaro
+- hangul: 떠
+  rr: tteo
+  gloss_en:
+  - a blabber
+  - a big mouth
+  image_prompt: A Blabber
+  image_filename: 떠버리-a_blabber.png
+  example_word: 떠버리
+  example_rr: tteobeori
+- hangul: 띠
+  rr: tti
+  gloss_en:
+  - band
+  - belt
+  - girdle
+  image_prompt: Band
+  image_filename: 띠-band.png
+  example_word: 띠
+  example_rr: tti
+- hangul: 때
+  rr: ttae
+  gloss_en: 1) hour 2) period 3) opportunity
+  image_prompt: 1) Hour 2) Period 3) Opportunity
+  image_filename: 때-1)_hour_2)_period_3)_opportunity.png
+  example_word: 때
+  example_rr: ttae
+- hangul: 떼
+  rr: tte
+  gloss_en: skein
+  image_prompt: Skein
+  image_filename: 떼-skein.png
+  example_word: 떼
+  example_rr: tte
+- hangul: 뛰
+  rr: ttwi
+  gloss_en:
+  - broad jump
+  - long jump
+  image_prompt: Broad Jump
+  image_filename: 넓이뛰기-broad_jump.png
+  example_word: 넓이뛰기
+  example_rr: neoittwigi
+- hangul: 또
+  rr: tto
+  gloss_en: again
+  image_prompt: Again
+  image_filename: 또-again.png
+  example_word: 또
+  example_rr: tto
+- hangul: 똬
+  rr: ttwa
+  gloss_en: putting sth on your head to carry it
+  image_prompt: Putting Sth On Your Head To Carry It
+  image_filename: 똬리-putting_sth_on_your_head_to_carry_it.png
+  example_word: 똬리
+  example_rr: ttwari
+- hangul: 뚜
+  rr: ttu
+  gloss_en:
+  - cap
+  - cover
+  - lid
+  - top
+  image_prompt: Cap
+  image_filename: 뚜껑-cap.png
+  example_word: 뚜껑
+  example_rr: ttukkeo
+- hangul: 뜨
+  rr: tteu
+  gloss_en:
+  - knitting
+  - stitchery
+  - yarning
+  image_prompt: Knitting
+  image_filename: 뜨개질-knitting.png
+  example_word: 뜨개질
+  example_rr: tteugaeji
+- hangul: 띄
+  rr: ttui
+  gloss_en: white country
+  image_prompt: White Country
+  image_filename: 띄_하얀_나라-white_country.png
+  example_word: 띄 하얀 나라
+  example_rr: ttui haya nara
+- hangul: 타
+  rr: ta
+  gloss_en: ostrich
+  image_prompt: Ostrich
+  image_filename: 타조-ostrich.png
+  example_word: 타조
+  example_rr: tajo
+- hangul: 터
+  rr: teo
+  gloss_en: site
+  image_prompt: Site
+  image_filename: 터-site.png
+  example_word: 터
+  example_rr: teo
+- hangul: 티
+  rr: ti
+  gloss_en: tv
+  image_prompt: Tv
+  image_filename: 티브이-tv.png
+  example_word: 티브이
+  example_rr: tibeui
+- hangul: 태
+  rr: tae
+  gloss_en: attitude
+  image_prompt: Attitude
+  image_filename: 태도-attitude.png
+  example_word: 태도
+  example_rr: taedo
+- hangul: 테
+  rr: te
+  gloss_en: tennis
+  image_prompt: Tennis
+  image_filename: 테니스-tennis.png
+  example_word: 테니스
+  example_rr: teniseu
+- hangul: 퇘
+  rr: twae
+  gloss_en: sow
+  image_prompt: Sow
+  image_filename: 암퇘지-sow.png
+  example_word: 암퇘지
+  example_rr: atwaeji
+- hangul: 퇴
+  rr: toe
+  gloss_en: page
+  image_prompt: Page
+  image_filename: 퇴근-page.png
+  example_word: 퇴근
+  example_rr: toegeu
+- hangul: 튀
+  rr: twi
+  gloss_en: batter-fried food
+  image_prompt: Batter-Fried Food
+  image_filename: 튀김-batter-fried_food.png
+  example_word: 튀김
+  example_rr: twigi
+- hangul: 토
+  rr: to
+  gloss_en: national flag
+  image_prompt: National Flag
+  image_filename: 토끼-national_flag.png
+  example_word: 토끼
+  example_rr: tokki
+- hangul: 투
+  rr: tu
+  gloss_en: rock
+  image_prompt: Rock
+  image_filename: 투혼-rock.png
+  example_word: 투혼
+  example_rr: tuho
+- hangul: 튜
+  rr: tyu
+  gloss_en:
+  - inner tube
+  - tube
+  image_prompt: Inner Tube
+  image_filename: 튜브-inner_tube.png
+  example_word: 튜브
+  example_rr: tyubeu
+- hangul: 트
+  rr: teu
+  gloss_en: truck
+  image_prompt: Truck
+  image_filename: 트럭-truck.png
+  example_word: 트럭
+  example_rr: teureo
+- hangul: 라
+  rr: ra
+  gloss_en: ramen (instant noodles)
+  image_prompt: Ramen (Instant Noodles)
+  image_filename: 라면-ramen_(instant_noodles).png
+  example_word: 라면
+  example_rr: ramyeo
+- hangul: 랴
+  rr: rya
+  gloss_en: hurriedly
+  image_prompt: Hurriedly
+  image_filename: 부랴부랴-hurriedly.png
+  example_word: 부랴부랴
+  example_rr: buryaburya
+- hangul: 러
+  rr: reo
+  gloss_en: dollar
+  image_prompt: Dollar
+  image_filename: 달러-dollar.png
+  example_word: 달러
+  example_rr: dareo
+- hangul: 려
+  rr: ryeo
+  gloss_en: consideration
+  image_prompt: Consideration
+  image_filename: 배려-consideration.png
+  example_word: 배려
+  example_rr: baeryeo
+- hangul: 리
+  rr: ri
+  gloss_en: remote control
+  image_prompt: Remote Control
+  image_filename: 리모콘-remote_control.png
+  example_word: 리모콘
+  example_rr: rimoko
+- hangul: 래
+  rr: rae
+  gloss_en: song
+  image_prompt: Song
+  image_filename: 노래-song.png
+  example_word: 노래
+  example_rr: norae
+- hangul: 레
+  rr: re
+  gloss_en: green
+  image_prompt: Green
+  image_filename: 레슨-green.png
+  example_word: 레슨
+  example_rr: reseu
+- hangul: 례
+  rr: rye
+  gloss_en: rudeness/impolite
+  image_prompt: Rudeness/Impolite
+  image_filename: 실례-rudeness/impolite.png
+  example_word: 실례
+  example_rr: sirye
+- hangul: 뢰
+  rr: roe
+  gloss_en: thunderstroke
+  image_prompt: Thunderstroke
+  image_filename: 낙뢰-thunderstroke.png
+  example_word: 낙뢰
+  example_rr: naroe
+- hangul: 뤼
+  rr: rwi
+  gloss_en: white magpie
+  image_prompt: White Magpie
+  image_filename: 뤼_하얀_까치-white_magpie.png
+  example_word: 뤼 하얀 까치
+  example_rr: rwi haya kkachi
+- hangul: 로
+  rr: ro
+  gloss_en: zoo
+  image_prompt: Zoo
+  image_filename: 로봇-zoo.png
+  example_word: 로봇
+  example_rr: robo
+- hangul: 료
+  rr: ryo
+  gloss_en: colleague
+  image_prompt: Colleague
+  image_filename: 동료-colleague.png
+  example_word: 동료
+  example_rr: doryo
+- hangul: 루
+  rr: ru
+  gloss_en: beach
+  image_prompt: Beach
+  image_filename: 가루-beach.png
+  example_word: 가루
+  example_rr: garu
+- hangul: 류
+  rr: ryu
+  gloss_en: documents
+  image_prompt: Documents
+  image_filename: 서류-documents.png
+  example_word: 서류
+  example_rr: seoryu
+- hangul: 뤄
+  rr: rwo
+  gloss_en: black bread
+  image_prompt: Black Bread
+  image_filename: 뤄_검은_빵-black_bread.png
+  example_word: 뤄 검은 빵
+  example_rr: rwo geoeu ppa
+- hangul: 르
+  rr: reu
+  gloss_en: shop
+  image_prompt: Shop
+  image_filename: 장르-shop.png
+  example_word: 장르
+  example_rr: jareu
+- hangul: 마
+  rr: ma
+  gloss_en: title
+  image_prompt: Title
+  image_filename: 마당-title.png
+  example_word: 마당
+  example_rr: mada
+- hangul: 머
+  rr: meo
+  gloss_en: head
+  image_prompt: Head
+  image_filename: 머리-head.png
+  example_word: 머리
+  example_rr: meori
+- hangul: 며
+  rr: myeo
+  gloss_en: how many days
+  image_prompt: How Many Days
+  image_filename: 며칠-how_many_days.png
+  example_word: 며칠
+  example_rr: myeochi
+- hangul: 미
+  rr: mi
+  gloss_en: the united states
+  image_prompt: The United States
+  image_filename: 미국-the_united_states.png
+  example_word: 미국
+  example_rr: migu
+- hangul: 매
+  rr: mae
+  gloss_en: enthusiast
+  image_prompt: Enthusiast
+  image_filename: 매력-enthusiast.png
+  example_word: 매력
+  example_rr: maeryeo
+- hangul: 메
+  rr: me
+  gloss_en: menu
+  image_prompt: Menu
+  image_filename: 메뉴-menu.png
+  example_word: 메뉴
+  example_rr: menyu
+- hangul: 몌
+  rr: mye
+  gloss_en: black car
+  image_prompt: Black Car
+  image_filename: 몌_검은_차-black_car.png
+  example_word: 몌 검은 차
+  example_rr: mye geoeu cha
+- hangul: 뫼
+  rr: moe
+  gloss_en: a mountain
+  image_prompt: A Mountain
+  image_filename: 뫼-a_mountain.png
+  example_word: 뫼
+  example_rr: moe
+- hangul: 모
+  rr: mo
+  gloss_en: mosquito
+  image_prompt: Mosquito
+  image_filename: 모기-mosquito.png
+  example_word: 모기
+  example_rr: mogi
+- hangul: 묘
+  rr: myo
+  gloss_en: a mysterious power
+  image_prompt: A Mysterious Power
+  image_filename: 묘-a_mysterious_power.png
+  example_word: 묘
+  example_rr: myo
+- hangul: 무
+  rr: mu
+  gloss_en: weight
+  image_prompt: Weight
+  image_filename: 무게-weight.png
+  example_word: 무게
+  example_rr: muge
+- hangul: 뮤
+  rr: myu
+  gloss_en: communication
+  image_prompt: Communication
+  image_filename: 커뮤니케이션-communication.png
+  example_word: 커뮤니케이션
+  example_rr: keomyunikeisyeo
+- hangul: 뭐
+  rr: mwo
+  gloss_en: huh? (2) something
+  image_prompt: Huh? (2) Something
+  image_filename: 뭐-huh?_(2)_something.png
+  example_word: 뭐
+  example_rr: mwo
+- hangul: 므
+  rr: meu
+  gloss_en: yellow tomato
+  image_prompt: Yellow Tomato
+  image_filename: 므_노란_토마토-yellow_tomato.png
+  example_word: 므 노란 토마토
+  example_rr: meu nora tomato
+- hangul: 바
+  rr: ba
+  gloss_en: outside
+  image_prompt: Outside
+  image_filename: 바깥-outside.png
+  example_word: 바깥
+  example_rr: bakka
+- hangul: 버
+  rr: beo
+  gloss_en: bus
+  image_prompt: Bus
+  image_filename: 버스-bus.png
+  example_word: 버스
+  example_rr: beoseu
+- hangul: 벼
+  rr: byeo
+  gloss_en: a rice plant
+  image_prompt: A Rice Plant
+  image_filename: 벼-a_rice_plant.png
+  example_word: 벼
+  example_rr: byeo
+- hangul: 비
+  rr: bi
+  gloss_en: rain
+  image_prompt: Rain
+  image_filename: 비-rain.png
+  example_word: 비
+  example_rr: bi
+- hangul: 배
+  rr: bae
+  gloss_en: abdomen
+  image_prompt: Abdomen
+  image_filename: 배-abdomen.png
+  example_word: 배
+  example_rr: bae
+- hangul: 베
+  rr: be
+  gloss_en: pillow
+  image_prompt: Pillow
+  image_filename: 베개-pillow.png
+  example_word: 베개
+  example_rr: begae
+- hangul: 봬
+  rr: bwae
+  gloss_en: green separate
+  image_prompt: Green Separate
+  image_filename: 봬_초록_따로-green_separate.png
+  example_word: 봬 초록 따로
+  example_rr: bwae choro ttaro
+- hangul: 뵈
+  rr: boe
+  gloss_en: red sky
+  image_prompt: Red Sky
+  image_filename: 뵈_빨간_하늘-red_sky.png
+  example_word: 뵈 빨간 하늘
+  example_rr: boe ppaga haneu
+- hangul: 뷔
+  rr: bwi
+  gloss_en: buffet
+  image_prompt: Buffet
+  image_filename: 뷔페-buffet.png
+  example_word: 뷔페
+  example_rr: bwipe
+- hangul: 보
+  rr: bo
+  gloss_en: fatigue
+  image_prompt: Fatigue
+  image_filename: 보기-fatigue.png
+  example_word: 보기
+  example_rr: bogi
+- hangul: 봐
+  rr: bwa
+  gloss_en: green snack
+  image_prompt: Green Snack
+  image_filename: 봐_초록_과자-green_snack.png
+  example_word: 봐 초록 과자
+  example_rr: bwa choro gwaja
+- hangul: 부
+  rr: bu
+  gloss_en: burden
+  image_prompt: Burden
+  image_filename: 부담-burden.png
+  example_word: 부담
+  example_rr: buda
+- hangul: 뷰
+  rr: byu
+  gloss_en: interview
+  image_prompt: Interview
+  image_filename: 인터뷰-interview.png
+  example_word: 인터뷰
+  example_rr: iteobyu
+- hangul: 브
+  rr: beu
+  gloss_en: tv
+  image_prompt: Tv
+  image_filename: 티브이-tv.png
+  example_word: 티브이
+  example_rr: tibeui
+- hangul: 빠
+  rr: ppa
+  gloss_en: gorge
+  image_prompt: Gorge
+  image_filename: 빠지-gorge.png
+  example_word: 빠지
+  example_rr: ppaji
+- hangul: 뻐
+  rr: ppeo
+  gloss_en: cuckoo
+  image_prompt: Cuckoo
+  image_filename: 뻐꾹-cuckoo.png
+  example_word: 뻐꾹
+  example_rr: ppeokku
+- hangul: 뼈
+  rr: ppyeo
+  gloss_en: subject
+  image_prompt: Subject
+  image_filename: 뼈-subject.png
+  example_word: 뼈
+  example_rr: ppyeo
+- hangul: 삐
+  rr: ppi
+  gloss_en: throwaway
+  image_prompt: Throwaway
+  image_filename: 삐라-throwaway.png
+  example_word: 삐라
+  example_rr: ppira
+- hangul: 빼
+  rr: ppae
+  gloss_en: draft
+  image_prompt: Draft
+  image_filename: 빼기-draft.png
+  example_word: 빼기
+  example_rr: ppaegi
+- hangul: 뻬
+  rr: ppe
+  gloss_en: black car
+  image_prompt: Black Car
+  image_filename: 뻬_검은_차-black_car.png
+  example_word: 뻬 검은 차
+  example_rr: ppe geoeu cha
+- hangul: 뽀
+  rr: ppo
+  gloss_en: 뽀뽀
+  image_prompt: 뽀뽀
+  image_filename: 뽀뽀-뽀뽀.png
+  example_word: 뽀뽀
+  example_rr: ppoppo
+- hangul: 뾰
+  rr: ppyo
+  gloss_en: black shop
+  image_prompt: Black Shop
+  image_filename: 뾰_검은_가게-black_shop.png
+  example_word: 뾰 검은 가게
+  example_rr: ppyo geoeu gage
+- hangul: 뿌
+  rr: ppu
+  gloss_en: a root
+  image_prompt: A Root
+  image_filename: 뿌리-a_root.png
+  example_word: 뿌리
+  example_rr: ppuri
+- hangul: 쀼
+  rr: ppyu
+  gloss_en: blue location
+  image_prompt: Blue Location
+  image_filename: 쀼_파란_위치-blue_location.png
+  example_word: 쀼 파란 위치
+  example_rr: ppyu para wichi
+- hangul: 쁘
+  rr: ppeu
+  gloss_en: black apple
+  image_prompt: Black Apple
+  image_filename: 쁘_검은_사과-black_apple.png
+  example_word: 쁘 검은 사과
+  example_rr: ppeu geoeu sagwa
+- hangul: 파
+  rr: pa
+  gloss_en: (good) manners
+  image_prompt: (Good) Manners
+  image_filename: 파도-(good)_manners.png
+  example_word: 파도
+  example_rr: pado
+- hangul: 퍄
+  rr: pya
+  gloss_en: white country
+  image_prompt: White Country
+  image_filename: 퍄_하얀_나라-white_country.png
+  example_word: 퍄 하얀 나라
+  example_rr: pya haya nara
+- hangul: 퍼
+  rr: peo
+  gloss_en: camera
+  image_prompt: Camera
+  image_filename: 퍼즐-camera.png
+  example_word: 퍼즐
+  example_rr: peojeu
+- hangul: 펴
+  rr: pyeo
+  gloss_en: red butterfly
+  image_prompt: Red Butterfly
+  image_filename: 펴_빨간_나비-red_butterfly.png
+  example_word: 펴 빨간 나비
+  example_rr: pyeo ppaga nabi
+- hangul: 피
+  rr: pi
+  gloss_en: question
+  image_prompt: Question
+  image_filename: 피-question.png
+  example_word: 피
+  example_rr: pi
+- hangul: 패
+  rr: pae
+  gloss_en:
+  - a playing card
+  - a suit
+  image_prompt: A Playing Card
+  image_filename: 패-a_playing_card.png
+  example_word: 패
+  example_rr: pae
+- hangul: 페
+  rr: pe
+  gloss_en: envelope
+  image_prompt: Envelope
+  image_filename: 페이지-envelope.png
+  example_word: 페이지
+  example_rr: peiji
+- hangul: 폐
+  rr: pye
+  gloss_en:
+  - infliction
+  - distress
+  image_prompt: Infliction
+  image_filename: 폐-infliction.png
+  example_word: 폐
+  example_rr: pye
+- hangul: 퓌
+  rr: pwi
+  gloss_en: red scissors
+  image_prompt: Red Scissors
+  image_filename: 퓌_빨간_가위-red_scissors.png
+  example_word: 퓌 빨간 가위
+  example_rr: pwi ppaga gawi
+- hangul: 포
+  rr: po
+  gloss_en: grape(s)
+  image_prompt: Grape(S)
+  image_filename: 포도-grape(s).png
+  example_word: 포도
+  example_rr: podo
+- hangul: 표
+  rr: pyo
+  gloss_en: a marker/indication
+  image_prompt: A Marker/Indication
+  image_filename: 표-a_marker/indication.png
+  example_word: 표
+  example_rr: pyo
+- hangul: 푸
+  rr: pu
+  gloss_en: shampoo
+  image_prompt: Shampoo
+  image_filename: 샴푸-shampoo.png
+  example_word: 샴푸
+  example_rr: syapu
+- hangul: 퓨
+  rr: pyu
+  gloss_en: computer
+  image_prompt: Computer
+  image_filename: 컴퓨터-computer.png
+  example_word: 컴퓨터
+  example_rr: keopyuteo
+- hangul: 프
+  rr: peu
+  gloss_en: bakery (older sounding)
+  image_prompt: Bakery (Older Sounding)
+  image_filename: 프로-bakery_(older_sounding).png
+  example_word: 프로
+  example_rr: peuro
+- hangul: 사
+  rr: sa
+  gloss_en: fortune
+  image_prompt: Fortune
+  image_filename: 사건-fortune.png
+  example_word: 사건
+  example_rr: sageo
+- hangul: 샤
+  rr: sya
+  gloss_en: shower
+  image_prompt: Shower
+  image_filename: 샤워-shower.png
+  example_word: 샤워
+  example_rr: syawo
+- hangul: 서
+  rr: seo
+  gloss_en: leave work
+  image_prompt: Leave Work
+  image_filename: 서랍-leave_work.png
+  example_word: 서랍
+  example_rr: seora
+- hangul: 셔
+  rr: syeo
+  gloss_en: t-shirt
+  image_prompt: T-Shirt
+  image_filename: 티셔츠-t-shirt.png
+  example_word: 티셔츠
+  example_rr: tisyeocheu
+- hangul: 시
+  rr: si
+  gloss_en: city
+  image_prompt: City
+  image_filename: 시-city.png
+  example_word: 시
+  example_rr: si
+- hangul: 새
+  rr: sae
+  gloss_en: a bird
+  image_prompt: A Bird
+  image_filename: 새-a_bird.png
+  example_word: 새
+  example_rr: sae
+- hangul: 세
+  rr: se
+  gloss_en: whole world
+  image_prompt: Whole World
+  image_filename: 세계-whole_world.png
+  example_word: 세계
+  example_rr: segye
+- hangul: 셰
+  rr: sye
+  gloss_en: menshevik
+  image_prompt: Menshevik
+  image_filename: 멘셰비키-menshevik.png
+  example_word: 멘셰비키
+  example_rr: mesyebiki
+- hangul: 쇄
+  rr: swae
+  gloss_en:
+  - avalanche
+  - influx
+  - deluge of
+  - stampede
+  image_prompt: Avalanche
+  image_filename: 쇄도-avalanche.png
+  example_word: 쇄도
+  example_rr: swaedo
+- hangul: 쇠
+  rr: soe
+  gloss_en: beef
+  image_prompt: Beef
+  image_filename: 쇠고기-beef.png
+  example_word: 쇠고기
+  example_rr: soegogi
+- hangul: 쉬
+  rr: swi
+  gloss_en: weewee
+  image_prompt: Weewee
+  image_filename: 쉬-weewee.png
+  example_word: 쉬
+  example_rr: swi
+- hangul: 소
+  rr: so
+  gloss_en: city hall
+  image_prompt: City Hall
+  image_filename: 소-city_hall.png
+  example_word: 소
+  example_rr: so
+- hangul: 쇼
+  rr: syo
+  gloss_en: shopping
+  image_prompt: Shopping
+  image_filename: 쇼핑-shopping.png
+  example_word: 쇼핑
+  example_rr: syopi
+- hangul: 수
+  rr: su
+  gloss_en: handkerchief
+  image_prompt: Handkerchief
+  image_filename: 수건-handkerchief.png
+  example_word: 수건
+  example_rr: sugeo
+- hangul: 슈
+  rr: syu
+  gloss_en: supermarket
+  image_prompt: Supermarket
+  image_filename: 슈퍼마겟-supermarket.png
+  example_word: 슈퍼마겟
+  example_rr: syupeomage
+- hangul: 숴
+  rr: swo
+  gloss_en: yellow squirrel
+  image_prompt: Yellow Squirrel
+  image_filename: 숴_노란_다람쥐-yellow_squirrel.png
+  example_word: 숴 노란 다람쥐
+  example_rr: swo nora darajwi
+- hangul: 스
+  rr: seu
+  gloss_en: ski
+  image_prompt: Ski
+  image_filename: 스키-ski.png
+  example_word: 스키
+  example_rr: seuki
+- hangul: 싸
+  rr: ssa
+  gloss_en: fight
+  image_prompt: Fight
+  image_filename: 싸움-fight.png
+  example_word: 싸움
+  example_rr: ssau
+- hangul: 써
+  rr: sseo
+  gloss_en:
+  - a dragging thing like a plow
+  - a harrow
+  - a rake
+  image_prompt: A Dragging Thing Like A Plow
+  image_filename: 써레-a_dragging_thing_like_a_plow.png
+  example_word: 써레
+  example_rr: sseore
+- hangul: 씨
+  rr: ssi
+  gloss_en: handwriting
+  image_prompt: Handwriting
+  image_filename: 글씨-handwriting.png
+  example_word: 글씨
+  example_rr: geussi
+- hangul: 쌔
+  rr: ssae
+  gloss_en: white magpie
+  image_prompt: White Magpie
+  image_filename: 쌔_하얀_까치-white_magpie.png
+  example_word: 쌔 하얀 까치
+  example_rr: ssae haya kkachi
+- hangul: 쎄
+  rr: sse
+  gloss_en: now or  well or  let me see
+  image_prompt: Now Or  Well Or  Let Me See
+  image_filename: 글쎄-now_or_well_or_let_me_see.png
+  example_word: 글쎄
+  example_rr: geusse
+- hangul: 쐐
+  rr: sswae
+  gloss_en:
+  - a chock
+  - a wedge
+  image_prompt: A Chock
+  image_filename: 쐐기-a_chock.png
+  example_word: 쐐기
+  example_rr: sswaegi
+- hangul: 쐬
+  rr: ssoe
+  gloss_en: blue monkey
+  image_prompt: Blue Monkey
+  image_filename: 쐬_파란_원숭이-blue_monkey.png
+  example_word: 쐬 파란 원숭이
+  example_rr: ssoe para wosui
+- hangul: 쏘
+  rr: sso
+  gloss_en: kindling for lighting a fire
+  image_prompt: Kindling For Lighting A Fire
+  image_filename: 불쏘시개-kindling_for_lighting_a_fire.png
+  example_word: 불쏘시개
+  example_rr: bussosigae
+- hangul: 쏴
+  rr: sswa
+  gloss_en: yellow wedding
+  image_prompt: Yellow Wedding
+  image_filename: 쏴_노란_웨딩-yellow_wedding.png
+  example_word: 쏴 노란 웨딩
+  example_rr: sswa nora wedi
+- hangul: 쑤
+  rr: ssu
+  gloss_en: habitual practice
+  image_prompt: Habitual Practice
+  image_filename: 일쑤-habitual_practice.png
+  example_word: 일쑤
+  example_rr: issu
+- hangul: 쓰
+  rr: sseu
+  gloss_en: garbage
+  image_prompt: Garbage
+  image_filename: 쓰레기-garbage.png
+  example_word: 쓰레기
+  example_rr: sseuregi
+- hangul: 씌
+  rr: ssui
+  gloss_en:
+  - overlay
+  - sheath
+  image_prompt: Overlay
+  image_filename: 씌우개-overlay.png
+  example_word: 씌우개
+  example_rr: ssuiugae
+- hangul: 아
+  rr: a
+  gloss_en: baby/infant
+  image_prompt: Baby/Infant
+  image_filename: 아기-baby/infant.png
+  example_word: 아기
+  example_rr: agi
+- hangul: 야
+  rr: ya
+  gloss_en: baseball
+  image_prompt: Baseball
+  image_filename: 야구-baseball.png
+  example_word: 야구
+  example_rr: yagu
+- hangul: 어
+  rr: eo
+  gloss_en: shoulder
+  image_prompt: Shoulder
+  image_filename: 어깨-shoulder.png
+  example_word: 어깨
+  example_rr: eokkae
+- hangul: 여
+  rr: yeo
+  gloss_en: fingerprint
+  image_prompt: Fingerprint
+  image_filename: 여관-fingerprint.png
+  example_word: 여관
+  example_rr: yeogwa
+- hangul: 이
+  rr: i
+  gloss_en: a tooth
+  image_prompt: A Tooth
+  image_filename: 이-a_tooth.png
+  example_word: 이
+  example_rr: i
+- hangul: 애
+  rr: ae
+  gloss_en: funeral
+  image_prompt: Funeral
+  image_filename: 애교-funeral.png
+  example_word: 애교
+  example_rr: aegyo
+- hangul: 에
+  rr: e
+  gloss_en: police officer
+  image_prompt: Police Officer
+  image_filename: 에너지-police_officer.png
+  example_word: 에너지
+  example_rr: eneoji
+- hangul: 예
+  rr: ye
+  gloss_en: excessive
+  image_prompt: Excessive
+  image_filename: 예-excessive.png
+  example_word: 예
+  example_rr: ye
+- hangul: 왜
+  rr: wae
+  gloss_en: why?
+  image_prompt: Why?
+  image_filename: 왜-why?.png
+  example_word: 왜
+  example_rr: wae
+- hangul: 외
+  rr: oe
+  gloss_en: rubber
+  image_prompt: Rubber
+  image_filename: 외교-rubber.png
+  example_word: 외교
+  example_rr: oegyo
+- hangul: 위
+  rr: wi
+  gloss_en: the upper part/above
+  image_prompt: The Upper Part/Above
+  image_filename: 위-the_upper_part/above.png
+  example_word: 위
+  example_rr: wi
+- hangul: 오
+  rr: o
+  gloss_en: today
+  image_prompt: Today
+  image_filename: 오늘-today.png
+  example_word: 오늘
+  example_rr: oneu
+- hangul: 요
+  rr: yo
+  gloss_en: male student
+  image_prompt: Male Student
+  image_filename: 요금-male_student.png
+  example_word: 요금
+  example_rr: yogeu
+- hangul: 와
+  rr: wa
+  gloss_en: dress shirt (white shirt)
+  image_prompt: Dress Shirt (White Shirt)
+  image_filename: 와이셔츠-dress_shirt_(white_shirt).png
+  example_word: 와이셔츠
+  example_rr: waisyeocheu
+- hangul: 우
+  rr: u
+  gloss_en: an umbrealla
+  image_prompt: An Umbrealla
+  image_filename: 우산-an_umbrealla.png
+  example_word: 우산
+  example_rr: usa
+- hangul: 유
+  rr: yu
+  gloss_en: glass
+  image_prompt: Glass
+  image_filename: 유리-glass.png
+  example_word: 유리
+  example_rr: yuri
+- hangul: 워
+  rr: wo
+  gloss_en: shower
+  image_prompt: Shower
+  image_filename: 샤워-shower.png
+  example_word: 샤워
+  example_rr: syawo
+- hangul: 웨
+  rr: we
+  gloss_en: wedding
+  image_prompt: Wedding
+  image_filename: 웨딩-wedding.png
+  example_word: 웨딩
+  example_rr: wedi
+- hangul: 으
+  rr: eu
+  gloss_en: best
+  image_prompt: Best
+  image_filename: 으뜸-best.png
+  example_word: 으뜸
+  example_rr: eutteu
+- hangul: 의
+  rr: ui
+  gloss_en: opinion
+  image_prompt: Opinion
+  image_filename: 의견-opinion.png
+  example_word: 의견
+  example_rr: uigyeo
+- hangul: 자
+  rr: ja
+  gloss_en: signal
+  image_prompt: Signal
+  image_filename: 자-signal.png
+  example_word: 자
+  example_rr: ja
+- hangul: 저
+  rr: jeo
+  gloss_en: evening
+  image_prompt: Evening
+  image_filename: 저녁-evening.png
+  example_word: 저녁
+  example_rr: jeonyeo
+- hangul: 져
+  rr: jyeo
+  gloss_en: black shop
+  image_prompt: Black Shop
+  image_filename: 져_검은_가게-black_shop.png
+  example_word: 져 검은 가게
+  example_rr: jyeo geoeu gage
+- hangul: 지
+  rr: ji
+  gloss_en: a purse/wallet
+  image_prompt: A Purse/Wallet
+  image_filename: 지갑-a_purse/wallet.png
+  example_word: 지갑
+  example_rr: jiga
+- hangul: 재
+  rr: jae
+  gloss_en: yut (game 4 sticks)
+  image_prompt: Yut (Game 4 Sticks)
+  image_filename: 재능-yut_(game_4_sticks).png
+  example_word: 재능
+  example_rr: jaeneu
+- hangul: 제
+  rr: je
+  gloss_en: housework
+  image_prompt: Housework
+  image_filename: 제국-housework.png
+  example_word: 제국
+  example_rr: jegu
+- hangul: 졔
+  rr: jye
+  gloss_en: green snack
+  image_prompt: Green Snack
+  image_filename: 졔_초록_과자-green_snack.png
+  example_word: 졔 초록 과자
+  example_rr: jye choro gwaja
+- hangul: 좨
+  rr: jwae
+  gloss_en: white screw
+  image_prompt: White Screw
+  image_filename: 좨_하얀_나사-white_screw.png
+  example_word: 좨 하얀 나사
+  example_rr: jwae haya nasa
+- hangul: 죄
+  rr: joe
+  gloss_en: tendency
+  image_prompt: Tendency
+  image_filename: 죄-tendency.png
+  example_word: 죄
+  example_rr: joe
+- hangul: 쥐
+  rr: jwi
+  gloss_en: rat
+  image_prompt: Rat
+  image_filename: 쥐-rat.png
+  example_word: 쥐
+  example_rr: jwi
+- hangul: 조
+  rr: jo
+  gloss_en: condition (for)
+  image_prompt: Condition (For)
+  image_filename: 조건-condition_(for).png
+  example_word: 조건
+  example_rr: jogeo
+- hangul: 죠
+  rr: jyo
+  gloss_en: green grapes
+  image_prompt: Green Grapes
+  image_filename: 죠_초록_포도-green_grapes.png
+  example_word: 죠 초록 포도
+  example_rr: jyo choro podo
+- hangul: 좌
+  rr: jwa
+  gloss_en: seat
+  image_prompt: Seat
+  image_filename: 좌석-seat.png
+  example_word: 좌석
+  example_rr: jwaseo
+- hangul: 주
+  rr: ju
+  gloss_en: week <counting>
+  image_prompt: Week <Counting>
+  image_filename: 주-week_<counting>.png
+  example_word: 주
+  example_rr: ju
+- hangul: 쥬
+  rr: jyu
+  gloss_en: white fight
+  image_prompt: White Fight
+  image_filename: 쥬_하얀_싸움-white_fight.png
+  example_word: 쥬 하얀 싸움
+  example_rr: jyu haya ssau
+- hangul: 즈
+  rr: jeu
+  gloss_en: jazz
+  image_prompt: Jazz
+  image_filename: 재즈-jazz.png
+  example_word: 재즈
+  example_rr: jaejeu
+- hangul: 짜
+  rr: jja
+  gloss_en: noodles with black bean sauce
+  image_prompt: Noodles With Black Bean Sauce
+  image_filename: 짜장면-noodles_with_black_bean_sauce.png
+  example_word: 짜장면
+  example_rr: jjajamyeo
+- hangul: 쩌
+  rr: jjeo
+  gloss_en:
+  - (1) it is possible that 아마도 2) how on earth
+  - how the hell
+  image_prompt: (1) It Is Possible That 아마도 2) How On Earth
+  image_filename: 어쩌면-(1)_it_is_possible_that_아마도_2)_how_on_earth.png
+  example_word: 어쩌면
+  example_rr: eojjeomyeo
+- hangul: 쪄
+  rr: jjyeo
+  gloss_en: yellow tomato
+  image_prompt: Yellow Tomato
+  image_filename: 쪄_노란_토마토-yellow_tomato.png
+  example_word: 쪄 노란 토마토
+  example_rr: jjyeo nora tomato
+- hangul: 찌
+  rr: jji
+  gloss_en: a pot stew
+  image_prompt: A Pot Stew
+  image_filename: 찌개-a_pot_stew.png
+  example_word: 찌개
+  example_rr: jjigae
+- hangul: 째
+  rr: jjae
+  gloss_en: a clicking sound
+  image_prompt: A Clicking Sound
+  image_filename: 째깍-a_clicking_sound.png
+  example_word: 째깍
+  example_rr: jjaekka
+- hangul: 쩨
+  rr: jje
+  gloss_en: white cooking
+  image_prompt: White Cooking
+  image_filename: 쩨_하얀_요리-white_cooking.png
+  example_word: 쩨 하얀 요리
+  example_rr: jje haya yori
+- hangul: 쬐
+  rr: jjoe
+  gloss_en: green snack
+  image_prompt: Green Snack
+  image_filename: 쬐_초록_과자-green_snack.png
+  example_word: 쬐 초록 과자
+  example_rr: jjoe choro gwaja
+- hangul: 쪼
+  rr: jjo
+  gloss_en: green noodles with black bean sauce
+  image_prompt: Green Noodles With Black Bean Sauce
+  image_filename: 쪼_초록_짜장면-green_noodles_with_black_bean_sauce.png
+  example_word: 쪼 초록 짜장면
+  example_rr: jjo choro jjajamyeo
+- hangul: 쭈
+  rr: jju
+  gloss_en:
+  - hesitantly
+  - timorously
+  image_prompt: Hesitantly
+  image_filename: 쭈뼛쭈뼛-hesitantly.png
+  example_word: 쭈뼛쭈뼛
+  example_rr: jjuppyeojjuppyeo
+- hangul: 차
+  rr: cha
+  gloss_en: a vehicle/train/auto car
+  image_prompt: A Vehicle/Train/Auto Car
+  image_filename: 차-a_vehicle/train/auto_car.png
+  example_word: 차
+  example_rr: cha
+- hangul: 처
+  rr: cheo
+  gloss_en: first
+  image_prompt: First
+  image_filename: 처음-first.png
+  example_word: 처음
+  example_rr: cheoeu
+- hangul: 쳐
+  rr: chyeo
+  gloss_en: green snack
+  image_prompt: Green Snack
+  image_filename: 쳐_초록_과자-green_snack.png
+  example_word: 쳐 초록 과자
+  example_rr: chyeo choro gwaja
+- hangul: 치
+  rr: chi
+  gloss_en: dentist
+  image_prompt: Dentist
+  image_filename: 치과-dentist.png
+  example_word: 치과
+  example_rr: chigwa
+- hangul: 채
+  rr: chae
+  gloss_en: channel
+  image_prompt: Channel
+  image_filename: 채널-channel.png
+  example_word: 채널
+  example_rr: chaeneo
+- hangul: 체
+  rr: che
+  gloss_en: physical education
+  image_prompt: Physical Education
+  image_filename: 체육-physical_education.png
+  example_word: 체육
+  example_rr: cheyu
+- hangul: 최
+  rr: choe
+  gloss_en: the oldest
+  image_prompt: The Oldest
+  image_filename: 최고-the_oldest.png
+  example_word: 최고
+  example_rr: choego
+- hangul: 취
+  rr: chwi
+  gloss_en: hobby
+  image_prompt: Hobby
+  image_filename: 취미-hobby.png
+  example_word: 취미
+  example_rr: chwimi
+- hangul: 초
+  rr: cho
+  gloss_en: an invitation
+  image_prompt: An Invitation
+  image_filename: 초대-an_invitation.png
+  example_word: 초대
+  example_rr: chodae
+- hangul: 추
+  rr: chu
+  gloss_en: grass
+  image_prompt: Grass
+  image_filename: 추억-grass.png
+  example_word: 추억
+  example_rr: chueo
+- hangul: 츄
+  rr: chyu
+  gloss_en: white mother
+  image_prompt: White Mother
+  image_filename: 츄_하얀_어머니-white_mother.png
+  example_word: 츄 하얀 어머니
+  example_rr: chyu haya eomeoni
+- hangul: 춰
+  rr: chwo
+  gloss_en: white elephant
+  image_prompt: White Elephant
+  image_filename: 춰_하얀_코끼리-white_elephant.png
+  example_word: 춰 하얀 코끼리
+  example_rr: chwo haya kokkiri
+- hangul: 췌
+  rr: chwe
+  gloss_en:
+  - a book excerpt
+  - a selection of the important parts of a book
+  image_prompt: A Book Excerpt
+  image_filename: 발췌-a_book_excerpt.png
+  example_word: 발췌
+  example_rr: bachwe
+- hangul: 츠
+  rr: cheu
+  gloss_en: boots
+  image_prompt: Boots
+  image_filename: 부츠-boots.png
+  example_word: 부츠
+  example_rr: bucheu
+- hangul: 하
+  rr: ha
+  gloss_en: one
+  image_prompt: One
+  image_filename: 하나-one.png
+  example_word: 하나
+  example_rr: hana
+- hangul: 햐
+  rr: hya
+  gloss_en: black blanket
+  image_prompt: Black Blanket
+  image_filename: 햐_검은_이불-black_blanket.png
+  example_word: 햐 검은 이불
+  example_rr: hya geoeu ibu
+- hangul: 허
+  rr: heo
+  gloss_en: waist/the small of the back
+  image_prompt: Waist/The Small Of The Back
+  image_filename: 허리-waist/the_small_of_the_back.png
+  example_word: 허리
+  example_rr: heori
+- hangul: 혀
+  rr: hyeo
+  gloss_en: all sides
+  image_prompt: All Sides
+  image_filename: 혀-all_sides.png
+  example_word: 혀
+  example_rr: hyeo
+- hangul: 히
+  rr: hi
+  gloss_en: genius
+  image_prompt: Genius
+  image_filename: 열심히-genius.png
+  example_word: 열심히
+  example_rr: yeosihi
+- hangul: 해
+  rr: hae
+  gloss_en: sun
+  image_prompt: Sun
+  image_filename: 해-sun.png
+  example_word: 해
+  example_rr: hae
+- hangul: 헤
+  rr: he
+  gloss_en: heading
+  image_prompt: Heading
+  image_filename: 헤딩-heading.png
+  example_word: 헤딩
+  example_rr: hedi
+- hangul: 혜
+  rr: hye
+  gloss_en: comet
+  image_prompt: Comet
+  image_filename: 혜성-comet.png
+  example_word: 혜성
+  example_rr: hyeseo
+- hangul: 홰
+  rr: hwae
+  gloss_en: roost
+  image_prompt: Roost
+  image_filename: 홰-roost.png
+  example_word: 홰
+  example_rr: hwae
+- hangul: 회
+  rr: hoe
+  gloss_en: shoulder
+  image_prompt: Shoulder
+  image_filename: 회비-shoulder.png
+  example_word: 회비
+  example_rr: hoebi
+- hangul: 휘
+  rr: hwi
+  gloss_en: the sound of blowing wind
+  image_prompt: The Sound Of Blowing Wind
+  image_filename: 휘-the_sound_of_blowing_wind.png
+  example_word: 휘
+  example_rr: hwi
+- hangul: 호
+  rr: ho
+  gloss_en: number
+  image_prompt: Number
+  image_filename: 호-number.png
+  example_word: 호
+  example_rr: ho
+- hangul: 효
+  rr: hyo
+  gloss_en: inside
+  image_prompt: Inside
+  image_filename: 효과-inside.png
+  example_word: 효과
+  example_rr: hyogwa
+- hangul: 화
+  rr: hwa
+  gloss_en: anger (get angry)
+  image_prompt: Anger (Get Angry)
+  image_filename: 화-anger_(get_angry).png
+  example_word: 화
+  example_rr: hwa
+- hangul: 후
+  rr: hu
+  gloss_en: after
+  image_prompt: After
+  image_filename: 후-after.png
+  example_word: 후
+  example_rr: hu
+- hangul: 휴
+  rr: hyu
+  gloss_en: the public
+  image_prompt: The Public
+  image_filename: 휴가-the_public.png
+  example_word: 휴가
+  example_rr: hyuga
+- hangul: 훠
+  rr: hwo
+  gloss_en: white bag
+  image_prompt: White Bag
+  image_filename: 훠_하얀_가방-white_bag.png
+  example_word: 훠 하얀 가방
+  example_rr: hwo haya gaba
+- hangul: 훼
+  rr: hwe
+  gloss_en:
+  - bafflement
+  - interference with
+  image_prompt: Bafflement
+  image_filename: 훼방-bafflement.png
+  example_word: 훼방
+  example_rr: hweba
+- hangul: 흐
+  rr: heu
+  gloss_en:
+  - flowing
+  - a stream/current
+  image_prompt: Flowing
+  image_filename: 흐름-flowing.png
+  example_word: 흐름
+  example_rr: heureu
+- hangul: 희
+  rr: hui
+  gloss_en:
+  - a drama
+  - a play
+  image_prompt: A Drama
+  image_filename: 희곡-a_drama.png
+  example_word: 희곡
+  example_rr: huigo
+- hangul: 솨
+  rr: swa
+  gloss_en: black car
+  image_prompt: Black Car
+  image_filename: 솨_검은_차-black_car.png
+  example_word: 솨 검은 차
+  example_rr: swa geoeu cha
+- hangul: 궈
+  rr: gwo
+  gloss_en: blue noodles
+  image_prompt: Blue Noodles
+  image_filename: 궈_파란_라면-blue_noodles.png
+  example_word: 궈 파란 라면
+  example_rr: gwo para ramyeo
+- hangul: 긔
+  rr: gui
+  gloss_en: black car
+  image_prompt: Black Car
+  image_filename: 긔_검은_차-black_car.png
+  example_word: 긔 검은 차
+  example_rr: gui geoeu cha
+- hangul: 꺄
+  rr: kkya
+  gloss_en: green garlic
+  image_prompt: Green Garlic
+  image_filename: 꺄_초록_마늘-green_garlic.png
+  example_word: 꺄 초록 마늘
+  example_rr: kkya choro maneu
+- hangul: 꾜
+  rr: kkyo
+  gloss_en: red road
+  image_prompt: Red Road
+  image_filename: 꾜_빨간_믜물-red_road.png
+  example_word: 꾜 빨간 믜물
+  example_rr: kkyo ppaga muimu
+- hangul: 뀨
+  rr: kkyu
+  gloss_en: green grapes
+  image_prompt: Green Grapes
+  image_filename: 뀨_초록_포도-green_grapes.png
+  example_word: 뀨 초록 포도
+  example_rr: kkyu choro podo
+- hangul: 끠
+  rr: kkui
+  gloss_en: yellow story
+  image_prompt: Yellow Story
+  image_filename: 끠_노란_얘기-yellow_story.png
+  example_word: 끠 노란 얘기
+  example_rr: kkui nora yaegi
+- hangul: 캬
+  rr: kya
+  gloss_en: black snow
+  image_prompt: Black Snow
+  image_filename: 캬_검은_싀밥-black_snow.png
+  example_word: 캬 검은 싀밥
+  example_rr: kya geoeu suiba
+- hangul: 켸
+  rr: kye
+  gloss_en: black snow
+  image_prompt: Black Snow
+  image_filename: 켸_검은_싀밥-black_snow.png
+  example_word: 켸 검은 싀밥
+  example_rr: kye geoeu suiba
+- hangul: 쾨
+  rr: koe
+  gloss_en: black fox
+  image_prompt: Black Fox
+  image_filename: 쾨_검은_여우-black_fox.png
+  example_word: 쾨 검은 여우
+  example_rr: koe geoeu yeou
+- hangul: 킈
+  rr: kui
+  gloss_en: yellow gorge
+  image_prompt: Yellow Gorge
+  image_filename: 킈_노란_빠지-yellow_gorge.png
+  example_word: 킈 노란 빠지
+  example_rr: kui nora ppaji
+- hangul: 놰
+  rr: nwae
+  gloss_en: white cooking
+  image_prompt: White Cooking
+  image_filename: 놰_하얀_요리-white_cooking.png
+  example_word: 놰 하얀 요리
+  example_rr: nwae haya yori
+- hangul: 눠
+  rr: nwo
+  gloss_en: yellow story
+  image_prompt: Yellow Story
+  image_filename: 눠_노란_얘기-yellow_story.png
+  example_word: 눠 노란 얘기
+  example_rr: nwo nora yaegi
+- hangul: 눼
+  rr: nwe
+  gloss_en: green tree
+  image_prompt: Green Tree
+  image_filename: 눼_초록_가꼐도-green_tree.png
+  example_word: 눼 초록 가꼐도
+  example_rr: nwe choro gakkyedo
+- hangul: 댜
+  rr: dya
+  gloss_en: blue monkey
+  image_prompt: Blue Monkey
+  image_filename: 댜_파란_원숭이-blue_monkey.png
+  example_word: 댜 파란 원숭이
+  example_rr: dya para wosui
+- hangul: 뎨
+  rr: dye
+  gloss_en: white screw
+  image_prompt: White Screw
+  image_filename: 뎨_하얀_나사-white_screw.png
+  example_word: 뎨 하얀 나사
+  example_rr: dye haya nasa
+- hangul: 돠
+  rr: dwa
+  gloss_en: white bag
+  image_prompt: White Bag
+  image_filename: 돠_하얀_가방-white_bag.png
+  example_word: 돠 하얀 가방
+  example_rr: dwa haya gaba
+- hangul: 듸
+  rr: dui
+  gloss_en: green woman
+  image_prompt: Green Woman
+  image_filename: 듸_초록_여자-green_woman.png
+  example_word: 듸 초록 여자
+  example_rr: dui choro yeoja
+- hangul: 땨
+  rr: ttya
+  gloss_en: white best
+  image_prompt: White Best
+  image_filename: 땨_하얀_으뜸-white_best.png
+  example_word: 땨 하얀 으뜸
+  example_rr: ttya haya eutteu
+- hangul: 뗘
+  rr: ttyeo
+  gloss_en: red baby
+  image_prompt: Red Baby
+  image_filename: 뗘_빨간_아기-red_baby.png
+  example_word: 뗘 빨간 아기
+  example_rr: ttyeo ppaga agi
+- hangul: 뗴
+  rr: ttye
+  gloss_en: yellow gorge
+  image_prompt: Yellow Gorge
+  image_filename: 뗴_노란_빠지-yellow_gorge.png
+  example_word: 뗴 노란 빠지
+  example_rr: ttye nora ppaji
+- hangul: 뙈
+  rr: ttwae
+  gloss_en: black hoe
+  image_prompt: Black Hoe
+  image_filename: 뙈_검은_괭이-black_hoe.png
+  example_word: 뙈 검은 괭이
+  example_rr: ttwae geoeu gwaei
+- hangul: 뙤
+  rr: ttoe
+  gloss_en: black hoe
+  image_prompt: Black Hoe
+  image_filename: 뙤_검은_괭이-black_hoe.png
+  example_word: 뙤 검은 괭이
+  example_rr: ttoe geoeu gwaei
+- hangul: 뚀
+  rr: ttyo
+  gloss_en: blue book
+  image_prompt: Blue Book
+  image_filename: 뚀_파란_책-blue_book.png
+  example_word: 뚀 파란 책
+  example_rr: ttyo para chae
+- hangul: 뜌
+  rr: ttyu
+  gloss_en: red sky
+  image_prompt: Red Sky
+  image_filename: 뜌_빨간_하늘-red_sky.png
+  example_word: 뜌 빨간 하늘
+  example_rr: ttyu ppaga haneu
+- hangul: 뚸
+  rr: ttwo
+  gloss_en: blue pepper
+  image_prompt: Blue Pepper
+  image_filename: 뚸_파란_후추-blue_pepper.png
+  example_word: 뚸 파란 후추
+  example_rr: ttwo para huchu
+- hangul: 뛔
+  rr: ttwe
+  gloss_en: blue pepper
+  image_prompt: Blue Pepper
+  image_filename: 뛔_파란_후추-blue_pepper.png
+  example_word: 뛔 파란 후추
+  example_rr: ttwe para huchu
+- hangul: 탸
+  rr: tya
+  gloss_en: black bread
+  image_prompt: Black Bread
+  image_filename: 탸_검은_빵-black_bread.png
+  example_word: 탸 검은 빵
+  example_rr: tya geoeu ppa
+- hangul: 텨
+  rr: tyeo
+  gloss_en: white fight
+  image_prompt: White Fight
+  image_filename: 텨_하얀_싸움-white_fight.png
+  example_word: 텨 하얀 싸움
+  example_rr: tyeo haya ssau
+- hangul: 톄
+  rr: tye
+  gloss_en: yellow chair
+  image_prompt: Yellow Chair
+  image_filename: 톄_노란_의자-yellow_chair.png
+  example_word: 톄 노란 의자
+  example_rr: tye nora uija
+- hangul: 툐
+  rr: tyo
+  gloss_en: red ball
+  image_prompt: Red Ball
+  image_filename: 빨간_툐숲-red_ball.png
+  example_word: 빨간 툐숲
+  example_rr: ppaga tyosu
+- hangul: 톼
+  rr: twa
+  gloss_en: white country
+  image_prompt: White Country
+  image_filename: 톼_하얀_나라-white_country.png
+  example_word: 톼 하얀 나라
+  example_rr: twa haya nara
+- hangul: 퉈
+  rr: two
+  gloss_en: black shop
+  image_prompt: Black Shop
+  image_filename: 퉈_검은_가게-black_shop.png
+  example_word: 퉈 검은 가게
+  example_rr: two geoeu gage
+- hangul: 퉤
+  rr: twe
+  gloss_en: green grapes
+  image_prompt: Green Grapes
+  image_filename: 퉤_초록_포도-green_grapes.png
+  example_word: 퉤 초록 포도
+  example_rr: twe choro podo
+- hangul: 틔
+  rr: tui
+  gloss_en: red compass
+  image_prompt: Red Compass
+  image_filename: 틔_빨간_나침반-red_compass.png
+  example_word: 틔 빨간 나침반
+  example_rr: tui ppaga nachiba
+- hangul: 뢔
+  rr: rwae
+  gloss_en: green leg
+  image_prompt: Green Leg
+  image_filename: 뢔_초록_다리-green_leg.png
+  example_word: 뢔 초록 다리
+  example_rr: rwae choro dari
+- hangul: 롸
+  rr: rwa
+  gloss_en: white cart
+  image_prompt: White Cart
+  image_filename: 롸_하얀_마차-white_cart.png
+  example_word: 롸 하얀 마차
+  example_rr: rwa haya macha
+- hangul: 뤠
+  rr: rwe
+  gloss_en: white duck
+  image_prompt: White Duck
+  image_filename: 뤠_하얀_오리-white_duck.png
+  example_word: 뤠 하얀 오리
+  example_rr: rwe haya ori
+- hangul: 릐
+  rr: rui
+  gloss_en: red sky
+  image_prompt: Red Sky
+  image_filename: 릐_빨간_하늘-red_sky.png
+  example_word: 릐 빨간 하늘
+  example_rr: rui ppaga haneu
+- hangul: 먀
+  rr: mya
+  gloss_en: blue lion
+  image_prompt: Blue Lion
+  image_filename: 먀_파란_사자-blue_lion.png
+  example_word: 먀 파란 사자
+  example_rr: mya para saja
+- hangul: 뫠
+  rr: mwae
+  gloss_en: green autumn
+  image_prompt: Green Autumn
+  image_filename: 뫠_초록_가을-green_autumn.png
+  example_word: 뫠 초록 가을
+  example_rr: mwae choro gaeu
+- hangul: 뮈
+  rr: mwi
+  gloss_en: white mother
+  image_prompt: White Mother
+  image_filename: 뮈_하얀_어머니-white_mother.png
+  example_word: 뮈 하얀 어머니
+  example_rr: mwi haya eomeoni
+- hangul: 뫄
+  rr: mwa
+  gloss_en: white vegetables
+  image_prompt: White Vegetables
+  image_filename: 뫄_하얀_야채-white_vegetables.png
+  example_word: 뫄 하얀 야채
+  example_rr: mwa haya yachae
+- hangul: 뭬
+  rr: mwe
+  gloss_en: white elephant
+  image_prompt: White Elephant
+  image_filename: 뭬_하얀_코끼리-white_elephant.png
+  example_word: 뭬 하얀 코끼리
+  example_rr: mwe haya kokkiri
+- hangul: 믜
+  rr: mui
+  gloss_en: yellow road
+  image_prompt: Yellow Road
+  image_filename: 노란_믜물-yellow_road.png
+  example_word: 노란 믜물
+  example_rr: nora muimu
+- hangul: 뱌
+  rr: bya
+  gloss_en: white mother
+  image_prompt: White Mother
+  image_filename: 뱌_하얀_어머니-white_mother.png
+  example_word: 뱌 하얀 어머니
+  example_rr: bya haya eomeoni
+- hangul: 볘
+  rr: bye
+  gloss_en: white screw
+  image_prompt: White Screw
+  image_filename: 볘_하얀_나사-white_screw.png
+  example_word: 볘 하얀 나사
+  example_rr: bye haya nasa
+- hangul: 뵤
+  rr: byo
+  gloss_en: black library
+  image_prompt: Black Library
+  image_filename: 뵤_검은_도서관-black_library.png
+  example_word: 뵤 검은 도서관
+  example_rr: byo geoeu doseogwa
+- hangul: 붜
+  rr: bwo
+  gloss_en: yellow house
+  image_prompt: Yellow House
+  image_filename: 붜_노란_집-yellow_house.png
+  example_word: 붜 노란 집
+  example_rr: bwo nora ji
+- hangul: 붸
+  rr: bwe
+  gloss_en: yellow chair
+  image_prompt: Yellow Chair
+  image_filename: 붸_노란_의자-yellow_chair.png
+  example_word: 붸 노란 의자
+  example_rr: bwe nora uija
+- hangul: 븨
+  rr: bui
+  gloss_en: blue flower
+  image_prompt: Blue Flower
+  image_filename: 파란_븨숲-blue_flower.png
+  example_word: 파란 븨숲
+  example_rr: para buisu
+- hangul: 뺘
+  rr: ppya
+  gloss_en: black library
+  image_prompt: Black Library
+  image_filename: 뺘_검은_도서관-black_library.png
+  example_word: 뺘 검은 도서관
+  example_rr: ppya geoeu doseogwa
+- hangul: 뼤
+  rr: ppye
+  gloss_en: white best
+  image_prompt: White Best
+  image_filename: 뼤_하얀_으뜸-white_best.png
+  example_word: 뼤 하얀 으뜸
+  example_rr: ppye haya eutteu
+- hangul: 뽸
+  rr: ppwae
+  gloss_en: blue shrimp
+  image_prompt: Blue Shrimp
+  image_filename: 뽸_파란_새우-blue_shrimp.png
+  example_word: 뽸 파란 새우
+  example_rr: ppwae para saeu
+- hangul: 뾔
+  rr: ppoe
+  gloss_en: yellow squirrel
+  image_prompt: Yellow Squirrel
+  image_filename: 뾔_노란_다람쥐-yellow_squirrel.png
+  example_word: 뾔 노란 다람쥐
+  example_rr: ppoe nora darajwi
+- hangul: 쀠
+  rr: ppwi
+  gloss_en: green washing machine
+  image_prompt: Green Washing Machine
+  image_filename: 쀠_초록_세탁기-green_washing_machine.png
+  example_word: 쀠 초록 세탁기
+  example_rr: ppwi choro setagi
+- hangul: 뽜
+  rr: ppwa
+  gloss_en: black snow
+  image_prompt: Black Snow
+  image_filename: 뽜_검은_싀밥-black_snow.png
+  example_word: 뽜 검은 싀밥
+  example_rr: ppwa geoeu suiba
+- hangul: 뿨
+  rr: ppwo
+  gloss_en: white elephant
+  image_prompt: White Elephant
+  image_filename: 뿨_하얀_코끼리-white_elephant.png
+  example_word: 뿨 하얀 코끼리
+  example_rr: ppwo haya kokkiri
+- hangul: 쀄
+  rr: ppwe
+  gloss_en: yellow wedding
+  image_prompt: Yellow Wedding
+  image_filename: 쀄_노란_웨딩-yellow_wedding.png
+  example_word: 쀄 노란 웨딩
+  example_rr: ppwe nora wedi
+- hangul: 쁴
+  rr: ppui
+  gloss_en: blue foreign country
+  image_prompt: Blue Foreign Country
+  image_filename: 쁴_파란_외국-blue_foreign_country.png
+  example_word: 쁴 파란 외국
+  example_rr: ppui para oegu
+- hangul: 퐤
+  rr: pwae
+  gloss_en: blue noodles
+  image_prompt: Blue Noodles
+  image_filename: 퐤_파란_라면-blue_noodles.png
+  example_word: 퐤 파란 라면
+  example_rr: pwae para ramyeo
+- hangul: 푀
+  rr: poe
+  gloss_en: green separate
+  image_prompt: Green Separate
+  image_filename: 푀_초록_따로-green_separate.png
+  example_word: 푀 초록 따로
+  example_rr: poe choro ttaro
+- hangul: 퐈
+  rr: pwa
+  gloss_en: red road
+  image_prompt: Red Road
+  image_filename: 퐈_빨간_믜물-red_road.png
+  example_word: 퐈 빨간 믜물
+  example_rr: pwa ppaga muimu
+- hangul: 풔
+  rr: pwo
+  gloss_en: blue noodles
+  image_prompt: Blue Noodles
+  image_filename: 풔_파란_라면-blue_noodles.png
+  example_word: 풔 파란 라면
+  example_rr: pwo para ramyeo
+- hangul: 풰
+  rr: pwe
+  gloss_en: green garlic
+  image_prompt: Green Garlic
+  image_filename: 풰_초록_마늘-green_garlic.png
+  example_word: 풰 초록 마늘
+  example_rr: pwe choro maneu
+- hangul: 픠
+  rr: pui
+  gloss_en: yellow rice
+  image_prompt: Yellow Rice
+  image_filename: 픠_노란_밥-yellow_rice.png
+  example_word: 픠 노란 밥
+  example_rr: pui nora ba
+- hangul: 쉐
+  rr: swe
+  gloss_en: red memory
+  image_prompt: Red Memory
+  image_filename: 쉐_빨간_추억-red_memory.png
+  example_word: 쉐 빨간 추억
+  example_rr: swe ppaga chueo
+- hangul: 싀
+  rr: sui
+  gloss_en: white snow
+  image_prompt: White Snow
+  image_filename: 하얀_싀밥-white_snow.png
+  example_word: 하얀 싀밥
+  example_rr: haya suiba
+- hangul: 쌰
+  rr: ssya
+  gloss_en: red scissors
+  image_prompt: Red Scissors
+  image_filename: 쌰_빨간_가위-red_scissors.png
+  example_word: 쌰 빨간 가위
+  example_rr: ssya ppaga gawi
+- hangul: 쎠
+  rr: ssyeo
+  gloss_en: red road
+  image_prompt: Red Road
+  image_filename: 쎠_빨간_믜물-red_road.png
+  example_word: 쎠 빨간 믜물
+  example_rr: ssyeo ppaga muimu
+- hangul: 쎼
+  rr: ssye
+  gloss_en: blue book
+  image_prompt: Blue Book
+  image_filename: 쎼_파란_책-blue_book.png
+  example_word: 쎼 파란 책
+  example_rr: ssye para chae
+- hangul: 쒸
+  rr: sswi
+  gloss_en: red salt
+  image_prompt: Red Salt
+  image_filename: 쒸_빨간_소금-red_salt.png
+  example_word: 쒸 빨간 소금
+  example_rr: sswi ppaga sogeu
+- hangul: 쑈
+  rr: ssyo
+  gloss_en: blue camera
+  image_prompt: Blue Camera
+  image_filename: 쑈_파란_카메라-blue_camera.png
+  example_word: 쑈 파란 카메라
+  example_rr: ssyo para kamera
+- hangul: 쓔
+  rr: ssyu
+  gloss_en: white cart
+  image_prompt: White Cart
+  image_filename: 쓔_하얀_마차-white_cart.png
+  example_word: 쓔 하얀 마차
+  example_rr: ssyu haya macha
+- hangul: 쒀
+  rr: sswo
+  gloss_en: yellow pants
+  image_prompt: Yellow Pants
+  image_filename: 쒀_노란_바지-yellow_pants.png
+  example_word: 쒀 노란 바지
+  example_rr: sswo nora baji
+- hangul: 쒜
+  rr: sswe
+  gloss_en: red sky
+  image_prompt: Red Sky
+  image_filename: 쒜_빨간_하늘-red_sky.png
+  example_word: 쒜 빨간 하늘
+  example_rr: sswe ppaga haneu
+- hangul: 쟈
+  rr: jya
+  gloss_en: black bookstore
+  image_prompt: Black Bookstore
+  image_filename: 쟈_검은_서점-black_bookstore.png
+  example_word: 쟈 검은 서점
+  example_rr: jya geoeu seojeo
+- hangul: 줘
+  rr: jwo
+  gloss_en: black library
+  image_prompt: Black Library
+  image_filename: 줘_검은_도서관-black_library.png
+  example_word: 줘 검은 도서관
+  example_rr: jwo geoeu doseogwa
+- hangul: 줴
+  rr: jwe
+  gloss_en: blue monkey
+  image_prompt: Blue Monkey
+  image_filename: 줴_파란_원숭이-blue_monkey.png
+  example_word: 줴 파란 원숭이
+  example_rr: jwe para wosui
+- hangul: 즤
+  rr: jui
+  gloss_en: black bookstore
+  image_prompt: Black Bookstore
+  image_filename: 즤_검은_서점-black_bookstore.png
+  example_word: 즤 검은 서점
+  example_rr: jui geoeu seojeo
+- hangul: 쨔
+  rr: jjya
+  gloss_en: green grapes
+  image_prompt: Green Grapes
+  image_filename: 쨔_초록_포도-green_grapes.png
+  example_word: 쨔 초록 포도
+  example_rr: jjya choro podo
+- hangul: 쪠
+  rr: jjye
+  gloss_en: green snack
+  image_prompt: Green Snack
+  image_filename: 쪠_초록_과자-green_snack.png
+  example_word: 쪠 초록 과자
+  example_rr: jjye choro gwaja
+- hangul: 쫴
+  rr: jjwae
+  gloss_en: white duck
+  image_prompt: White Duck
+  image_filename: 쫴_하얀_오리-white_duck.png
+  example_word: 쫴 하얀 오리
+  example_rr: jjwae haya ori
+- hangul: 쮜
+  rr: jjwi
+  gloss_en: white fight
+  image_prompt: White Fight
+  image_filename: 쮜_하얀_싸움-white_fight.png
+  example_word: 쮜 하얀 싸움
+  example_rr: jjwi haya ssau
+- hangul: 쬬
+  rr: jjyo
+  gloss_en: black blanket
+  image_prompt: Black Blanket
+  image_filename: 쬬_검은_이불-black_blanket.png
+  example_word: 쬬 검은 이불
+  example_rr: jjyo geoeu ibu
+- hangul: 쫘
+  rr: jjwa
+  gloss_en: yellow rice
+  image_prompt: Yellow Rice
+  image_filename: 쫘_노란_밥-yellow_rice.png
+  example_word: 쫘 노란 밥
+  example_rr: jjwa nora ba
+- hangul: 쮸
+  rr: jjyu
+  gloss_en: white best
+  image_prompt: White Best
+  image_filename: 쮸_하얀_으뜸-white_best.png
+  example_word: 쮸 하얀 으뜸
+  example_rr: jjyu haya eutteu
+- hangul: 쭤
+  rr: jjwo
+  gloss_en: green separate
+  image_prompt: Green Separate
+  image_filename: 쭤_초록_따로-green_separate.png
+  example_word: 쭤 초록 따로
+  example_rr: jjwo choro ttaro
+- hangul: 쮀
+  rr: jjwe
+  gloss_en: green washing machine
+  image_prompt: Green Washing Machine
+  image_filename: 쮀_초록_세탁기-green_washing_machine.png
+  example_word: 쮀 초록 세탁기
+  example_rr: jjwe choro setagi
+- hangul: 쯔
+  rr: jjeu
+  gloss_en: black wave
+  image_prompt: Black Wave
+  image_filename: 쯔_검은_파도-black_wave.png
+  example_word: 쯔 검은 파도
+  example_rr: jjeu geoeu pado
+- hangul: 쯰
+  rr: jjui
+  gloss_en: green banana
+  image_prompt: Green Banana
+  image_filename: 쯰_초록_바나나-green_banana.png
+  example_word: 쯰 초록 바나나
+  example_rr: jjui choro banana
+- hangul: 챠
+  rr: chya
+  gloss_en: blue watermelon
+  image_prompt: Blue Watermelon
+  image_filename: 챠_파란_수박-blue_watermelon.png
+  example_word: 챠 파란 수박
+  example_rr: chya para suba
+- hangul: 쳬
+  rr: chye
+  gloss_en: green banana
+  image_prompt: Green Banana
+  image_filename: 쳬_초록_바나나-green_banana.png
+  example_word: 쳬 초록 바나나
+  example_rr: chye choro banana
+- hangul: 쵀
+  rr: chwae
+  gloss_en: white country
+  image_prompt: White Country
+  image_filename: 쵀_하얀_나라-white_country.png
+  example_word: 쵀 하얀 나라
+  example_rr: chwae haya nara
+- hangul: 쵸
+  rr: chyo
+  gloss_en: white glass
+  image_prompt: White Glass
+  image_filename: 쵸_하얀_유리-white_glass.png
+  example_word: 쵸 하얀 유리
+  example_rr: chyo haya yuri
+- hangul: 촤
+  rr: chwa
+  gloss_en: yellow squirrel
+  image_prompt: Yellow Squirrel
+  image_filename: 촤_노란_다람쥐-yellow_squirrel.png
+  example_word: 촤 노란 다람쥐
+  example_rr: chwa nora darajwi
+- hangul: 츼
+  rr: chui
+  gloss_en: white country
+  image_prompt: White Country
+  image_filename: 츼_하얀_나라-white_country.png
+  example_word: 츼 하얀 나라
+  example_rr: chui haya nara

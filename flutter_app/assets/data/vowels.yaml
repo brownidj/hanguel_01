@@ -1,0 +1,192 @@
+# data/vowels.yaml
+# Hangul vowels grouped by branching type (A–D)
+# Each entry includes the vowel glyph, IPA value, and corresponding BlockType.
+
+vowels:
+  # --- A. Right-branching vowels (ㅏ ㅑ ㅓ ㅕ ㅣ; and ㅐ ㅔ ㅖ ㅙ ㅚ ㅟ) ---
+  - glyph: "ㅏ"
+    ipa: "a"
+    type: A_RightBranch
+    vowel_type: core
+    rr:
+      target_sound: "open a; similar to 'ah'"
+      best_approx: "as in 'father'"
+      alternative: "as in 'spa'"
+      recommended: "as in 'father'"
+  - glyph: "ㅑ"
+    ipa: "ja"
+    type: A_RightBranch
+    vowel_type: y_glide
+    rr:
+      target_sound: "ya; palatalized 'ah'"
+      best_approx: "as in 'yard'"
+      alternative: "as in 'yacht'"
+      recommended: "as in 'yard'"
+  - glyph: "ㅓ"
+    ipa: "ʌ"
+    type: A_RightBranch
+    vowel_type: core
+    rr:
+      target_sound: "open uh; more open than 'uh'"
+      best_approx: "as in 'sun'"
+      alternative: "as in 'cut'"
+      recommended: "as in 'sun'"
+  - glyph: "ㅕ"
+    ipa: "jʌ"
+    type: A_RightBranch
+    vowel_type: y_glide
+    rr:
+      target_sound: "yeo; palatalized 'uh'"
+      best_approx: "as in 'young' (starting sound)"
+      alternative: "as in 'yuck'"
+      recommended: "as in 'young' (starting sound)"
+  - glyph: "ㅣ"
+    ipa: "i"
+    type: A_RightBranch
+    vowel_type: core
+    rr:
+      target_sound: "ee; close front vowel"
+      best_approx: "as in 'see'"
+      alternative: "as in 'machine'"
+      recommended: "as in 'see'"
+  - glyph: "ㅐ"
+    ipa: "ɛ"
+    type: A_RightBranch
+    vowel_type: mid_front
+    rr:
+      target_sound: "ae; between 'a' and 'e'"
+      best_approx: "as in 'cat'"
+      alternative: "as in 'bad'"
+      recommended: "as in 'cat'"
+  - glyph: "ㅔ"
+    ipa: "e"
+    type: A_RightBranch
+    vowel_type: mid_front
+    rr:
+      target_sound: "e; mid front vowel"
+      best_approx: "as in 'bed'"
+      alternative: "as in 'men'"
+      recommended: "as in 'bed'"
+  - glyph: "ㅖ"
+    ipa: "je"
+    type: A_RightBranch
+    vowel_type: y_glide
+    rr:
+      target_sound: "ye; palatalized 'e'"
+      best_approx: "as in 'yes' (starting sound)"
+      alternative: "as in 'yell'"
+      recommended: "as in 'yes' (starting sound)"
+  - glyph: "ㅙ"
+    ipa: "wɛ"
+    type: A_RightBranch
+    vowel_type: compound
+    rr:
+      target_sound: "wae; 'w' + 'ae'"
+      best_approx: "as in 'wax' (starting sound)"
+      alternative: "as in 'wag'"
+      recommended: "as in 'wax' (starting sound)"
+  - glyph: "ㅚ"
+    ipa: "we~ø"
+    type: A_RightBranch
+    vowel_type: compound
+    rr:
+      target_sound: "oe; like 'we' or 'weh'"
+      best_approx: "as in 'way'"
+      alternative: "as in 'wait'"
+      recommended: "as in 'way'"
+  - glyph: "ㅟ"
+    ipa: "wi"
+    type: A_RightBranch
+    vowel_type: compound
+    rr:
+      target_sound: "wi; 'wee'"
+      best_approx: "as in 'we'"
+      alternative: "as in 'week'"
+      recommended: "as in 'we'"
+
+  # --- B. Top-branching vowels (ㅗ ㅛ; and complexes starting with ㅗ) ---
+  - glyph: "ㅗ"
+    ipa: "o"
+    type: B_TopBranch
+    vowel_type: core
+    rr:
+      target_sound: "o; mid back rounded"
+      best_approx: "as in 'go'"
+      alternative: "as in 'so'"
+      recommended: "as in 'go'"
+  - glyph: "ㅛ"
+    ipa: "jo"
+    type: B_TopBranch
+    vowel_type: y_glide
+    rr:
+      target_sound: "yo; palatalized 'o'"
+      best_approx: "as in 'yoga' (starting sound)"
+      alternative: "as in 'yoke'"
+      recommended: "as in 'yoga' (starting sound)"
+  - glyph: "ㅘ"
+    ipa: "wa"
+    type: B_TopBranch
+    vowel_type: compound
+    rr:
+      target_sound: "wa; 'w' + 'a'"
+      best_approx: "as in 'water' (starting sound)"
+      alternative: "as in 'wand'"
+      recommended: "as in 'water' (starting sound)"
+
+  # --- C. Bottom-branching vowels (ㅜ ㅠ; and complexes starting with ㅜ) ---
+  - glyph: "ㅜ"
+    ipa: "u"
+    type: C_BottomBranch
+    vowel_type: core
+    rr:
+      target_sound: "oo; close back rounded"
+      best_approx: "as in 'food'"
+      alternative: "as in 'moon'"
+      recommended: "as in 'food'"
+  - glyph: "ㅠ"
+    ipa: "ju"
+    type: C_BottomBranch
+    vowel_type: y_glide
+    rr:
+      target_sound: "yu; 'y' + 'oo'"
+      best_approx: "as in 'you'"
+      alternative: "as in 'yule'"
+      recommended: "as in 'you'"
+  - glyph: "ㅝ"
+    ipa: "wʌ"
+    type: C_BottomBranch
+    vowel_type: compound
+    rr:
+      target_sound: "wo; 'w' + 'uh'"
+      best_approx: "as in 'wonder' (starting sound)"
+      alternative: "as in 'one' (starting sound)"
+      recommended: "as in 'wonder' (starting sound)"
+  - glyph: "ㅞ"
+    ipa: "we"
+    type: C_BottomBranch
+    vowel_type: compound
+    rr:
+      target_sound: "we; 'w' + 'e'"
+      best_approx: "as in 'wet'"
+      alternative: "as in 'west'"
+      recommended: "as in 'wet'"
+
+  # --- D. Horizontal vowels (ㅡ; and ㅢ) ---
+  - glyph: "ㅡ"
+    ipa: "ɯ"
+    type: D_Horizontal
+    vowel_type: core
+    rr:
+      target_sound: "eu; unrounded 'oo' sound"
+      best_approx: "as in the 'a' of 'sofa' (unstressed)"
+      alternative: "as in 'sir' (without r)"
+      recommended: "as in the 'a' of 'sofa' (unstressed)"
+  - glyph: "ㅢ"
+    ipa: "ɰi"
+    type: D_Horizontal
+    vowel_type: compound
+    rr:
+      target_sound: "ui; 'eu' + 'i'"
+      best_approx: "as in 'we' (quickly)"
+      alternative: "as in 'oo-ee' (said quickly)"
+      recommended: "as in 'we' (quickly)"

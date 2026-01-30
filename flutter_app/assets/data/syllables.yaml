@@ -9,7 +9,7 @@ metadata:
   default_tag: allowed
 tag_legend:
   allowed: Orthographically valid and commonly attested in modern Korean.
-  rare: Valid but infrequent (names, onomatopoeia, archaic/loan contexts).
+  special: Valid but infrequent (names, onomatopoeia, archaic/loan contexts).
   not_used_in_spoken_language: Avoid for teaching; not used in ordinary speech.
   impossible: Orthographically invalid (should not occur for plain CV).
 syllables:
@@ -132,7 +132,7 @@ syllables:
   vowel: ㅢ
   block_type: D_Horizontal
   ipa: kɰi
-  tag: rare
+  tag: special
 - glyph: 까
   consonant: ㄲ
   vowel: ㅏ
@@ -492,7 +492,7 @@ syllables:
   vowel: ㅢ
   block_type: D_Horizontal
   ipa: nɰi
-  tag: rare
+  tag: special
 - glyph: 다
   consonant: ㄷ
   vowel: ㅏ
@@ -732,7 +732,7 @@ syllables:
   vowel: ㅢ
   block_type: D_Horizontal
   ipa: t͈ɰi
-  tag: rare
+  tag: special
 - glyph: 타
   consonant: ㅌ
   vowel: ㅏ

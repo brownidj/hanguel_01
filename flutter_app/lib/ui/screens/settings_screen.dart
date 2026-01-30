@@ -69,63 +69,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Themes', style: titleStyle),
-                  const SizedBox(width: 4),
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
-                    icon: const Icon(Icons.info_outline, size: 13, color: Colors.black54),
-                    onPressed: () {
-                      _toggleHelper(
-                        current: _showThemeHelp,
-                        update: (value) => setState(() => _showThemeHelp = value),
-                        timer: _themeTimer,
-                        saveTimer: (timer) => _themeTimer = timer,
-                        duration: const Duration(seconds: 7),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (_showThemeHelp)
-            const Padding(
-              padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Choose the visual theme for the app.', style: helperStyle),
-              ),
-            ),
-          if (!_showThemeHelp) const SizedBox(height: 4),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Wrap(
-              spacing: 8,
-              children: ['Taeguk', 'Hanji'].map((theme) {
-                return ChoiceChip(
-                  label: Text(theme, style: labelStyle),
-                  selected: settings.theme == theme,
-                  showCheckmark: false,
-                  selectedColor: const Color(0xFFE0E0E0),
-                  backgroundColor: const Color(0xFFF5F5F5),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  onSelected: (_) {
-                    ref.read(settingsStateProvider.notifier).setTheme(theme);
-                  },
-                );
-              }).toList(),
-            ),
-          ),
-          const Divider(height: 8, thickness: 0.5),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
                   const Text('Pauses', style: titleStyle),
                   const SizedBox(width: 4),
                   IconButton(
@@ -192,7 +135,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Advanced Vowels', style: titleStyle),
+                  const Text('Vowel stages', style: titleStyle),
                   const SizedBox(width: 4),
                   IconButton(
                     padding: EdgeInsets.zero,
@@ -217,12 +160,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Controls which rare/advanced vowels are included.', style: helperStyle),
+                child: Text('Controls which special/advanced vowels are included.', style: helperStyle),
               ),
             ),
           if (!_showAdvancedHelp) const SizedBox(height: 4),
           ListTile(
-            title: const Text('Include rare', style: labelStyle),
+            title: const Text('Include special', style: labelStyle),
             dense: true,
             visualDensity: const VisualDensity(horizontal: -3, vertical: -3),
             minVerticalPadding: 0,
@@ -256,6 +199,63 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
           const Divider(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Themes', style: titleStyle),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+                    icon: const Icon(Icons.info_outline, size: 13, color: Colors.black54),
+                    onPressed: () {
+                      _toggleHelper(
+                        current: _showThemeHelp,
+                        update: (value) => setState(() => _showThemeHelp = value),
+                        timer: _themeTimer,
+                        saveTimer: (timer) => _themeTimer = timer,
+                        duration: const Duration(seconds: 7),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_showThemeHelp)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Choose the visual theme for the app.', style: helperStyle),
+              ),
+            ),
+          if (!_showThemeHelp) const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Wrap(
+              spacing: 8,
+              children: ['Taeguk', 'Hanji'].map((theme) {
+                return ChoiceChip(
+                  label: Text(theme, style: labelStyle),
+                  selected: settings.theme == theme,
+                  showCheckmark: false,
+                  selectedColor: const Color(0xFFE0E0E0),
+                  backgroundColor: const Color(0xFFF5F5F5),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  onSelected: (_) {
+                    ref.read(settingsStateProvider.notifier).setTheme(theme);
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+          const Divider(height: 8, thickness: 0.5),
           const ListTile(
             title: Text('About'),
             subtitle: Text('Hangul Say It v1.0 • © topository • 260127'),

@@ -69,4 +69,19 @@ void main() {
     });
     expect(found, isTrue);
   });
+
+  test('every vowel has an example entry', () async {
+    final vowelsRepo = VowelsRepository();
+    final vowels = await vowelsRepo.loadVowels();
+    final expected = vowels
+        .map((raw) => '${raw['glyph'] ?? ''}')
+        .where((glyph) => glyph.isNotEmpty)
+        .toSet();
+
+    final examplesRepo = ExamplesRepository();
+    final vowelExamples = await examplesRepo.loadExamplesForMode('Vowels');
+    final actual = vowelExamples.map((item) => item.startsWithVowel).toSet();
+
+    expect(actual.containsAll(expected), isTrue);
+  });
 }

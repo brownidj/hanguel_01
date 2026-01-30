@@ -72,7 +72,9 @@ class ExamplesPanel extends ConsumerWidget {
                               final reserved = hangulHeight +
                                   rrHeight +
                                   glossHeight +
-                                  spacing * 3;
+                                  spacing * 3 +
+                                  buttonHeight +
+                                  spacing;
                               final availableHeight = innerConstraints.maxHeight - reserved;
                               final maxByWidth = innerConstraints.maxWidth * 0.8;
                               final maxImage = [
@@ -82,55 +84,59 @@ class ExamplesPanel extends ConsumerWidget {
                               ].reduce((a, b) => a < b ? a : b);
                               final imageEdge = maxImage.isFinite && maxImage > 0 ? maxImage : 0.0;
 
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text.rich(
-                                    _buildHighlightedHangul(
-                                      example.hangul,
-                                      example.startsWithSyllable,
-                                      true,
+                              return SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text.rich(
+                                      _buildHighlightedHangul(
+                                        example.hangul,
+                                        example.startsWithSyllable,
+                                        true,
+                                      ),
+                                      key: const ValueKey('example-hangul'),
+                                      style: hangulStyle,
                                     ),
-                                    style: hangulStyle,
-                                  ),
-                                  const SizedBox(height: spacing),
-                                  Center(
-                                    child: Tooltip(
-                                      message: example.imagePrompt,
-                                      waitDuration: const Duration(milliseconds: 300),
+                                    const SizedBox(height: spacing),
+                                    Center(
+                                      child: Tooltip(
+                                        message: example.imagePrompt,
+                                        waitDuration: const Duration(milliseconds: 300),
+                                        child: SizedBox(
+                                          width: imageEdge,
+                                          height: imageEdge,
+                                          child: example.imageFilename.isEmpty
+                                              ? const SizedBox.shrink()
+                                              : Image.asset(
+                                                  'assets/images/examples/${example.imageFilename}',
+                                                  key: const ValueKey('example-image'),
+                                                  fit: BoxFit.contain,
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: spacing),
+                                    Text(example.glossEn, style: metaStyle),
+                                    Text('Say it: ${example.rr}', style: metaStyle),
+                                    const SizedBox(height: spacing),
+                                    Align(
+                                      alignment: Alignment.centerRight,
                                       child: SizedBox(
-                                        width: imageEdge,
-                                        height: imageEdge,
-                                        child: example.imageFilename.isEmpty
-                                            ? const SizedBox.shrink()
-                                            : Image.asset(
-                                                'assets/images/examples/${example.imageFilename}',
-                                                fit: BoxFit.contain,
-                                              ),
+                                        height: buttonHeight,
+                                        child: ElevatedButton(
+                                          onPressed: playback.autoEnabled || !playback.controlsEnabled || !playback.heardOnce
+                                              ? null
+                                              : () async {
+                                                  await ref
+                                                      .read(audioServiceProvider)
+                                                      .playGlyph(example.hangul, wpm: settings.effectiveWpm);
+                                                },
+                                          child: const Icon(Icons.hearing, size: 18),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(height: spacing),
-                                  Text(example.glossEn, style: metaStyle),
-                                  Text('Say it: ${example.rr}', style: metaStyle),
-                                  const Spacer(),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: SizedBox(
-                                      height: buttonHeight,
-                                      child: ElevatedButton(
-                                        onPressed: playback.autoEnabled || !playback.controlsEnabled || !playback.heardOnce
-                                            ? null
-                                            : () async {
-                                                await ref
-                                                    .read(audioServiceProvider)
-                                                    .playGlyph(example.hangul, wpm: settings.effectiveWpm);
-                                              },
-                                        child: const Icon(Icons.hearing, size: 18),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               );
                             },
                           ),

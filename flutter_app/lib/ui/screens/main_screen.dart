@@ -37,6 +37,16 @@ class MainScreen extends ConsumerWidget {
           padding: EdgeInsets.zero,
           children: const [
             SizedBox(height: 86),
+            Padding(
+              padding: EdgeInsets.fromLTRB(12, 0, 12, 6),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Quick changes',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
             _DrawerSettings(),
           ],
         ),
@@ -236,6 +246,58 @@ class _DrawerSettingsState extends ConsumerState<_DrawerSettings> {
         ),
         const SizedBox(height: 8),
         const Divider(height: 8, thickness: 0.5),
+        ListTile(
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Repeats', style: titleStyle),
+              const SizedBox(width: 4),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+                icon: const Icon(Icons.info_outline,
+                    size: 13, color: Colors.black54),
+                onPressed: () {
+                  _toggleHelper(
+                    current: _showRepeatsHelp,
+                    update: (value) => setState(() => _showRepeatsHelp = value),
+                    timer: _repeatsTimer,
+                    saveTimer: (timer) => _repeatsTimer = timer,
+                  );
+                },
+              ),
+            ],
+          ),
+          dense: true,
+          visualDensity: compactDensity,
+          trailing: DropdownButton<int>(
+            value: settings.repeats,
+            isDense: true,
+            style: labelStyle,
+            dropdownColor: Colors.white,
+            items: List.generate(10, (index) => index + 1)
+                .map((value) => DropdownMenuItem(
+                    value: value, child: Text('$value×', style: labelStyle)))
+                .toList(),
+            onChanged: (value) {
+              if (value == null) return;
+              ref.read(settingsStateProvider.notifier).setRepeats(value);
+            },
+          ),
+        ),
+        if (_showRepeatsHelp)
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'The number of times you will hear the vowel, consonant or syllable spoken.',
+                style: helperStyle,
+              ),
+            ),
+          ),
+        if (!_showRepeatsHelp) const SizedBox(height: 4),
+        const Divider(height: 8, thickness: 0.5),
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
           child: Align(
@@ -243,7 +305,7 @@ class _DrawerSettingsState extends ConsumerState<_DrawerSettings> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Presets', style: titleStyle),
+                const Text('Preset pauses', style: titleStyle),
                 const SizedBox(width: 4),
                 IconButton(
                   padding: EdgeInsets.zero,
@@ -362,58 +424,6 @@ class _DrawerSettingsState extends ConsumerState<_DrawerSettings> {
             ],
           ),
         ),
-        const Divider(height: 8, thickness: 0.5),
-        ListTile(
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Repeats', style: titleStyle),
-              const SizedBox(width: 4),
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
-                icon: const Icon(Icons.info_outline,
-                    size: 13, color: Colors.black54),
-                onPressed: () {
-                  _toggleHelper(
-                    current: _showRepeatsHelp,
-                    update: (value) => setState(() => _showRepeatsHelp = value),
-                    timer: _repeatsTimer,
-                    saveTimer: (timer) => _repeatsTimer = timer,
-                  );
-                },
-              ),
-            ],
-          ),
-          dense: true,
-          visualDensity: compactDensity,
-          trailing: DropdownButton<int>(
-            value: settings.repeats,
-            isDense: true,
-            style: labelStyle,
-            dropdownColor: Colors.white,
-            items: List.generate(10, (index) => index + 1)
-                .map((value) => DropdownMenuItem(
-                    value: value, child: Text('$value×', style: labelStyle)))
-                .toList(),
-            onChanged: (value) {
-              if (value == null) return;
-              ref.read(settingsStateProvider.notifier).setRepeats(value);
-            },
-          ),
-        ),
-        if (_showRepeatsHelp)
-          const Padding(
-            padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'The number of times you will hear the vowel, consonant or syllable spoken.',
-                style: helperStyle,
-              ),
-            ),
-          ),
-        if (!_showRepeatsHelp) const SizedBox(height: 4),
         const Divider(),
       ],
     );

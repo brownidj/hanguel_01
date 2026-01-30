@@ -1,3 +1,6 @@
+#--------------------
+# starter: [ㅏ, ㅓ, ㅗ, ㅜ, ㅡ]
+#--------------------
 - hangul: ㅏ
   rr: a
   gloss_en: baby
@@ -5,13 +8,6 @@
   image_filename: 아기-baby.png
   example_word: 아기
   example_rr: agi
-- hangul: ㅑ
-  rr: ya
-  gloss_en: baseball
-  image_prompt: Baseball
-  image_filename: 야구-baseball.png
-  example_word: 야구
-  example_rr: yagu
 - hangul: ㅓ
   rr: eo
   gloss_en: mother
@@ -19,13 +15,31 @@
   image_filename: 어머니-mother.png
   example_word: 어머니
   example_rr: eomeoni
-- hangul: ㅕ
-  rr: yeo
-  gloss_en: fox
-  image_prompt: Fox
-  image_filename: 여우-fox.png
-  example_word: 여우
-  example_rr: yeou
+- hangul: ㅗ
+  rr: o
+  gloss_en: duck
+  image_prompt: Duck
+  image_filename: 오리-duck.png
+  example_word: 오리
+  example_rr: ori
+- hangul: ㅜ
+  rr: u
+  gloss_en: umbrella
+  image_prompt: Umbrella
+  image_filename: 우산-umbrella.png
+  example_word: 우산
+  example_rr: usa
+- hangul: ㅡ
+  rr: eu
+  gloss_en: best
+  image_prompt: Best
+  image_filename: 으뜸-best.png
+  example_word: 으뜸
+  example_rr: eutteu
+
+#--------------------
+# modifier: [ㅣ]
+#--------------------
 - hangul: ㅣ
   rr: i
   gloss_en: blanket
@@ -33,6 +47,10 @@
   image_filename: 이불-blanket.png
   example_word: 이불
   example_rr: ibu
+
+#--------------------
+# brightened: [ㅐ, ㅔ, ㅚ, ㅟ]
+#--------------------
 - hangul: ㅐ
   rr: ae
   gloss_en: book
@@ -47,20 +65,6 @@
   image_filename: 가게-shop.png
   example_word: 가게
   example_rr: gage
-- hangul: ㅖ
-  rr: ye
-  gloss_en: art
-  image_prompt: Art
-  image_filename: 예술-art.png
-  example_word: 예술
-  example_rr: yesu
-- hangul: ㅙ
-  rr: wae
-  gloss_en: hoe
-  image_prompt: Hoe
-  image_filename: 괭이-hoe.png
-  example_word: 괭이
-  example_rr: gwaei
 - hangul: ㅚ
   rr: oe
   gloss_en: foreign country
@@ -75,13 +79,24 @@
   image_filename: 위치-location.png
   example_word: 위치
   example_rr: wichi
-- hangul: ㅗ
-  rr: o
-  gloss_en: duck
-  image_prompt: Duck
-  image_filename: 오리-duck.png
-  example_word: 오리
-  example_rr: ori
+
+#--------------------
+# y_vowels: [ㅑ, ㅕ, ㅛ, ㅠ, ㅒ, ㅖ]
+#--------------------
+- hangul: ㅑ
+  rr: ya
+  gloss_en: baseball
+  image_prompt: Baseball
+  image_filename: 야구-baseball.png
+  example_word: 야구
+  example_rr: yagu
+- hangul: ㅕ
+  rr: yeo
+  gloss_en: fox
+  image_prompt: Fox
+  image_filename: 여우-fox.png
+  example_word: 여우
+  example_rr: yeou
 - hangul: ㅛ
   rr: yo
   gloss_en: cooking
@@ -89,20 +104,6 @@
   image_filename: 요리-cooking.png
   example_word: 요리
   example_rr: yori
-- hangul: ㅘ
-  rr: wa
-  gloss_en: snack
-  image_prompt: Snack
-  image_filename: 과자-snack.png
-  example_word: 과자
-  example_rr: gwaja
-- hangul: ㅜ
-  rr: u
-  gloss_en: umbrella
-  image_prompt: Umbrella
-  image_filename: 우산-umbrella.png
-  example_word: 우산
-  example_rr: usa
 - hangul: ㅠ
   rr: yu
   gloss_en: glass
@@ -110,6 +111,38 @@
   image_filename: 유리-glass.png
   example_word: 유리
   example_rr: yuri
+- hangul: ㅒ
+  rr: yae
+  gloss_en: story
+  image_prompt: Story
+  image_filename: 얘기-story.png
+  example_word: 얘기
+  example_rr: yaegi
+- hangul: ㅖ
+  rr: ye
+  gloss_en: art
+  image_prompt: Art
+  image_filename: 예술-art.png
+  example_word: 예술
+  example_rr: yesu
+
+#--------------------
+# compounds: [ㅘ, ㅙ, ㅝ, ㅞ]
+#--------------------
+- hangul: ㅘ
+  rr: wa
+  gloss_en: snack
+  image_prompt: Snack
+  image_filename: 과자-snack.png
+  example_word: 과자
+  example_rr: gwaja
+- hangul: ㅙ
+  rr: wae
+  gloss_en: hoe
+  image_prompt: Hoe
+  image_filename: 괭이-hoe.png
+  example_word: 괭이
+  example_rr: gwaei
 - hangul: ㅝ
   rr: wo
   gloss_en: monkey
@@ -124,13 +157,10 @@
   image_filename: 웨딩-wedding.png
   example_word: 웨딩
   example_rr: wedi
-- hangul: ㅡ
-  rr: eu
-  gloss_en: best
-  image_prompt: Best
-  image_filename: 으뜸-best.png
-  example_word: 으뜸
-  example_rr: eutteu
+
+#--------------------
+# special: [ㅢ]
+#--------------------
 - hangul: ㅢ
   rr: ui
   gloss_en: chair

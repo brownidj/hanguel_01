@@ -26,7 +26,7 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 350));
 
     expect(prefs.getInt('wpm'), 120);
-    expect(prefs.getBool('include_rare'), true);
+    expect(prefs.getBool('include_special'), true);
     expect(prefs.getBool('advanced_vowels'), true);
     expect(prefs.getInt('repeats'), 3);
   });

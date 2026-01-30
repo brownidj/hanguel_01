@@ -36,16 +36,18 @@ def _slugify(text: str) -> str:
     return s or "example"
 
 
-def _load_examples(path: Path) -> list[dict[str, Any]]:
+def _load_examples(path: Path) -> tuple[list[dict[str, Any]], bool]:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if isinstance(data, list):
+        return [item for item in data if isinstance(item, dict)], True
     items = data.get("examples", [])
     if not isinstance(items, list):
-        return []
-    return items
+        return [], False
+    return [item for item in items if isinstance(item, dict)], False
 
 
-def _save_examples(path: Path, items: list[dict[str, Any]]) -> None:
-    data = {"examples": items}
+def _save_examples(path: Path, items: list[dict[str, Any]], *, as_list: bool) -> None:
+    data: Any = items if as_list else {"examples": items}
     path.write_text(yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8")
 
 
@@ -124,6 +126,11 @@ def main() -> int:
     parser.add_argument("--batch-index", type=int, default=1, help="1-based batch index to process.")
     parser.add_argument("--auto-batches", action="store_true", help="Run batches sequentially with pauses.")
     parser.add_argument("--batch-pause", type=int, default=10, help="Seconds to pause between batches.")
+    parser.add_argument(
+        "--only",
+        default="",
+        help="Only generate a specific image (match by image_filename or example_word).",
+    )
     args = parser.parse_args()
 
     examples_path = Path(args.examples)
@@ -135,26 +142,37 @@ def main() -> int:
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is required for image generation.")
 
-    items = _load_examples(examples_path)
+    items, examples_as_list = _load_examples(examples_path)
     if not items:
         print("No examples found in {}".format(examples_path))
         return 1
-    syllables = yaml.safe_load(syllables_path.read_text(encoding="utf-8")) or {}
-    syllable_glyphs = {
-        s.get("glyph") for s in syllables.get("syllables", []) if isinstance(s, dict) and s.get("glyph")
-    }
+    syllable_glyphs: set[str] = set()
+    if args.context == "syllable":
+        syllables = yaml.safe_load(syllables_path.read_text(encoding="utf-8")) or {}
+        syllable_glyphs = {
+            s.get("glyph")
+            for s in syllables.get("syllables", [])
+            if isinstance(s, dict) and s.get("glyph")
+        }
 
     background = PASTEL_BACKGROUNDS.get(args.context, PASTEL_BACKGROUNDS["syllable"])
     candidates: list[dict[str, Any]] = []
+    only = args.only.strip()
     for item in items:
-        if not isinstance(item, dict):
-            continue
         syllable = item.get("starts_with_syllable", "")
-        if isinstance(syllable, str) and syllable_glyphs and syllable not in syllable_glyphs:
+        if args.context == "syllable" and isinstance(syllable, str) and syllable_glyphs and syllable not in syllable_glyphs:
             continue
         filename = item.get("image_filename", "")
         if not isinstance(filename, str) or not filename.strip():
             continue
+        example_word = item.get("example_word", "")
+        if only:
+            if isinstance(example_word, str) and example_word == only:
+                pass
+            elif filename == only:
+                pass
+            else:
+                continue
         out_path = output_dir / filename
         if out_path.exists() and not args.overwrite:
             continue
@@ -239,7 +257,7 @@ def main() -> int:
     if args.dry_run:
         print("[dry-run] Skipping examples.yaml write")
     else:
-        _save_examples(examples_path, items)
+        _save_examples(examples_path, items, as_list=examples_as_list)
     return 0
 
 

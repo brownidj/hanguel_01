@@ -4,10 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f99d5883-1264-4767-9e65-2673746d4b79" name="Changes" comment="Tried, unsuccessfully, to update examples.yaml">
+    <list default="true" id="f99d5883-1264-4767-9e65-2673746d4b79" name="Changes" comment="example_syllables.yaml partly fixed.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/notes_ui_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/notes_ui_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/examples.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/data/examples.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/assets/data/clean_nouns.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/assets/data/clean_nouns.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/assets/data/example_vowels.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/assets/data/example_vowels.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/assets/data/syllables.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/assets/data/syllables.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/assets/data/vowels.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/assets/data/vowels.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/lib/data/repositories/examples_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/data/repositories/examples_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/lib/services/settings_store.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/services/settings_store.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/screens/main_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/screens/main_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/screens/settings_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/screens/settings_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/examples_panel.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/examples_panel.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/notes_panel.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/notes_panel.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/test/domain/repositories_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/test/domain/repositories_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/test/state/settings_debounce_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/test/state/settings_debounce_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/test/ui/main_screen_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/test/ui/main_screen_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/settings.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/generate_example_images.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/generate_example_images.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +73,7 @@
     "Flutter.main.dart.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python tests.Python tests in tests.executor": "Run",
-    "Python.build_clean_nouns.executor": "Run",
+    "Python.build_clean_nouns.executor": "Debug",
     "Python.create_syllables.executor": "Run",
     "Python.generate_wav.executor": "Run",
     "Python.list_component_names.executor": "Run",
@@ -73,7 +86,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "vowel__stages",
     "last_opened_file_path": "/Users/david/PycharmProjects/Hangul_01/flutter_app/assets/data",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -105,7 +118,7 @@
       <recent name="$PROJECT_DIR$/assets/audio" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.build_clean_nouns">
+  <component name="RunManager" selected="Python tests.Python tests in tests">
     <configuration name="build_clean_nouns" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Hangul_01" />
       <option name="ENV_FILES" value="" />
@@ -221,9 +234,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python.build_clean_nouns" />
         <item itemvalue="Python.main" />
-        <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python.sanity_tts_ko" />
         <item itemvalue="Python.generate_wav" />
       </list>
@@ -252,7 +265,7 @@
       <workItem from="1765520013546" duration="30000" />
       <workItem from="1768795640822" duration="114476000" />
       <workItem from="1769216130722" duration="974000" />
-      <workItem from="1769217230586" duration="156377000" />
+      <workItem from="1769217230586" duration="174444000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -406,7 +419,23 @@
       <option name="project" value="LOCAL" />
       <updated>1769579602879</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="example_syllables.yaml partly fixed.">
+      <option name="closed" value="true" />
+      <created>1769666794318</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1769666794318</updated>
+    </task>
+    <task id="LOCAL-00021" summary="example_syllables.yaml partly fixed.">
+      <option name="closed" value="true" />
+      <created>1769666870518</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1769666870518</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -430,15 +459,16 @@
     <MESSAGE value="Fine tuning of the L&amp;F Step 1" />
     <MESSAGE value="Fine tuning of the L&amp;F Step 1 prior to adding CVC" />
     <MESSAGE value="Tried, unsuccessfully, to update examples.yaml" />
-    <option name="LAST_COMMIT_MESSAGE" value="Tried, unsuccessfully, to update examples.yaml" />
+    <MESSAGE value="example_syllables.yaml partly fixed." />
+    <option name="LAST_COMMIT_MESSAGE" value="example_syllables.yaml partly fixed." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Hangul_01$main.coverage" NAME="main Coverage Results" MODIFIED="1769471863335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Hangul_01$generate_wav.coverage" NAME="generate_wav Coverage Results" MODIFIED="1762917523230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/Hangul_01$list_component_names.coverage" NAME="list_component_names Coverage Results" MODIFIED="1769126571780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/Hangul_01$create_syllables.coverage" NAME="create_syllables Coverage Results" MODIFIED="1762689925032" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
-    <SUITE FILE_PATH="coverage/Hangul_01$.coverage" NAME=" Coverage Results" MODIFIED="1769386449989" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/Hangul_01$build_clean_nouns.coverage" NAME="build_clean_nouns Coverage Results" MODIFIED="1769664746365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
+    <SUITE FILE_PATH="coverage/Hangul_01$.coverage" NAME=" Coverage Results" MODIFIED="1769718090087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/Hangul_01$build_clean_nouns.coverage" NAME="build_clean_nouns Coverage Results" MODIFIED="1769715211648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/Hangul_01$sanity_tts_ko.coverage" NAME="sanity_tts_ko Coverage Results" MODIFIED="1762907762959" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
   </component>
 </project>

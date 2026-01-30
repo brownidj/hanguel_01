@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../domain/compose.dart';
 import '../../../state/data_providers.dart';
 import '../../../state/navigation_state.dart';
 
@@ -20,9 +21,10 @@ class NotesPanel extends ConsumerWidget {
         child: itemAsync.when(
           data: (item) {
             final vowel = item.vowel.isEmpty ? 'ㅏ' : item.vowel;
-            final syllable = item.glyph.isEmpty ? '아' : item.glyph;
+            final syllable = composeCv('ㅇ', vowel);
             return Text(
               'Standalone vowels are written with a silent ㅇ onset, so $vowel is written as $syllable (ㅇ + $vowel).',
+              style: const TextStyle(fontSize: 16),
             );
           },
           loading: () => const SizedBox.shrink(),

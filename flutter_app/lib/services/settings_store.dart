@@ -13,7 +13,8 @@ class SettingsStore {
   static const String _keyShowCues = 'show_cues';
   static const String _keyWpm = 'wpm';
   static const String _keySlow = 'slow_enabled';
-  static const String _keyIncludeRare = 'include_rare';
+  static const String _keyIncludeRare = 'include_special';
+  static const String _legacyIncludeRare = 'include_rare';
   static const String _keyAdvancedVowels = 'advanced_vowels';
   static const String _keyRepeats = 'repeats';
   static const String _keyDelayBeforeFirstPlay = 'delay_before_first_play';
@@ -34,7 +35,7 @@ class SettingsStore {
     final showCues = prefs.getBool(_keyShowCues) ?? true;
     final wpm = prefs.getInt(_keyWpm) ?? 80;
     final slowEnabled = prefs.getBool(_keySlow) ?? false;
-    final includeRare = prefs.getBool(_keyIncludeRare) ?? false;
+    final includeRare = prefs.getBool(_keyIncludeRare) ?? prefs.getBool(_legacyIncludeRare) ?? false;
     final advancedVowels = prefs.getBool(_keyAdvancedVowels) ?? false;
     final repeats = prefs.getInt(_keyRepeats) ?? 1;
     final delayBeforeFirstPlay = prefs.getDouble(_keyDelayBeforeFirstPlay) ?? 0.0;

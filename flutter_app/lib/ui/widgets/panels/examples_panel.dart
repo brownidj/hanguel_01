@@ -48,97 +48,104 @@ class ExamplesPanel extends ConsumerWidget {
                         final maxByHeight = constraints.maxHeight * 0.4;
                         final maxByWidth = constraints.maxWidth * 0.8;
                         final imageSize = [160.0, maxByHeight, maxByWidth].reduce((a, b) => a < b ? a : b);
+                        const buttonHeight = 36.0;
                         return Padding(
                           padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                          child: LayoutBuilder(
-                            builder: (context, innerConstraints) {
-                              const hangulStyle = TextStyle(fontSize: 28, fontWeight: FontWeight.bold);
-                              const metaStyle = TextStyle(fontSize: 14);
-                              const spacing = 6.0;
-                              const buttonHeight = 36.0;
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: LayoutBuilder(
+                                  builder: (context, innerConstraints) {
+                                    const hangulStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+                                    const metaStyle = TextStyle(fontSize: 14);
+                                    const spacing = 6.0;
 
-                              double measureLineHeight(String text, TextStyle style) {
-                                final painter = TextPainter(
-                                  text: TextSpan(text: text, style: style),
-                                  maxLines: 1,
-                                  textDirection: TextDirection.ltr,
-                                )..layout(maxWidth: innerConstraints.maxWidth);
-                                return painter.height;
-                              }
+                                    double measureLineHeight(String text, TextStyle style) {
+                                      final painter = TextPainter(
+                                        text: TextSpan(text: text, style: style),
+                                        maxLines: 1,
+                                        textDirection: TextDirection.ltr,
+                                      )..layout(maxWidth: innerConstraints.maxWidth);
+                                      return painter.height;
+                                    }
 
-                              final hangulHeight = measureLineHeight(example.hangul, hangulStyle);
-                              final rrHeight = measureLineHeight('Say it: ${example.rr}', metaStyle);
-                              final glossHeight = measureLineHeight(example.glossEn, metaStyle);
-                              final reserved = hangulHeight +
-                                  rrHeight +
-                                  glossHeight +
-                                  spacing * 3 +
-                                  buttonHeight +
-                                  spacing;
-                              final availableHeight = innerConstraints.maxHeight - reserved;
-                              final maxByWidth = innerConstraints.maxWidth * 0.8;
-                              final maxImage = [
-                                imageSize,
-                                maxByWidth,
-                                availableHeight,
-                              ].reduce((a, b) => a < b ? a : b);
-                              final imageEdge = maxImage.isFinite && maxImage > 0 ? maxImage : 0.0;
+                                    final hangulHeight = measureLineHeight(example.hangul, hangulStyle);
+                                    final rrHeight = measureLineHeight('Say it: ${example.rr}', metaStyle);
+                                    final glossHeight = measureLineHeight(example.glossEn, metaStyle);
+                                    final reserved = hangulHeight +
+                                        rrHeight +
+                                        glossHeight +
+                                        spacing * 3 +
+                                        buttonHeight +
+                                        spacing;
+                                    final availableHeight = innerConstraints.maxHeight - reserved;
+                                    final maxByWidth = innerConstraints.maxWidth * 0.8;
+                                    final maxImage = [
+                                      imageSize,
+                                      maxByWidth,
+                                      availableHeight,
+                                    ].reduce((a, b) => a < b ? a : b);
+                                    final imageEdge = maxImage.isFinite && maxImage > 0 ? maxImage : 0.0;
 
-                              return SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                                    return SingleChildScrollView(
+                                      padding: const EdgeInsets.only(bottom: buttonHeight + spacing),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
                                     Text.rich(
                                       _buildHighlightedHangul(
                                         example.hangul,
-                                        example.startsWithSyllable,
+                                        _highlightTarget(nav.mode, item.consonant, item.vowel, example),
                                         true,
                                       ),
                                       key: const ValueKey('example-hangul'),
                                       style: hangulStyle,
                                     ),
-                                    const SizedBox(height: spacing),
-                                    Center(
-                                      child: Tooltip(
-                                        message: example.imagePrompt,
-                                        waitDuration: const Duration(milliseconds: 300),
-                                        child: SizedBox(
-                                          width: imageEdge,
-                                          height: imageEdge,
-                                          child: example.imageFilename.isEmpty
-                                              ? const SizedBox.shrink()
-                                              : Image.asset(
-                                                  'assets/images/examples/${example.imageFilename}',
-                                                  key: const ValueKey('example-image'),
-                                                  fit: BoxFit.contain,
-                                                ),
-                                        ),
+                                          const SizedBox(height: spacing),
+                                          Center(
+                                            child: Tooltip(
+                                              message: example.imagePrompt,
+                                              waitDuration: const Duration(milliseconds: 300),
+                                              child: SizedBox(
+                                                width: imageEdge,
+                                                height: imageEdge,
+                                                child: example.imageFilename.isEmpty
+                                                    ? const SizedBox.shrink()
+                                                    : Image.asset(
+                                                        'assets/images/examples/${example.imageFilename}',
+                                                        key: const ValueKey('example-image'),
+                                                        fit: BoxFit.contain,
+                                                      ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: spacing),
+                                          Text(example.glossEn, style: metaStyle),
+                                          Text('Say it: ${example.rr}', style: metaStyle),
+                                        ],
                                       ),
-                                    ),
-                                    const SizedBox(height: spacing),
-                                    Text(example.glossEn, style: metaStyle),
-                                    Text('Say it: ${example.rr}', style: metaStyle),
-                                    const SizedBox(height: spacing),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: SizedBox(
-                                        height: buttonHeight,
-                                        child: ElevatedButton(
-                                          onPressed: playback.autoEnabled || !playback.controlsEnabled || !playback.heardOnce
-                                              ? null
-                                              : () async {
-                                                  await ref
-                                                      .read(audioServiceProvider)
-                                                      .playGlyph(example.hangul, wpm: settings.effectiveWpm);
-                                                },
-                                          child: const Icon(Icons.hearing, size: 18),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                    );
+                                  },
                                 ),
-                              );
-                            },
+                              ),
+                              Positioned(
+                                right: 0,
+                                bottom: 0,
+                                child: SizedBox(
+                                  height: buttonHeight,
+                                  child: ElevatedButton(
+                                    onPressed: playback.autoEnabled || !playback.controlsEnabled || !playback.heardOnce
+                                        ? null
+                                        : () async {
+                                            await ref
+                                                .read(audioServiceProvider)
+                                                .playGlyph(example.hangul, wpm: settings.effectiveWpm);
+                                          },
+                                    child: const Icon(Icons.hearing, size: 18),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -208,8 +215,148 @@ TextSpan _buildHighlightedHangul(String hangul, String syllable, bool highlight)
   return TextSpan(
     children: [
       if (before.isNotEmpty) TextSpan(text: before),
-      TextSpan(text: target, style: const TextStyle(color: Color(0xFFD32F2F))),
+      TextSpan(text: target, style: const TextStyle(color: Color(0xFFFF7A00))),
       if (after.isNotEmpty) TextSpan(text: after),
     ],
   );
 }
+
+String _highlightTarget(String mode, String consonant, String vowel, ExampleItem example) {
+  if (mode == 'Consonants' && consonant.isNotEmpty) {
+    final target = _findSyllableForConsonant(example.hangul, consonant);
+    if (target.isNotEmpty) {
+      return target;
+    }
+  }
+  if (mode == 'Vowels' && vowel.isNotEmpty) {
+    final target = _findSyllableForVowel(example.hangul, vowel);
+    if (target.isNotEmpty) {
+      return target;
+    }
+  }
+  return example.startsWithSyllable;
+}
+
+String _findSyllableForConsonant(String word, String consonant) {
+  for (final rune in word.runes) {
+    final syllable = String.fromCharCode(rune);
+    final components = _decomposeSyllable(syllable);
+    if (components != null) {
+      final initial = components.initial;
+      final finalConsonant = components.finalConsonant;
+      if (initial == consonant || finalConsonant == consonant) {
+        return syllable;
+      }
+    }
+  }
+  return '';
+}
+
+String _findSyllableForVowel(String word, String vowel) {
+  for (final rune in word.runes) {
+    final syllable = String.fromCharCode(rune);
+    final components = _decomposeSyllable(syllable);
+    if (components != null) {
+      final mid = components.vowel;
+      if (mid == vowel) {
+        return syllable;
+      }
+    }
+  }
+  return '';
+}
+
+({String initial, String vowel, String finalConsonant})? _decomposeSyllable(String syllable) {
+  if (syllable.isEmpty) return null;
+  final code = syllable.codeUnitAt(0);
+  if (code < 0xAC00 || code > 0xD7A3) return null;
+  final index = code - 0xAC00;
+  final choIndex = index ~/ 588;
+  final jungIndex = (index % 588) ~/ 28;
+  final jongIndex = index % 28;
+  if (choIndex < 0 || choIndex >= _compatCho.length) return null;
+  if (jungIndex < 0 || jungIndex >= _compatJung.length) return null;
+  if (jongIndex < 0 || jongIndex >= _compatJong.length) return null;
+  return (
+    initial: _compatCho[choIndex],
+    vowel: _compatJung[jungIndex],
+    finalConsonant: _compatJong[jongIndex],
+  );
+}
+
+const List<String> _compatCho = [
+  'ㄱ',
+  'ㄲ',
+  'ㄴ',
+  'ㄷ',
+  'ㄸ',
+  'ㄹ',
+  'ㅁ',
+  'ㅂ',
+  'ㅃ',
+  'ㅅ',
+  'ㅆ',
+  'ㅇ',
+  'ㅈ',
+  'ㅉ',
+  'ㅊ',
+  'ㅋ',
+  'ㅌ',
+  'ㅍ',
+  'ㅎ',
+];
+
+const List<String> _compatJung = [
+  'ㅏ',
+  'ㅐ',
+  'ㅑ',
+  'ㅒ',
+  'ㅓ',
+  'ㅔ',
+  'ㅕ',
+  'ㅖ',
+  'ㅗ',
+  'ㅘ',
+  'ㅙ',
+  'ㅚ',
+  'ㅛ',
+  'ㅜ',
+  'ㅝ',
+  'ㅞ',
+  'ㅟ',
+  'ㅠ',
+  'ㅡ',
+  'ㅢ',
+  'ㅣ',
+];
+
+const List<String> _compatJong = [
+  '',
+  'ㄱ',
+  'ㄲ',
+  'ㄳ',
+  'ㄴ',
+  'ㄵ',
+  'ㄶ',
+  'ㄷ',
+  'ㄹ',
+  'ㄺ',
+  'ㄻ',
+  'ㄼ',
+  'ㄽ',
+  'ㄾ',
+  'ㄿ',
+  'ㅀ',
+  'ㅁ',
+  'ㅂ',
+  'ㅄ',
+  'ㅅ',
+  'ㅆ',
+  'ㅇ',
+  'ㅈ',
+  'ㅊ',
+  'ㅋ',
+  'ㅌ',
+  'ㅍ',
+  'ㅎ',
+];

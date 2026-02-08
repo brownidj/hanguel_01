@@ -3,6 +3,9 @@
 # Each entry includes glyph, IPA, romanization, and a feature tag.
 
 consonants:
+  #--------------------
+  # base: [ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅅ, ㅇ]
+  #--------------------
   - glyph: "ㄱ"
     ipa: "k"
     romanization: "g/k"
@@ -12,24 +15,6 @@ consonants:
       best_approx: "as in the k of 'ski' (no puff of air)"
       alternative: "as in 'go' (but softer)"
       recommended: "as in the k of 'ski' (no puff of air)"
-  - glyph: "ㄲ"
-    ipa: "k͈"
-    romanization: "kk"
-    feature: "tense velar stop"
-    rr:
-      target_sound: "tense velar stop; very tight; no aspiration"
-      best_approx: "as in the k of 'skate' (tight, no puff)"
-      alternative: "like a very hard 'k'"
-      recommended: "as in a tight, tense 'k' (no puff)"
-  - glyph: "ㅋ"
-    ipa: "kʰ"
-    romanization: "kh"
-    feature: "aspirated velar stop"
-    rr:
-      target_sound: "aspirated velar stop; strong puff of air"
-      best_approx: "as in 'kite' (strong puff)"
-      alternative: "as in 'key' (strong puff)"
-      recommended: "as in 'kite' (strong puff of air)"
   - glyph: "ㄴ"
     ipa: "n"
     romanization: "n"
@@ -48,24 +33,6 @@ consonants:
       best_approx: "as in the t of 'stop' (no puff)"
       alternative: "as in 'day' (but softer)"
       recommended: "as in the t of 'stop' (no puff of air)"
-  - glyph: "ㄸ"
-    ipa: "t͈"
-    romanization: "tt"
-    feature: "tense alveolar stop"
-    rr:
-      target_sound: "tense alveolar stop; very tight; no aspiration"
-      best_approx: "as in a very tight 't' (no puff)"
-      alternative: "like the t in 'stop' but held tighter"
-      recommended: "as in a tight, clipped 't' (no puff)"
-  - glyph: "ㅌ"
-    ipa: "tʰ"
-    romanization: "th"
-    feature: "aspirated alveolar stop"
-    rr:
-      target_sound: "aspirated alveolar stop; strong puff of air"
-      best_approx: "as in 'tea' (strong puff)"
-      alternative: "as in 'top' (strong puff)"
-      recommended: "as in 'tea' (strong puff of air)"
   - glyph: "ㄹ"
     ipa: "ɾ ~ l"
     romanization: "r/l"
@@ -93,24 +60,6 @@ consonants:
       best_approx: "as in the p of 'spin' (no puff)"
       alternative: "as in 'boy' (but softer)"
       recommended: "as in the p of 'spin' (no puff of air)"
-  - glyph: "ㅃ"
-    ipa: "p͈"
-    romanization: "pp"
-    feature: "tense bilabial stop"
-    rr:
-      target_sound: "tense bilabial stop; very tight; no aspiration"
-      best_approx: "as in a very tight 'p' (no puff)"
-      alternative: "like the p in 'spin' but tense"
-      recommended: "as in a tight, clipped 'p' (no puff)"
-  - glyph: "ㅍ"
-    ipa: "pʰ"
-    romanization: "ph"
-    feature: "aspirated bilabial stop"
-    rr:
-      target_sound: "aspirated bilabial stop; strong puff of air"
-      best_approx: "as in 'pie' (strong puff)"
-      alternative: "as in 'power' (strong puff)"
-      recommended: "as in 'pie' (strong puff of air)"
   - glyph: "ㅅ"
     ipa: "s"
     romanization: "s"
@@ -120,15 +69,6 @@ consonants:
       best_approx: "as in 'see'"
       alternative: "as in 'sun'"
       recommended: "as in 'see' (may sound sh-like before i/y)"
-  - glyph: "ㅆ"
-    ipa: "s͈"
-    romanization: "ss"
-    feature: "tense alveolar fricative"
-    rr:
-      target_sound: "tense s; sharper, tighter"
-      best_approx: "as in a very sharp 's'"
-      alternative: "like the 'ss' in 'hiss' (held)"
-      recommended: "as in a tight, sharp 's'"
   - glyph: "ㅇ"
     ipa: "∅ / ŋ"
     romanization: "ng"
@@ -138,6 +78,10 @@ consonants:
       best_approx: "silent at the start (no sound)"
       alternative: "as in the final 'ng' of 'sing'"
       recommended: "silent at start; 'ng' in 'sing' if final"
+
+  #--------------------
+  # base_extras: [ㅈ]
+  #--------------------
   - glyph: "ㅈ"
     ipa: "tɕ"
     romanization: "j/ch"
@@ -147,15 +91,37 @@ consonants:
       best_approx: "as in 'jam' (soft, no puff)"
       alternative: "as in 'chop' (but softer)"
       recommended: "as in 'jam' (soft, no puff of air)"
-  - glyph: "ㅉ"
-    ipa: "tɕ͈"
-    romanization: "jj"
-    feature: "tense alveolo-palatal affricate"
+
+  #--------------------
+  # aspirated: [ㅋ, ㅌ, ㅍ, ㅊ]
+  #--------------------
+  - glyph: "ㅋ"
+    ipa: "kʰ"
+    romanization: "kh"
+    feature: "aspirated velar stop"
     rr:
-      target_sound: "tense affricate; tight, clipped j"
-      best_approx: "as in a very tight 'j' (no puff)"
-      alternative: "like a strong 'j' sound"
-      recommended: "as in a tight, clipped 'j' (no puff)"
+      target_sound: "aspirated velar stop; strong puff of air"
+      best_approx: "as in 'kite' (strong puff)"
+      alternative: "as in 'key' (strong puff)"
+      recommended: "as in 'kite' (strong puff of air)"
+  - glyph: "ㅌ"
+    ipa: "tʰ"
+    romanization: "th"
+    feature: "aspirated alveolar stop"
+    rr:
+      target_sound: "aspirated alveolar stop; strong puff of air"
+      best_approx: "as in 'tea' (strong puff)"
+      alternative: "as in 'top' (strong puff)"
+      recommended: "as in 'tea' (strong puff of air)"
+  - glyph: "ㅍ"
+    ipa: "pʰ"
+    romanization: "ph"
+    feature: "aspirated bilabial stop"
+    rr:
+      target_sound: "aspirated bilabial stop; strong puff of air"
+      best_approx: "as in 'pie' (strong puff)"
+      alternative: "as in 'power' (strong puff)"
+      recommended: "as in 'pie' (strong puff of air)"
   - glyph: "ㅊ"
     ipa: "tɕʰ"
     romanization: "chh"
@@ -165,6 +131,59 @@ consonants:
       best_approx: "as in 'cheese' (strong puff)"
       alternative: "as in 'chop' (strong puff)"
       recommended: "as in 'cheese' (strong puff of air)"
+
+  #--------------------
+  # tense: [ㄲ, ㄸ, ㅃ, ㅆ, ㅉ]
+  #--------------------
+  - glyph: "ㄲ"
+    ipa: "k͈"
+    romanization: "kk"
+    feature: "tense velar stop"
+    rr:
+      target_sound: "tense velar stop; very tight; no aspiration"
+      best_approx: "as in the k of 'skate' (tight, no puff)"
+      alternative: "like a very hard 'k'"
+      recommended: "as in a tight, tense 'k' (no puff)"
+  - glyph: "ㄸ"
+    ipa: "t͈"
+    romanization: "tt"
+    feature: "tense alveolar stop"
+    rr:
+      target_sound: "tense alveolar stop; very tight; no aspiration"
+      best_approx: "as in a very tight 't' (no puff)"
+      alternative: "like the t in 'stop' but held tighter"
+      recommended: "as in a tight, clipped 't' (no puff)"
+  - glyph: "ㅃ"
+    ipa: "p͈"
+    romanization: "pp"
+    feature: "tense bilabial stop"
+    rr:
+      target_sound: "tense bilabial stop; very tight; no aspiration"
+      best_approx: "as in a very tight 'p' (no puff)"
+      alternative: "like the p in 'spin' but tense"
+      recommended: "as in a tight, clipped 'p' (no puff)"
+  - glyph: "ㅆ"
+    ipa: "s͈"
+    romanization: "ss"
+    feature: "tense alveolar fricative"
+    rr:
+      target_sound: "tense s; sharper, tighter"
+      best_approx: "as in a very sharp 's'"
+      alternative: "like the 'ss' in 'hiss' (held)"
+      recommended: "as in a tight, sharp 's'"
+  - glyph: "ㅉ"
+    ipa: "tɕ͈"
+    romanization: "jj"
+    feature: "tense alveolo-palatal affricate"
+    rr:
+      target_sound: "tense affricate; tight, clipped j"
+      best_approx: "as in a very tight 'j' (no puff)"
+      alternative: "like a strong 'j' sound"
+      recommended: "as in a tight, clipped 'j' (no puff)"
+
+  #--------------------
+  # special: [ㅎ]
+  #--------------------
   - glyph: "ㅎ"
     ipa: "h"
     romanization: "h"

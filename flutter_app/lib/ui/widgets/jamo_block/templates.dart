@@ -11,6 +11,9 @@ class RightBranchTemplate extends StatelessWidget {
     required this.topTooltip,
     required this.middleTooltip,
     required this.bottomTooltip,
+    this.topStyle,
+    this.middleStyle,
+    this.bottomStyle,
   });
 
   final String topText;
@@ -19,16 +22,19 @@ class RightBranchTemplate extends StatelessWidget {
   final String topTooltip;
   final String middleTooltip;
   final String bottomTooltip;
+  final TextStyle? topStyle;
+  final TextStyle? middleStyle;
+  final TextStyle? bottomStyle;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(child: SegmentFrame(child: _glyph(topText, topTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(topText, topTooltip, style: topStyle))),
         const SizedBox(height: 4),
-        Expanded(child: SegmentFrame(child: _glyph(middleText, middleTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(middleText, middleTooltip, style: middleStyle))),
         const SizedBox(height: 4),
-        Expanded(child: SegmentFrame(child: _glyph(bottomText, bottomTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(bottomText, bottomTooltip, style: bottomStyle))),
       ],
     );
   }
@@ -43,6 +49,9 @@ class TopBranchTemplate extends StatelessWidget {
     required this.topTooltip,
     required this.middleTooltip,
     required this.bottomTooltip,
+    this.topStyle,
+    this.middleStyle,
+    this.bottomStyle,
   });
 
   final String topText;
@@ -51,16 +60,19 @@ class TopBranchTemplate extends StatelessWidget {
   final String topTooltip;
   final String middleTooltip;
   final String bottomTooltip;
+  final TextStyle? topStyle;
+  final TextStyle? middleStyle;
+  final TextStyle? bottomStyle;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(child: SegmentFrame(child: _glyph(topText, topTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(topText, topTooltip, style: topStyle))),
         const SizedBox(height: 4),
-        Expanded(child: SegmentFrame(child: _glyph(middleText, middleTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(middleText, middleTooltip, style: middleStyle))),
         const SizedBox(height: 4),
-        Expanded(child: SegmentFrame(child: _glyph(bottomText, bottomTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(bottomText, bottomTooltip, style: bottomStyle))),
       ],
     );
   }
@@ -75,6 +87,9 @@ class BottomBranchTemplate extends StatelessWidget {
     required this.topTooltip,
     required this.middleTooltip,
     required this.bottomTooltip,
+    this.topStyle,
+    this.middleStyle,
+    this.bottomStyle,
   });
 
   final String topText;
@@ -83,16 +98,19 @@ class BottomBranchTemplate extends StatelessWidget {
   final String topTooltip;
   final String middleTooltip;
   final String bottomTooltip;
+  final TextStyle? topStyle;
+  final TextStyle? middleStyle;
+  final TextStyle? bottomStyle;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(child: SegmentFrame(child: _glyph(topText, topTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(topText, topTooltip, style: topStyle))),
         const SizedBox(height: 4),
-        Expanded(child: SegmentFrame(child: _glyph(middleText, middleTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(middleText, middleTooltip, style: middleStyle))),
         const SizedBox(height: 4),
-        Expanded(child: SegmentFrame(child: _glyph(bottomText, bottomTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(bottomText, bottomTooltip, style: bottomStyle))),
       ],
     );
   }
@@ -107,6 +125,9 @@ class HorizontalTemplate extends StatelessWidget {
     required this.topTooltip,
     required this.middleTooltip,
     required this.bottomTooltip,
+    this.topStyle,
+    this.middleStyle,
+    this.bottomStyle,
   });
 
   final String topText;
@@ -115,22 +136,25 @@ class HorizontalTemplate extends StatelessWidget {
   final String topTooltip;
   final String middleTooltip;
   final String bottomTooltip;
+  final TextStyle? topStyle;
+  final TextStyle? middleStyle;
+  final TextStyle? bottomStyle;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(child: SegmentFrame(child: _glyph(topText, topTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(topText, topTooltip, style: topStyle))),
         const SizedBox(height: 4),
-        Expanded(child: SegmentFrame(child: _glyph(middleText, middleTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(middleText, middleTooltip, style: middleStyle))),
         const SizedBox(height: 4),
-        Expanded(child: SegmentFrame(child: _glyph(bottomText, bottomTooltip))),
+        Expanded(child: SegmentFrame(child: _glyph(bottomText, bottomTooltip, style: bottomStyle))),
       ],
     );
   }
 }
 
-Widget _glyph(String text, String tooltip) {
+Widget _glyph(String text, String tooltip, {TextStyle? style}) {
   if (text.isEmpty) {
     return const Center(
       child: FittedBox(
@@ -151,7 +175,7 @@ Widget _glyph(String text, String tooltip) {
       fit: BoxFit.contain,
       child: Text(
         text,
-        style: const TextStyle(fontSize: 64, fontWeight: FontWeight.w600),
+        style: style ?? const TextStyle(fontSize: 64, fontWeight: FontWeight.w600),
       ),
     ),
   );

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../domain/compose.dart';
 import '../../../domain/models.dart';
 import '../../../state/data_providers.dart';
 import '../../../state/navigation_state.dart';
@@ -86,12 +87,18 @@ class SyllablePanel extends ConsumerWidget {
                   child: Center(
                     child: currentAsync.when(
                       data: (item) {
+                        final displayText = () {
+                          if (nav.mode == 'Vowels' && item.vowel.isNotEmpty) {
+                            return composeCv('ㅇ', item.vowel);
+                          }
+                          return item.glyph.isEmpty ? nav.mode : item.glyph;
+                        }();
                         return LayoutBuilder(
                           builder: (context, constraints) {
                             final fontSize = constraints.maxHeight * 0.6;
                             final size = fontSize > 180 ? 180.0 : fontSize;
                             return Text(
-                              item.glyph.isEmpty ? nav.mode : item.glyph,
+                              displayText,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: size,

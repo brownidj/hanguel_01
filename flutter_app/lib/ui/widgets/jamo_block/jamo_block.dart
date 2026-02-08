@@ -21,40 +21,57 @@ class JamoBlock extends ConsumerWidget {
         child: itemAsync.when(
           data: (item) {
             final index = _blockIndex(item.blockType);
+            final isVowelMode = item.mode == 'Vowels';
+            final leadingConsonant = isVowelMode ? 'ㅇ' : item.consonant;
+            const silentStyle = TextStyle(
+              fontSize: 64,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFFF0F0F0),
+            );
+            final leadingStyle = isVowelMode ? silentStyle : null;
+            final leadingTooltip = isVowelMode
+                ? 'Silent leading consonant'
+                : item.consonant.isEmpty
+                    ? ''
+                    : 'Leading consonant';
             return IndexedStack(
               index: index,
               children: [
                 RightBranchTemplate(
-                  topText: item.consonant,
+                  topText: leadingConsonant,
                   middleText: item.vowel,
                   bottomText: '',
-                  topTooltip: item.consonant.isEmpty ? '' : 'Leading consonant',
+                  topTooltip: leadingTooltip,
                   middleTooltip: item.vowel.isEmpty ? '' : 'Vowel',
                   bottomTooltip: '',
+                  topStyle: leadingStyle,
                 ),
                 TopBranchTemplate(
-                  topText: item.consonant,
+                  topText: leadingConsonant,
                   middleText: item.vowel,
                   bottomText: '',
-                  topTooltip: item.consonant.isEmpty ? '' : 'Leading consonant',
+                  topTooltip: leadingTooltip,
                   middleTooltip: item.vowel.isEmpty ? '' : 'Vowel',
                   bottomTooltip: '',
+                  topStyle: leadingStyle,
                 ),
                 BottomBranchTemplate(
-                  topText: item.consonant,
+                  topText: leadingConsonant,
                   middleText: item.vowel,
                   bottomText: '',
-                  topTooltip: item.consonant.isEmpty ? '' : 'Leading consonant',
+                  topTooltip: leadingTooltip,
                   middleTooltip: item.vowel.isEmpty ? '' : 'Vowel',
                   bottomTooltip: '',
+                  topStyle: leadingStyle,
                 ),
                 HorizontalTemplate(
-                  topText: item.consonant,
+                  topText: leadingConsonant,
                   middleText: item.vowel,
                   bottomText: '',
-                  topTooltip: item.consonant.isEmpty ? '' : 'Leading consonant',
+                  topTooltip: leadingTooltip,
                   middleTooltip: item.vowel.isEmpty ? '' : 'Vowel',
                   bottomTooltip: '',
+                  topStyle: leadingStyle,
                 ),
               ],
             );

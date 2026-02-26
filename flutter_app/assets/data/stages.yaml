@@ -1,0 +1,358 @@
+# stages.yaml
+# Pedagogical progression for Hangul practice.
+#
+# Concepts:
+# - "adds" lists items introduced at this stage (deltas from prior stages).
+# - "allow_modes" controls which practice views should be enabled.
+# - "syllable_policy":
+#     - "cv_all": generate all CV pairs from unlocked consonants x unlocked vowels
+#     - "explicit": use "syllables" list exactly as provided
+# - "recommended_settings" maps onto your existing UI controls:
+#     repeats, delay_between_reps_ms, delay_before_hints_ms, delay_before_extras_ms, wpm
+#
+# Notes:
+# - Stage 1 starts with vowels only (pedagogically common).
+# - Consonants are introduced in small sets, then aspirated/tense later.
+# - Compound vowels are introduced after learners have anchor vowels.
+
+version: 1
+
+vowel_stages:
+  - id: starter
+    vowels: [ㅏ, ㅓ, ㅗ, ㅜ, ㅡ]
+    unlock: always
+
+  - id: modifier
+    vowels: [ㅣ]
+    unlock:
+      requires_any: [starter]
+
+  - id: brightened
+    vowels: [ㅐ, ㅔ, ㅚ, ㅟ]
+    unlock:
+      requires_all: [modifier]
+      requires_any: [starter]
+
+  - id: y_vowels
+    vowels: [ㅑ, ㅕ, ㅛ, ㅠ, ㅒ, ㅖ]
+    unlock:
+      requires_any: [starter, brightened]
+
+  - id: compounds
+    vowels: [ㅘ, ㅙ, ㅝ, ㅞ]
+    unlock:
+      requires_pairs:
+        ㅘ: [ㅗ, ㅏ]
+        ㅙ: [ㅗ, ㅐ]
+        ㅝ: [ㅜ, ㅓ]
+        ㅞ: [ㅜ, ㅔ]
+
+  - id: special
+    vowels: [ㅢ]
+    unlock:
+      requires_all: [starter, modifier, brightened, y_vowels, compounds]
+
+consonant_stages:
+  - id: base
+    consonants: [ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅅ, ㅇ]
+    unlock: always
+
+  - id: base_extras
+    consonants: [ㅈ]
+    unlock:
+      requires_all: [base]
+
+  - id: aspirated
+    consonants: [ㅋ, ㅌ, ㅍ, ㅊ]
+    unlock:
+      requires_all: [base, base_extras]
+
+  - id: tense
+    consonants: [ㄲ, ㄸ, ㅃ, ㅆ, ㅉ]
+    unlock:
+      requires_all: [base, base_extras, aspirated]
+
+  - id: special
+    consonants: [ㅎ]
+    unlock:
+      requires_all: [base, base_extras, aspirated, tense]
+
+
+stages:
+  - id: stage_01_vowels_starter
+    name: "Starter vowels: ㅏ ㅓ ㅗ ㅜ ㅡ"
+    description: "Learn the 5 anchor vowels."
+    adds:
+      vowels: ["ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅡ"]
+      consonants: []
+    allow_modes:
+      vowels: true
+      consonants: false
+      syllables: false
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items or move on to the next lesson?"
+    recommended_settings:
+      repeats: 2
+      delay_between_reps_ms: 900
+      delay_before_hints_ms: 600
+      delay_before_extras_ms: 900
+      wpm: 70
+
+  - id: stage_02_consonants_basic_1
+    name: "Basic consonants: ㄱ ㄴ ㄷ ㄹ ㅁ"
+    description: "Introduce ㄱ ㄴ ㄷ ㄹ ㅁ; begin simple CV syllables."
+    adds:
+      vowels: []
+      consonants: ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ"]
+    allow_modes:
+      vowels: true
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 2
+      delay_between_reps_ms: 700
+      delay_before_hints_ms: 450
+      delay_before_extras_ms: 700
+      wpm: 85
+
+  - id: stage_03_consonants_basic_2
+    name: "Basic consonants: add ㅂ ㅅ ㅇ ㅈ ㅎ"
+    description: "Introduce ㅂ ㅅ ㅇ ㅈ ㅎ."
+    adds:
+      vowels: []
+      consonants: ["ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅎ"]
+    allow_modes:
+      vowels: true
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 2
+      delay_between_reps_ms: 650
+      delay_before_hints_ms: 400
+      delay_before_extras_ms: 650
+      wpm: 90
+
+  - id: stage_04_consonants_basic_3
+    name: "Aspirated consonants: ㅋ ㅌ ㅍ ㅊ"
+    description: "Introduce ㅋ ㅌ ㅍ ㅊ as aspirated contrasts."
+    adds:
+      vowels: []
+      consonants: ["ㅋ", "ㅌ", "ㅍ", "ㅊ"]
+    allow_modes:
+      vowels: true
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 2
+      delay_between_reps_ms: 600
+      delay_before_hints_ms: 350
+      delay_before_extras_ms: 600
+      wpm: 95
+
+  - id: stage_05_vowels_core_expansion
+    name: "Core vowels expansion: ㅣ ㅐ ㅔ"
+    description: "Introduce ㅣ ㅐ ㅔ."
+    adds:
+      vowels: ["ㅣ", "ㅐ", "ㅔ"]
+      consonants: []
+    allow_modes:
+      vowels: true
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 2
+      delay_between_reps_ms: 550
+      delay_before_hints_ms: 320
+      delay_before_extras_ms: 550
+      wpm: 100
+
+  - id: stage_06_y_vowels
+    name: "Y-vowels: ㅑ ㅕ ㅛ ㅠ ㅒ ㅖ"
+    description: "Introduce ㅑ ㅕ ㅛ ㅠ ㅒ ㅖ."
+    adds:
+      vowels: ["ㅑ", "ㅕ", "ㅛ", "ㅠ", "ㅒ", "ㅖ"]
+      consonants: []
+    allow_modes:
+      vowels: true
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 2
+      delay_between_reps_ms: 520
+      delay_before_hints_ms: 300
+      delay_before_extras_ms: 520
+      wpm: 105
+
+  - id: stage_07_compound_vowels_w
+    name: "W-compound vowels: ㅘ ㅝ ㅟ ㅙ ㅞ"
+    description: "Introduce ㅘ ㅝ ㅟ ㅙ ㅞ."
+    adds:
+      vowels: ["ㅘ", "ㅝ", "ㅟ", "ㅙ", "ㅞ"]
+      consonants: []
+    allow_modes:
+      vowels: true
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 2
+      delay_between_reps_ms: 500
+      delay_before_hints_ms: 280
+      delay_before_extras_ms: 500
+      wpm: 110
+
+  - id: stage_08_special_vowels
+    name: "Special vowels: ㅚ ㅢ"
+    description: "Introduce ㅚ ㅢ."
+    adds:
+      vowels: ["ㅚ", "ㅢ"]
+      consonants: []
+    allow_modes:
+      vowels: true
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 2
+      delay_between_reps_ms: 480
+      delay_before_hints_ms: 260
+      delay_before_extras_ms: 480
+      wpm: 112
+
+  - id: stage_09_double_consonants
+    name: "Tense consonants: ㄲ ㄸ ㅃ ㅆ ㅉ"
+    description: "Introduce ㄲ ㄸ ㅃ ㅆ ㅉ."
+    adds:
+      vowels: []
+      consonants: ["ㄲ", "ㄸ", "ㅃ", "ㅆ", "ㅉ"]
+    allow_modes:
+      vowels: false
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 3
+      delay_between_reps_ms: 650
+      delay_before_hints_ms: 450
+      delay_before_extras_ms: 650
+      wpm: 85
+
+  - id: stage_10_aspirated_consonants
+    name: "Aspirated consonants review"
+    description: "Review aspirated contrasts with expanded vowels."
+    adds:
+      vowels: []
+      consonants: []
+    review_pool:
+      vowels: ["ㅏ","ㅓ","ㅗ","ㅜ","ㅡ","ㅣ","ㅐ","ㅔ","ㅚ","ㅟ","ㅑ","ㅕ","ㅛ","ㅠ","ㅒ","ㅖ"]
+      consonants: ["ㄱ","ㄴ","ㄷ","ㄹ","ㅁ","ㅂ","ㅅ","ㅇ","ㅈ","ㅎ","ㅋ","ㅌ","ㅍ","ㅊ","ㄲ","ㄸ","ㅃ","ㅆ","ㅉ"]
+    allow_modes:
+      vowels: false
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 3
+      delay_between_reps_ms: 620
+      delay_before_hints_ms: 420
+      delay_before_extras_ms: 620
+      wpm: 90
+
+  - id: stage_11_full_review
+    name: "Full review"
+    description: "Review all introduced vowels and consonants."
+    adds:
+      vowels: []
+      consonants: []
+    allow_modes:
+      vowels: true
+      consonants: true
+      syllables: true
+    syllable_policy: "cv_all"
+    mastery_gate:
+      type: full_cycles
+      cycles: 3
+
+    review_offer:
+      allow_include_previous: true
+      label: "Review earlier items?"
+    recommended_settings:
+      repeats: 1
+      delay_between_reps_ms: 400
+      delay_before_hints_ms: 200
+      delay_before_extras_ms: 400
+      wpm: 120

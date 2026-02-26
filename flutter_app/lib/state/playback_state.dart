@@ -7,6 +7,8 @@ import 'data_providers.dart';
 import 'navigation_state.dart';
 import 'settings_state.dart';
 import 'audio_service_provider.dart';
+import 'stage_progress_state.dart';
+import 'stage_testing_mode.dart';
 import '../services/audio_service.dart';
 
 final playbackStateProvider = StateNotifierProvider<PlaybackState, PlaybackSnapshot>(
@@ -105,6 +107,9 @@ class PlaybackState extends StateNotifier<PlaybackSnapshot> {
     for (var i = 0; i < repeats; i += 1) {
       if (!state.autoEnabled || _disposed) return;
       await _ref.read(audioServiceProvider).playGlyph(item.glyph, wpm: settings.effectiveWpm);
+      if (!_ref.read(stageTestingModeProvider)) {
+        _ref.read(stageProgressProvider.notifier).recordPlay(item.glyph, _itemsLength());
+      }
       if (i < repeats - 1) {
         await _delaySeconds(settings.delayBetweenRepeats);
       }

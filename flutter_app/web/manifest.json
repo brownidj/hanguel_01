@@ -1,6 +1,6 @@
 {
-    "name": "Hangul Say It",
-    "short_name": "Hangul Say It",
+    "name": "Hanguel Tutor",
+    "short_name": "Hanguel Tutor",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

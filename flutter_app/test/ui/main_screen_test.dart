@@ -47,7 +47,6 @@ void main() {
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pump(const Duration(milliseconds: 200));
     expect(find.text('Words per minute'), findsOneWidget);
-    expect(find.text('Preset pauses'), findsOneWidget);
     expect(find.text('Repeats'), findsOneWidget);
     expect(find.text('About'), findsNothing);
   });

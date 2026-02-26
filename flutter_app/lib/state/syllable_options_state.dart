@@ -9,6 +9,11 @@ enum SyllableVowelSet {
   addCompounds,
 }
 
+const Set<String> _coreVowels = {'ㅏ', 'ㅓ', 'ㅗ', 'ㅜ', 'ㅡ', 'ㅣ'};
+const Set<String> _midFrontVowels = {'ㅐ', 'ㅔ'};
+const Set<String> _yGlideVowels = {'ㅑ', 'ㅕ', 'ㅛ', 'ㅠ'};
+const Set<String> _compoundVowels = {'ㅘ', 'ㅝ', 'ㅚ', 'ㅟ', 'ㅢ'};
+
 final syllableVowelSetProvider = StateNotifierProvider<SyllableVowelSetState, SyllableVowelSet>(
   (ref) => SyllableVowelSetState(ref.read(syllableOptionsStoreProvider)),
 );
@@ -25,6 +30,11 @@ class SyllableVowelSetState extends StateNotifier<SyllableVowelSet> {
   void set(SyllableVowelSet value) {
     state = value;
     _store.saveRaw(_encode(value));
+  }
+
+  void reset() {
+    state = SyllableVowelSet.core;
+    _store.saveRaw(_encode(state));
   }
 }
 
@@ -81,5 +91,23 @@ SyllableVowelSet decodeSyllableVowelSet(String? raw) {
     case 'core':
     default:
       return SyllableVowelSet.core;
+  }
+}
+
+Set<String> syllableVowelSetGlyphs(SyllableVowelSet set) {
+  switch (set) {
+    case SyllableVowelSet.core:
+      return _coreVowels;
+    case SyllableVowelSet.corePlusAeE:
+      return {..._coreVowels, ..._midFrontVowels};
+    case SyllableVowelSet.addYaYeYoYu:
+      return {..._coreVowels, ..._midFrontVowels, ..._yGlideVowels};
+    case SyllableVowelSet.addCompounds:
+      return {
+        ..._coreVowels,
+        ..._midFrontVowels,
+        ..._yGlideVowels,
+        ..._compoundVowels,
+      };
   }
 }

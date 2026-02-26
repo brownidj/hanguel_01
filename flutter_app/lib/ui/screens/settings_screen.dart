@@ -95,9 +95,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Sets various pauses to allow you to look at and understand stuff on the screen before moving on. '
-                  'Presets in the Drawer provide some useful sets of pauses. Changing a value here will override any '
-                  'Preset you have chosen.',
+                  'Sets various pauses to allow you to look at and understand stuff on the screen before moving on.',
                   style: helperStyle,
                 ),
               ),
@@ -258,7 +256,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const Divider(height: 8, thickness: 0.5),
           const ListTile(
             title: Text('About'),
-            subtitle: Text('Hangul Say It v1.0 • © topository • 260127'),
+            subtitle: Text("Hanguel Tutor v1.0 - (c) topository - 260127"),
           ),
         ],
       ),

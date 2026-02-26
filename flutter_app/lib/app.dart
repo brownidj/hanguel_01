@@ -12,7 +12,7 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeName = ref.watch(settingsStateProvider).theme;
     return MaterialApp(
-      title: 'Hangul Say It',
+      title: "Hanguel Tutor",
       theme: buildAppTheme(themeName),
       home: const MainScreen(),
     );

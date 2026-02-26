@@ -23,12 +23,6 @@ class SettingsStore {
   static const String _keyDelayBeforeExtras = 'delay_before_extras';
   static const String _keyDelayBeforeAutoAdvance = 'delay_before_auto_advance';
   static const String _keyTheme = 'theme';
-  static const String _keyActivePreset = 'active_preset';
-  static const String _keySavedWpm = 'saved_wpm';
-  static const String _keySavedRepeats = 'saved_repeats';
-  static const String _keySavedDelayBeforeFirstPlay = 'saved_delay_before_first_play';
-  static const String _keySavedDelayBetweenRepeats = 'saved_delay_between_repeats';
-  static const String _keySavedDelayBeforeAutoAdvance = 'saved_delay_before_auto_advance';
 
   Future<SettingsSnapshot> load() async {
     final prefs = _prefsOverride ?? await SharedPreferences.getInstance();
@@ -44,12 +38,6 @@ class SettingsStore {
     final delayBeforeExtras = prefs.getDouble(_keyDelayBeforeExtras) ?? 0.0;
     final delayBeforeAutoAdvance = prefs.getDouble(_keyDelayBeforeAutoAdvance) ?? 0.0;
     final theme = prefs.getString(_keyTheme) ?? 'Taeguk';
-    final activePreset = prefs.getString(_keyActivePreset) ?? '';
-    final savedWpm = prefs.getInt(_keySavedWpm) ?? wpm;
-    final savedRepeats = prefs.getInt(_keySavedRepeats) ?? 1;
-    final savedDelayBeforeFirstPlay = prefs.getDouble(_keySavedDelayBeforeFirstPlay) ?? 0.0;
-    final savedDelayBetweenRepeats = prefs.getDouble(_keySavedDelayBetweenRepeats) ?? 1.0;
-    final savedDelayBeforeAutoAdvance = prefs.getDouble(_keySavedDelayBeforeAutoAdvance) ?? 0.0;
     return SettingsSnapshot(
       showCues: showCues,
       wpm: wpm,
@@ -63,12 +51,6 @@ class SettingsStore {
       delayBeforeExtras: delayBeforeExtras,
       delayBeforeAutoAdvance: delayBeforeAutoAdvance,
       theme: theme == 'Hanji paper' ? 'Hanji' : theme,
-      activePreset: activePreset,
-      savedWpm: savedWpm,
-      savedRepeats: savedRepeats,
-      savedDelayBeforeFirstPlay: savedDelayBeforeFirstPlay,
-      savedDelayBetweenRepeats: savedDelayBetweenRepeats,
-      savedDelayBeforeAutoAdvance: savedDelayBeforeAutoAdvance,
     );
   }
 
@@ -101,12 +83,6 @@ class SettingsStore {
     await prefs.setDouble(_keyDelayBeforeExtras, snapshot.delayBeforeExtras);
     await prefs.setDouble(_keyDelayBeforeAutoAdvance, snapshot.delayBeforeAutoAdvance);
     await prefs.setString(_keyTheme, snapshot.theme);
-    await prefs.setString(_keyActivePreset, snapshot.activePreset);
-    await prefs.setInt(_keySavedWpm, snapshot.savedWpm);
-    await prefs.setInt(_keySavedRepeats, snapshot.savedRepeats);
-    await prefs.setDouble(_keySavedDelayBeforeFirstPlay, snapshot.savedDelayBeforeFirstPlay);
-    await prefs.setDouble(_keySavedDelayBetweenRepeats, snapshot.savedDelayBetweenRepeats);
-    await prefs.setDouble(_keySavedDelayBeforeAutoAdvance, snapshot.savedDelayBeforeAutoAdvance);
   }
 
   Future<void> saveIncludeRare(bool value) async {
@@ -152,10 +128,5 @@ class SettingsStore {
   Future<void> saveTheme(String value) async {
     final prefs = _prefsOverride ?? await SharedPreferences.getInstance();
     await prefs.setString(_keyTheme, value);
-  }
-
-  Future<void> saveActivePreset(String value) async {
-    final prefs = _prefsOverride ?? await SharedPreferences.getInstance();
-    await prefs.setString(_keyActivePreset, value);
   }
 }

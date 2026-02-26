@@ -43,4 +43,9 @@ class NavigationState extends StateNotifier<NavigationSnapshot> {
     final prevIndex = (state.index - 1) % length;
     state = NavigationSnapshot(mode: state.mode, index: prevIndex);
   }
+
+  void reset() {
+    state = const NavigationSnapshot(mode: 'Vowels', index: 0);
+    _store.saveMode('Vowels');
+  }
 }

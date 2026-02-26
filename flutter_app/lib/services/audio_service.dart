@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart' as ja;
 
 const String _defaultVoiceName = 'ko-KR-Wavenet-A';
@@ -30,6 +31,7 @@ class AudioService {
   Completer<void>? _activeCompleter;
   Future<void> _queue = Future<void>.value();
   late final _AudioBackend _backend = _resolveBackend();
+  final Set<String> _preloaded = <String>{};
 
   Future<void> playGlyph(String glyph, {required int wpm}) async {
     if (glyph.isEmpty) return;
@@ -39,6 +41,21 @@ class AudioService {
 
   Future<void> stop() async {
     await _enqueue(_stopInternal);
+  }
+
+  Future<void> preloadGlyphs(List<String> glyphs, {required int wpm}) async {
+    if (glyphs.isEmpty) return;
+    for (final glyph in glyphs) {
+      if (glyph.isEmpty) continue;
+      final filename = buildAudioFilename(glyph, wpm);
+      if (!_preloaded.add(filename)) continue;
+      try {
+        await rootBundle.load('assets/audio/$filename');
+      } catch (_) {
+        // ignore: avoid_print
+        print('[WARN] Audio preload failed: $filename');
+      }
+    }
   }
 
   Future<void> _playAssetInternal(String assetPath) async {
@@ -125,9 +142,6 @@ class _JustAudioBackend implements _AudioBackend {
   Future<void> playAsset(String assetPath) async {
     await _player.setAsset('assets/$assetPath');
     await _player.play();
-    await _player.processingStateStream.firstWhere(
-      (state) => state == ja.ProcessingState.completed || state == ja.ProcessingState.idle,
-    );
   }
 
   @override

@@ -7,6 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/persistence_providers.dart';
 import '../../state/playback_state.dart';
 import '../../state/settings_state.dart';
+import '../../state/stage_progress_state.dart';
+import '../../state/stage_prompt_state.dart';
+import '../../state/stage_state.dart';
+import '../../state/data_providers.dart';
+import '../../domain/stages.dart';
+import '../../state/syllable_options_state.dart';
+import '../../state/navigation_state.dart';
+import '../../state/stage_testing_mode.dart';
 import '../widgets/jamo_block/jamo_block.dart';
 import '../widgets/panels/examples_panel.dart';
 import '../widgets/panels/mode_row.dart';
@@ -23,6 +31,27 @@ class MainScreen extends ConsumerWidget {
     ref.watch(settingsHydrationProvider);
     ref.watch(navigationHydrationProvider);
     ref.watch(syllableVowelSetHydrationProvider);
+    ref.watch(stageHydrationProvider);
+    ref.watch(stageProgressListenerProvider);
+    ref.watch(stageModeCycleListenerProvider);
+    ref.watch(stageNavigationListenerProvider);
+    ref.listen<StageProgressSnapshot>(stageProgressProvider, (previous, next) {
+      if (!next.isComplete) return;
+      if (previous?.isComplete == true) return;
+      final stages = ref.read(stagesProvider).maybeWhen(
+            data: (items) => items,
+            orElse: () => const <StageDefinition>[],
+          );
+      if (stages.isEmpty) return;
+      final currentStage = stages.firstWhere(
+        (stage) => stage.id == next.stageId,
+        orElse: () => stages.first,
+      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        _showStageCompleteDialog(context, ref, stages, currentStage);
+      });
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!kDebugMode) return;
       final size = MediaQuery.of(context).size;
@@ -106,6 +135,42 @@ class MainScreen extends ConsumerWidget {
   }
 }
 
+Future<void> _showStageCompleteDialog(
+  BuildContext context,
+  WidgetRef ref,
+  List<StageDefinition> stages,
+  StageDefinition currentStage,
+) {
+  final stageIndex = stages.indexWhere((stage) => stage.id == currentStage.id);
+  final nextStage = stageIndex >= 0 && stageIndex + 1 < stages.length ? stages[stageIndex + 1] : null;
+  final reviewLabel = currentStage.reviewOffer?.label ?? 'Review this lesson again?';
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Lesson complete'),
+        content: Text(reviewLabel),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Review'),
+          ),
+          if (nextStage != null)
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                ref.read(stageCompletionProvider.notifier).markCompleted(currentStage.id);
+                ref.read(stageStateProvider.notifier).setStage(nextStage.id);
+              },
+              child: const Text('Next lesson'),
+            ),
+        ],
+      );
+    },
+  );
+}
+
 class _SizedPanelDebug extends StatelessWidget {
   const _SizedPanelDebug({required this.name, required this.child});
 
@@ -141,16 +206,13 @@ class _DrawerSettings extends ConsumerStatefulWidget {
 
 class _DrawerSettingsState extends ConsumerState<_DrawerSettings> {
   bool _showWpmHelp = false;
-  bool _showPresetsHelp = false;
   bool _showRepeatsHelp = false;
   Timer? _wpmTimer;
-  Timer? _presetsTimer;
   Timer? _repeatsTimer;
 
   @override
   void dispose() {
     _wpmTimer?.cancel();
-    _presetsTimer?.cancel();
     _repeatsTimer?.cancel();
     super.dispose();
   }
@@ -297,131 +359,42 @@ class _DrawerSettingsState extends ConsumerState<_DrawerSettings> {
             ),
           ),
         if (!_showRepeatsHelp) const SizedBox(height: 4),
-        const Divider(height: 8, thickness: 0.5),
+        const Divider(height: 12, thickness: 0.8),
+        SwitchListTile(
+          title: const Text('Stage testing mode', style: titleStyle),
+          subtitle: const Text(
+            'Allow selecting any stage and disable cycle tracking.',
+            style: helperStyle,
+          ),
+          dense: true,
+          visualDensity: compactDensity,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+          value: ref.watch(stageTestingModeProvider),
+          onChanged: (value) {
+            ref.read(stageTestingModeProvider.notifier).state = value;
+          },
+        ),
+        const Divider(height: 12, thickness: 0.8),
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Preset pauses', style: titleStyle),
-                const SizedBox(width: 4),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 20, minHeight: 20),
-                  icon: const Icon(Icons.info_outline,
-                      size: 13, color: Colors.black54),
-                  onPressed: () {
-                    _toggleHelper(
-                      current: _showPresetsHelp,
-                      update: (value) =>
-                          setState(() => _showPresetsHelp = value),
-                      timer: _presetsTimer,
-                      saveTimer: (timer) => _presetsTimer = timer,
-                    );
-                  },
-                ),
-              ],
+            child: ElevatedButton(
+              onPressed: () {
+                ref.read(playbackStateProvider.notifier).resetForMode();
+                ref.read(settingsStateProvider.notifier).resetDefaults();
+                ref.read(navigationStateProvider.notifier).reset();
+                ref.read(stageStateProvider.notifier).reset();
+                ref.read(stageCompletionProvider.notifier).reset();
+                ref.read(stagePromptProvider.notifier).reset();
+                ref.read(stageProgressProvider.notifier).reset();
+                ref.read(syllableVowelSetProvider.notifier).reset();
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              child: const Text('Reset'),
             ),
-          ),
-        ),
-        if (_showPresetsHelp)
-          const Padding(
-            padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Useful sets of predetermined delays - use Settings for a more detailed way of doing this.',
-                style: helperStyle,
-              ),
-            ),
-          ),
-        if (!_showPresetsHelp) const SizedBox(height: 4),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    const Text('Default',
-                        style: labelStyle, textAlign: TextAlign.center),
-                    Transform.scale(
-                      scale: 0.75,
-                      child: Switch(
-                        value: settings.activePreset == 'Default',
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: (value) {
-                          if (value) {
-                            ref
-                                .read(settingsStateProvider.notifier)
-                                .applyPreset('Default');
-                          } else {
-                            ref
-                                .read(settingsStateProvider.notifier)
-                                .applyPreset('');
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    const Text('Beginner',
-                        style: labelStyle, textAlign: TextAlign.center),
-                    Transform.scale(
-                      scale: 0.75,
-                      child: Switch(
-                        value: settings.activePreset == 'Beginner',
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: (value) {
-                          if (value) {
-                            ref
-                                .read(settingsStateProvider.notifier)
-                                .applyPreset('Beginner');
-                          } else {
-                            ref
-                                .read(settingsStateProvider.notifier)
-                                .applyPreset('');
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    const Text('Advanced',
-                        style: labelStyle, textAlign: TextAlign.center),
-                    Transform.scale(
-                      scale: 0.75,
-                      child: Switch(
-                        value: settings.activePreset == 'Advanced',
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: (value) {
-                          if (value) {
-                            ref
-                                .read(settingsStateProvider.notifier)
-                                .applyPreset('Advanced');
-                          } else {
-                            ref
-                                .read(settingsStateProvider.notifier)
-                                .applyPreset('');
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ),
         ),
         const Divider(),

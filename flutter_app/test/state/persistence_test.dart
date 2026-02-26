@@ -24,7 +24,6 @@ void main() {
     await store.saveDelayBeforeExtras(2.0);
     await store.saveDelayBeforeAutoAdvance(0.0);
     await store.saveTheme('Hanji');
-    await store.saveActivePreset('Beginner');
 
     final snapshot = await store.load();
     expect(snapshot.showCues, isFalse);
@@ -39,12 +38,6 @@ void main() {
     expect(snapshot.delayBeforeExtras, 2.0);
     expect(snapshot.delayBeforeAutoAdvance, 0.0);
     expect(snapshot.theme, 'Hanji');
-    expect(snapshot.activePreset, 'Beginner');
-    expect(snapshot.savedWpm, 160);
-    expect(snapshot.savedRepeats, 1);
-    expect(snapshot.savedDelayBeforeFirstPlay, 0.0);
-    expect(snapshot.savedDelayBetweenRepeats, 1.0);
-    expect(snapshot.savedDelayBeforeAutoAdvance, 0.0);
   });
 
   test('navigation store loads mode', () async {

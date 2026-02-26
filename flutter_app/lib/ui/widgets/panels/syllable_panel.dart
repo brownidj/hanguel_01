@@ -10,6 +10,9 @@ import '../../../state/navigation_state.dart';
 import '../../../state/audio_service_provider.dart';
 import '../../../state/playback_state.dart';
 import '../../../state/settings_state.dart';
+import '../../../state/stage_progress_state.dart';
+import '../../../state/stage_testing_mode.dart';
+import '../../../state/stage_state.dart';
 
 class SyllablePanel extends ConsumerWidget {
   const SyllablePanel({super.key});
@@ -19,8 +22,27 @@ class SyllablePanel extends ConsumerWidget {
     final nav = ref.watch(navigationStateProvider);
     final playback = ref.watch(playbackStateProvider);
     final settings = ref.watch(settingsStateProvider);
+    final stage = ref.watch(currentStageProvider);
+    final inventory = ref.watch(stageInventoryProvider);
+    final isFullReview = stage?.id == 'stage_11_full_review';
     final itemsAsync = ref.watch(currentItemsProvider);
     final currentAsync = ref.watch(currentItemProvider);
+    final items = itemsAsync.maybeWhen(
+      data: (value) => value,
+      orElse: () => const <StudyItem>[],
+    );
+    if (items.isNotEmpty) {
+      final length = items.length;
+      final index = nav.index % length;
+      final prevIndex = (index - 1 + length) % length;
+      final nextIndex = (index + 1) % length;
+      final glyphs = <String>{
+        items[prevIndex].glyph,
+        items[index].glyph,
+        items[nextIndex].glyph,
+      }.toList();
+      ref.read(audioServiceProvider).preloadGlyphs(glyphs, wpm: settings.effectiveWpm);
+    }
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -32,10 +54,20 @@ class SyllablePanel extends ConsumerWidget {
               children: [
                 itemsAsync.when(
                   data: (items) {
-                    final count = items.length;
-                    final index = count == 0 ? 0 : (nav.index % count) + 1;
+                    final modeCount = items.length;
+                    var displayCount = modeCount;
+                    var displayIndex = modeCount == 0 ? 0 : (nav.index % modeCount) + 1;
+                    if (stage?.id == 'stage_11_full_review' &&
+                        (nav.mode == 'Consonants' || nav.mode == 'Vowels')) {
+                      final vowelCount = inventory.vowels.length;
+                      final consonantCount = inventory.consonants.length;
+                      displayCount = consonantCount + vowelCount;
+                      if (modeCount > 0 && nav.mode == 'Consonants') {
+                        displayIndex = vowelCount + (nav.index % modeCount) + 1;
+                      }
+                    }
                     return Text(
-                      '$index of $count',
+                      '$displayIndex of $displayCount',
                       style: const TextStyle(fontSize: 12, color: Colors.black54),
                     );
                   },
@@ -133,7 +165,29 @@ class SyllablePanel extends ConsumerWidget {
                         data: (items) => items.length,
                         orElse: () => 0,
                       );
-                      ref.read(navigationStateProvider.notifier).prev(length);
+                      if (isFullReview &&
+                          length > 0 &&
+                          (nav.mode == 'Consonants' || nav.mode == 'Vowels')) {
+                        final index = nav.index % length;
+                        if (index == 0) {
+                          final otherMode =
+                              nav.mode == 'Consonants' ? 'Vowels' : 'Consonants';
+                          final otherLength = otherMode == 'Consonants'
+                              ? inventory.consonants.length
+                              : inventory.vowels.length;
+                          if (otherLength > 0) {
+                            final navState = ref.read(navigationStateProvider.notifier);
+                            navState.setMode(otherMode);
+                            navState.setIndex(otherLength - 1);
+                          } else {
+                            ref.read(navigationStateProvider.notifier).prev(length);
+                          }
+                        } else {
+                          ref.read(navigationStateProvider.notifier).prev(length);
+                        }
+                      } else {
+                        ref.read(navigationStateProvider.notifier).prev(length);
+                      }
                       if (playback.heardOnce) {
                         Future<void>.delayed(Duration.zero, () {
                           _handleHear(ref, settings.effectiveWpm);
@@ -157,7 +211,27 @@ class SyllablePanel extends ConsumerWidget {
                         data: (items) => items.length,
                         orElse: () => 0,
                       );
-                      ref.read(navigationStateProvider.notifier).next(length);
+                      if (isFullReview &&
+                          length > 0 &&
+                          (nav.mode == 'Consonants' || nav.mode == 'Vowels')) {
+                        final index = nav.index % length;
+                        if (index == length - 1) {
+                          final otherMode =
+                              nav.mode == 'Consonants' ? 'Vowels' : 'Consonants';
+                          final otherLength = otherMode == 'Consonants'
+                              ? inventory.consonants.length
+                              : inventory.vowels.length;
+                          if (otherLength > 0) {
+                            ref.read(navigationStateProvider.notifier).setMode(otherMode);
+                          } else {
+                            ref.read(navigationStateProvider.notifier).next(length);
+                          }
+                        } else {
+                          ref.read(navigationStateProvider.notifier).next(length);
+                        }
+                      } else {
+                        ref.read(navigationStateProvider.notifier).next(length);
+                      }
                       if (playback.heardOnce) {
                         Future<void>.delayed(Duration.zero, () {
                           _handleHear(ref, settings.effectiveWpm);
@@ -182,9 +256,17 @@ void _handleHear(WidgetRef ref, int wpm) async {
       );
   if (item.glyph.isEmpty) return;
   ref.read(playbackStateProvider.notifier).setControlsEnabled(false);
-  await ref.read(audioServiceProvider).playGlyph(item.glyph, wpm: wpm);
+  final playFuture = ref.read(audioServiceProvider).playGlyph(item.glyph, wpm: wpm);
   ref.read(playbackStateProvider.notifier).setControlsEnabled(true);
   ref.read(playbackStateProvider.notifier).setHeardOnce(true);
+  final itemCount = ref.read(currentItemsProvider).maybeWhen(
+        data: (items) => items.length,
+        orElse: () => 0,
+      );
+  if (!ref.read(stageTestingModeProvider)) {
+    ref.read(stageProgressProvider.notifier).recordPlay(item.glyph, itemCount);
+  }
+  unawaited(playFuture);
 }
 
 Widget _chipIconButton({

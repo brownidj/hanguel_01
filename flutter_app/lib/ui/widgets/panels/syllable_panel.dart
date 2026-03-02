@@ -190,7 +190,7 @@ class SyllablePanel extends ConsumerWidget {
                       }
                       if (playback.heardOnce) {
                         Future<void>.delayed(Duration.zero, () {
-                          _handleHear(ref, settings.effectiveWpm);
+                          _handleHear(ref, settings);
                         });
                       }
                     },
@@ -199,7 +199,7 @@ class SyllablePanel extends ConsumerWidget {
                     label: '',
                     enabled: true,
                     onPressed: () {
-                      _handleHear(ref, settings.effectiveWpm);
+                      _handleHear(ref, settings);
                     },
                     icon: Icons.hearing,
                   ),
@@ -234,7 +234,7 @@ class SyllablePanel extends ConsumerWidget {
                       }
                       if (playback.heardOnce) {
                         Future<void>.delayed(Duration.zero, () {
-                          _handleHear(ref, settings.effectiveWpm);
+                          _handleHear(ref, settings);
                         });
                       }
                     },
@@ -249,16 +249,21 @@ class SyllablePanel extends ConsumerWidget {
   }
 }
 
-void _handleHear(WidgetRef ref, int wpm) async {
+void _handleHear(WidgetRef ref, SettingsSnapshot settings) async {
   final item = ref.read(currentItemProvider).maybeWhen(
         data: (value) => value,
         orElse: () => const StudyItem.empty(),
       );
   if (item.glyph.isEmpty) return;
   ref.read(playbackStateProvider.notifier).setControlsEnabled(false);
-  final playFuture = ref.read(audioServiceProvider).playGlyph(item.glyph, wpm: wpm);
-  ref.read(playbackStateProvider.notifier).setControlsEnabled(true);
-  ref.read(playbackStateProvider.notifier).setHeardOnce(true);
+  final repeats = settings.repeats < 1 ? 1 : settings.repeats;
+  final playFuture = ref.read(audioServiceProvider).playGlyphRepeated(
+        item.glyph,
+        wpm: settings.effectiveWpm,
+        repeats: repeats,
+        delayBetweenSeconds: settings.delayBetweenRepeats,
+        delayBeforeFirstSeconds: settings.delayBeforeFirstPlay,
+      );
   final itemCount = ref.read(currentItemsProvider).maybeWhen(
         data: (items) => items.length,
         orElse: () => 0,
@@ -266,7 +271,12 @@ void _handleHear(WidgetRef ref, int wpm) async {
   if (!ref.read(stageTestingModeProvider)) {
     ref.read(stageProgressProvider.notifier).recordPlay(item.glyph, itemCount);
   }
-  unawaited(playFuture);
+  try {
+    await playFuture;
+  } finally {
+    ref.read(playbackStateProvider.notifier).setControlsEnabled(true);
+    ref.read(playbackStateProvider.notifier).setHeardOnce(true);
+  }
 }
 
 Widget _chipIconButton({

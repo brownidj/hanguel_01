@@ -28,15 +28,54 @@ String buildAudioFilename(String glyph, int wpm) {
 }
 
 class AudioService {
+  AudioService({AudioBackend? backend}) : _backend = backend ?? AudioService._resolveBackend();
+
+  factory AudioService.testing({
+    Future<void> Function(String assetPath)? playAsset,
+    Future<void> Function()? stop,
+  }) {
+    return AudioService(
+      backend: _CallbackAudioBackend(
+        playAsset: playAsset ?? ((_) async {}),
+        stop: stop ?? (() async {}),
+      ),
+    );
+  }
+
   Completer<void>? _activeCompleter;
   Future<void> _queue = Future<void>.value();
-  late final _AudioBackend _backend = _resolveBackend();
+  final AudioBackend _backend;
   final Set<String> _preloaded = <String>{};
 
   Future<void> playGlyph(String glyph, {required int wpm}) async {
     if (glyph.isEmpty) return;
     final filename = buildAudioFilename(glyph, wpm);
     await _enqueue(() => _playAssetInternal('audio/$filename'));
+  }
+
+  Future<void> playGlyphRepeated(
+    String glyph, {
+    required int wpm,
+    int repeats = 1,
+    double delayBetweenSeconds = 0.0,
+    double delayBeforeFirstSeconds = 0.0,
+  }) async {
+    if (glyph.isEmpty) return;
+    final safeRepeats = repeats < 1 ? 1 : repeats;
+    final delayBetweenMs = (delayBetweenSeconds * 1000).round();
+    final delayBeforeMs = (delayBeforeFirstSeconds * 1000).round();
+    final filename = buildAudioFilename(glyph, wpm);
+    await _enqueue(() async {
+      if (delayBeforeMs > 0) {
+        await Future<void>.delayed(Duration(milliseconds: delayBeforeMs));
+      }
+      for (var i = 0; i < safeRepeats; i += 1) {
+        await _playAssetInternal('audio/$filename');
+        if (i < safeRepeats - 1 && delayBetweenMs > 0) {
+          await Future<void>.delayed(Duration(milliseconds: delayBetweenMs));
+        }
+      }
+    });
   }
 
   Future<void> stop() async {
@@ -101,7 +140,7 @@ class AudioService {
     _backend.dispose();
   }
 
-  _AudioBackend _resolveBackend() {
+  static AudioBackend _resolveBackend() {
     if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
       return _JustAudioBackend();
     }
@@ -109,13 +148,13 @@ class AudioService {
   }
 }
 
-abstract class _AudioBackend {
+abstract class AudioBackend {
   Future<void> playAsset(String assetPath);
   Future<void> stop();
   void dispose();
 }
 
-class _AudioPlayersBackend implements _AudioBackend {
+class _AudioPlayersBackend implements AudioBackend {
   final ap.AudioPlayer _player = ap.AudioPlayer();
 
   @override
@@ -135,7 +174,7 @@ class _AudioPlayersBackend implements _AudioBackend {
   }
 }
 
-class _JustAudioBackend implements _AudioBackend {
+class _JustAudioBackend implements AudioBackend {
   final ja.AudioPlayer _player = ja.AudioPlayer();
 
   @override
@@ -153,4 +192,24 @@ class _JustAudioBackend implements _AudioBackend {
   void dispose() {
     _player.dispose();
   }
+}
+
+class _CallbackAudioBackend implements AudioBackend {
+  _CallbackAudioBackend({
+    required Future<void> Function(String assetPath) playAsset,
+    required Future<void> Function() stop,
+  })  : _playAsset = playAsset,
+        _stop = stop;
+
+  final Future<void> Function(String assetPath) _playAsset;
+  final Future<void> Function() _stop;
+
+  @override
+  Future<void> playAsset(String assetPath) => _playAsset(assetPath);
+
+  @override
+  Future<void> stop() => _stop();
+
+  @override
+  void dispose() {}
 }

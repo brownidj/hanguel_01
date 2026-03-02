@@ -27,3 +27,5 @@ flutter:
     - assets/data/
     - assets/audio/
     - assets/images/examples/
+    - assets/images/icons/korea-flag-circle-icon.png
+    - assets/splash_screen/portrait.png

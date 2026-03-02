@@ -137,9 +137,14 @@ class ExamplesPanel extends ConsumerWidget {
                                     onPressed: playback.autoEnabled || !playback.controlsEnabled || !playback.heardOnce
                                         ? null
                                         : () async {
-                                            await ref
-                                                .read(audioServiceProvider)
-                                                .playGlyph(example.hangul, wpm: settings.effectiveWpm);
+                                            final repeats = settings.repeats < 1 ? 1 : settings.repeats;
+                                            await ref.read(audioServiceProvider).playGlyphRepeated(
+                                                  example.hangul,
+                                                  wpm: settings.effectiveWpm,
+                                                  repeats: repeats,
+                                                  delayBetweenSeconds: settings.delayBetweenRepeats,
+                                                  delayBeforeFirstSeconds: settings.delayBeforeFirstPlay,
+                                                );
                                           },
                                     child: const Icon(Icons.hearing, size: 18),
                                   ),

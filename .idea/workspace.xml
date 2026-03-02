@@ -4,51 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f99d5883-1264-4767-9e65-2673746d4b79" name="Changes" comment="Before implementing Stages">
+    <list default="true" id="f99d5883-1264-4767-9e65-2673746d4b79" name="Changes" comment="Merge remote-tracking branch 'origin/vowel_stages' into vowel_stages">
+      <change beforePath="$PROJECT_DIR$/.idea/Hangul_01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Hangul_01.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/android/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Flutter/AppFrameworkInfo.plist" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Flutter/AppFrameworkInfo.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/AppDelegate.swift" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/AppDelegate.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/ios/Runner/Info.plist" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/flutter_app/lib/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/app.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/flutter_app/lib/services/audio_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/services/audio_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/services/settings_store.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/services/settings_store.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/state/data_providers.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/state/data_providers.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/state/navigation_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/state/navigation_state.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/state/persistence_providers.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/state/persistence_providers.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/state/playback_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/state/playback_state.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/state/settings_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/state/settings_state.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/state/syllable_options_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/state/syllable_options_state.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/screens/main_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/screens/main_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/screens/settings_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/screens/settings_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/mode_row.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/mode_row.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/examples_panel.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/examples_panel.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/syllable_panel.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/lib/ui/widgets/panels/syllable_panel.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/linux/runner/my_application.cc" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/linux/runner/my_application.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/macos/Runner/Configs/AppInfo.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/macos/Runner/Configs/AppInfo.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/test/state/persistence_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/test/state/persistence_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_app/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/flutter_app/test/ui/main_screen_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/test/ui/main_screen_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/web/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/web/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/web/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/windows/runner/Runner.rc" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/windows/runner/Runner.rc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_app/windows/runner/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_app/windows/runner/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +20,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="5810" />
+    <option name="cachedIndexableFilesCount" value="5811" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -136,6 +100,7 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/flutter_app/assets/images/icons" />
+      <recent name="$PROJECT_DIR$/flutter_app/assets/splash_screen" />
       <recent name="$PROJECT_DIR$/flutter_app/assets/data" />
       <recent name="$PROJECT_DIR$/assets/images" />
     </key>
@@ -295,7 +260,8 @@
       <workItem from="1769216130722" duration="974000" />
       <workItem from="1769217230586" duration="222281000" />
       <workItem from="1770957714604" duration="4000" />
-      <workItem from="1772060258540" duration="4885000" />
+      <workItem from="1772060258540" duration="10324000" />
+      <workItem from="1772489200591" duration="3304000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -481,7 +447,39 @@
       <option name="project" value="LOCAL" />
       <updated>1770522189749</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Stages now implemented, with special testing mode">
+      <option name="closed" value="true" />
+      <created>1772065186461</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1772065186461</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Stages now implemented, with special testing mode">
+      <option name="closed" value="true" />
+      <created>1772065256018</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1772065256018</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Merge remote-tracking branch 'origin/vowel_stages' into vowel_stages">
+      <option name="closed" value="true" />
+      <created>1772065308492</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1772065308492</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Merge remote-tracking branch 'origin/vowel_stages' into vowel_stages">
+      <option name="closed" value="true" />
+      <created>1772065329491</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1772065329491</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -508,7 +506,9 @@
     <MESSAGE value="example_syllables.yaml partly fixed." />
     <MESSAGE value="Before adding silent leading consonant (ㅇ) to the Jamo block and syllable block" />
     <MESSAGE value="Before implementing Stages" />
-    <option name="LAST_COMMIT_MESSAGE" value="Before implementing Stages" />
+    <MESSAGE value="Stages now implemented, with special testing mode" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/vowel_stages' into vowel_stages" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/vowel_stages' into vowel_stages" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Hangul_01$main.coverage" NAME="main Coverage Results" MODIFIED="1769471863335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

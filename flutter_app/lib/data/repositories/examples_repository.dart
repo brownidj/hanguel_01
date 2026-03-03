@@ -39,7 +39,13 @@ class ExamplesRepository {
   }
 
   Future<ExamplesIndex> loadIndexedExamples() async {
-    return loadIndexedExamplesForMode('Syllables');
+    final batches = await Future.wait([
+      loadExamplesForMode('Syllables'),
+      loadExamplesForMode('Consonants'),
+      loadExamplesForMode('Vowels'),
+    ]);
+    final items = batches.expand((batch) => batch).toList();
+    return ExamplesIndex.fromItems(items);
   }
 
   Future<ExamplesIndex> loadIndexedExamplesForMode(String mode) async {

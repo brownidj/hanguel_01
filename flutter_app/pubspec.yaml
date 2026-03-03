@@ -1,6 +1,6 @@
 name: hangul_flutter
 publish_to: 'none'
-version: 0.1.0
+version: 0.2.0+104
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -9,8 +9,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
-  audioplayers: ^6.0.1
   just_audio: ^0.9.38
+  path_provider: ^2.1.5
   yaml: ^3.1.2
   collection: ^1.18.0
   path: ^1.9.0
@@ -21,9 +21,15 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.0
 
+dependency_overrides:
+  audio_session: ^0.2.2
+  path_provider_foundation: 2.6.0
+
 flutter:
   uses-material-design: true
   assets:
     - assets/data/
     - assets/audio/
     - assets/images/examples/
+    - assets/images/icons/
+    - assets/splash_screen/

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart' as ja;
 
@@ -85,10 +84,7 @@ class AudioService {
   }
 
   _AudioBackend _resolveBackend() {
-    if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
-      return _JustAudioBackend();
-    }
-    return _AudioPlayersBackend();
+    return _JustAudioBackend();
   }
 }
 
@@ -96,26 +92,6 @@ abstract class _AudioBackend {
   Future<void> playAsset(String assetPath);
   Future<void> stop();
   void dispose();
-}
-
-class _AudioPlayersBackend implements _AudioBackend {
-  final ap.AudioPlayer _player = ap.AudioPlayer();
-
-  @override
-  Future<void> playAsset(String assetPath) async {
-    await _player.play(ap.AssetSource(assetPath));
-    await _player.onPlayerComplete.first;
-  }
-
-  @override
-  Future<void> stop() async {
-    await _player.stop();
-  }
-
-  @override
-  void dispose() {
-    _player.dispose();
-  }
 }
 
 class _JustAudioBackend implements _AudioBackend {
